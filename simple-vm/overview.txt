@@ -1,0 +1,23 @@
+
+The directory contains:
+
+Makefile        - a GNU makefile
+vm.hpp          - VM class
+vm.cpp          - a VM implementation
+get_opt.hpp     - for parsing command line parameters
+logger.hpp      - class and methods for debug messages
+main_driver.cpp - contains main() function
+
+How to build : type make, executable is called test1
+How to run   : ./test1 image_name 
+optional parameter is "-v" - be verbose
+
+How to launch test suite : make test
+
+There is a separate bash script called make_all, that launches test suite
+
+How to complete task1 : make task1
+How to complete task2 : make task2
+
+Another useful Makefile target : make clean
+

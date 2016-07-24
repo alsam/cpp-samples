@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for i in {01..25}
+do
+  echo -n "$i : "
+  ./test1 ../../test$i.bin
+  echo
+done
+
