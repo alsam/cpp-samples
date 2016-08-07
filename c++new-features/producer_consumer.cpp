@@ -1,5 +1,5 @@
 // see [A multi-threaded Producer Consumer with C++11](http://codereview.stackexchange.com/questions/84109/a-multi-threaded-producer-consumer-with-c11)
-// mote. that `lock_guard` is recommended instead of `unique_lock` as it is releases lock automatically follow RAII leaving the lock scope.
+// note that `lock_guard` is recommended instead of `unique_lock` as it is releases lock automatically follow RAII leaving the lock scope.
 // see also [](http://www.boost.org/doc/libs/1_54_0/doc/html/lockfree/examples.html) for atomics instead of locks.
 //
 
@@ -73,13 +73,12 @@ main()
     //
     const int producer_thread_count = 4;
     const int consumer_thread_count = 4;
+    Buffer buffer;
     for (int i = 0; i < producer_thread_count; i++) {
-        Buffer producer;
-        producer_grp.emplace_back(&Buffer::add, &producer, i);
+        producer_grp.emplace_back(&Buffer::add, &buffer, i);
     }
     for (int i = 0; i < consumer_thread_count; i++) {
-        Buffer consumer;
-        consumer_grp.emplace_back(&Buffer::remove, &consumer);
+        consumer_grp.emplace_back(&Buffer::remove, &buffer);
     }
 
     join_all(producer_grp);
