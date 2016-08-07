@@ -63,19 +63,12 @@ main()
 
     std::vector<std::thread> producer_grp, consumer_grp;
 
-    // FIXME : seems it has deadlock
-    // sample run
-    // ./producer_consumer 
-    // add(): pushed add(): pushed 01
-    // add(): pushed 
-    // 2
-    // add(): pushed 3
-    //
-    const int producer_thread_count = 4;
-    const int consumer_thread_count = 4;
+    const int producer_thread_count = 12;
+    const int consumer_thread_count = 12;
     Buffer buffer;
     for (int i = 0; i < producer_thread_count; i++) {
-        producer_grp.emplace_back(&Buffer::add, &buffer, i);
+        int num = dist(engine);
+        producer_grp.emplace_back(&Buffer::add, &buffer, num);
     }
     for (int i = 0; i < consumer_thread_count; i++) {
         consumer_grp.emplace_back(&Buffer::remove, &buffer);
