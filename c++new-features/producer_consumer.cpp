@@ -1,5 +1,5 @@
 // see [A multi-threaded Producer Consumer with C++11](http://codereview.stackexchange.com/questions/84109/a-multi-threaded-producer-consumer-with-c11)
-// note that `lock_guard` is recommended instead of `unique_lock` as it is releases lock automatically follow RAII leaving the lock scope.
+// note that `lock_guard` is recommended instead of `unique_lock` as it releases lock automatically follow RAII leaving the lock scope.
 // see also [](http://www.boost.org/doc/libs/1_54_0/doc/html/lockfree/examples.html) for atomics instead of locks.
 //
 
