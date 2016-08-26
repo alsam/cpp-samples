@@ -34,13 +34,13 @@ public:
     gauss_legendre(unsigned order, unsigned);
 
     /// @returns the order of the quadrature
-    unsigned order() {return order_;}
+    unsigned order() const { return order_; }
 
     /// knots
-    vec_t const& z() {return z_;}
+    vec_t const& z() const { return z_; }
 
     /// weights
-    vec_t const& w() {return w_;}
+    vec_t const& w() const { return w_; }
 };
 
 #endif // __GAUSS_LEGENDRE_HPP__
