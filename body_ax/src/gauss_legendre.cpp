@@ -127,8 +127,7 @@ main()
 
 #include "gtest/gtest.h"
 
-TEST(Reduction, Len5) {
-    unsigned len = 5;
+void TestReduction(unsigned len) {
     gauss_legendre gl(len);
     auto const& z = gl.z();
     auto const& w = gl.w();
@@ -138,15 +137,36 @@ TEST(Reduction, Len5) {
     EXPECT_NEAR (expected, reduction, absolute_range);
 }
 
+TEST(Reduction, Len2) {
+    TestReduction(2);
+}
+
+TEST(Reduction, Len3) {
+    TestReduction(3);
+}
+
+TEST(Reduction, Len4) {
+    TestReduction(4);
+}
+
+TEST(Reduction, Len5) {
+    TestReduction(5);
+}
+
+TEST(Reduction, Len6) {
+    TestReduction(6);
+}
+
+TEST(Reduction, Len8) {
+    TestReduction(8);
+}
+
 TEST(Reduction, Len12) {
-    unsigned len = 12;
-    gauss_legendre gl(len);
-    auto const& z = gl.z();
-    auto const& w = gl.w();
-    auto reduction = w.dot(z.cwiseProduct(z));
-    double expected = 2.0 / 3.0;
-    double absolute_range = 1e-10;
-    EXPECT_NEAR (expected, reduction, absolute_range);
+    TestReduction(12);
+}
+
+TEST(Reduction, Len20) {
+    TestReduction(20);
 }
 
 int main(int argc, char** argv)
