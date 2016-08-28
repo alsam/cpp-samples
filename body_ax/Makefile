@@ -66,6 +66,10 @@ gl_print:
 	./gauss_legendre_print > gauss_legendre_print.out
 	diff -u $(GOLDEN_DIR)/gauss_legendre_print.golden gauss_legendre_print.out
 
+ell_print: $(SDIR)/elliptic_integral.cpp
+	$(CXX) $(CXXFLAGS) -DPRINT_ME $(SDIR)/elliptic_integral.cpp -o ell_print 
+	./ell_print > ell_print.out
+
 gl_unit_test:
 	$(CXX) -pthread $(CXXFLAGS) -DUNIT_TEST $(SDIR)/gauss_legendre.cpp -lgtest -o gauss_legendre_unit_test
 	./gauss_legendre_unit_test
