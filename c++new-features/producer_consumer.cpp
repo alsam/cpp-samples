@@ -20,7 +20,7 @@ public:
             cond.wait(locker, [this](){return buffer_.size() < size_;});
             std::cout << "add(): pushed " << num << "\n";
             buffer_.push_back(num);
-            locker.unlock();
+            //locker.unlock();
             cond.notify_all();
             return;
         }
@@ -32,7 +32,7 @@ public:
             int back = buffer_.back();
             buffer_.pop_back();
             std::cout << "remove(): popped " << back << "\n";
-            locker.unlock();
+            //locker.unlock();
             cond.notify_all();
             return back;
         }
