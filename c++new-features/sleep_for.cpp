@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     std::chrono::duration<double, std::milli> elapsed = end-start;
     std::cout << "Waited " << elapsed.count() << " ms\n";
 
-    // tradional c++11 without `chrono_literals`
+    // traditional c++11 without `chrono_literals`
     start = std::chrono::high_resolution_clock::now();
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     end = std::chrono::high_resolution_clock::now();
