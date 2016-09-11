@@ -6,6 +6,7 @@
 
 // from here [C++11 Implementation of Spinlock using <atomic>](http://stackoverflow.com/questions/26583433/c11-implementation-of-spinlock-using-atomic)
 // see also [C++11 spinlock](http://anki3d.org/spinlock/)
+// and [Code Review: ++11 recursive atomic spinlock](http://codereview.stackexchange.com/questions/95590/c11-recursive-atomic-spinlock)
 
 class SpinLock {
     std::atomic_flag locked = ATOMIC_FLAG_INIT ;
