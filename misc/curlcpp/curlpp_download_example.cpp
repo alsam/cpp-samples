@@ -35,7 +35,7 @@ pull_one_url(std::string const& url)
         curlpp::Easy myRequest;
 
         // Set the URL.
-        myRequest.setOpt<Url>("https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/");
+        myRequest.setOpt<Url>(url);
 
         // Send request and get a result.
         // By default the result goes to standard output.
