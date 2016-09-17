@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+// [pugixml quick start guide](http://pugixml.org/docs/quickstart.html)
+
 int main()
 {
 // tag::code[]
