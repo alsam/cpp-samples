@@ -1,7 +1,7 @@
 # HOWTO install libcurlpp
 # yaourt -S aur/libcurlpp
 
-CXXFLAGS += -g
+CXXFLAGS += -g -pthread
 LDFLAGS += -g -lcurlpp -lcurl
 curlpp_download_example : curlpp_download_example.cpp
 clean:
