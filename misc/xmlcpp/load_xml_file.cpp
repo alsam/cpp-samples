@@ -22,6 +22,7 @@ int main()
         std::cout << "Error description: " << result1.description() << "\n";
         std::cout << "Error offset: " << result1.offset << "\n\n";
     }
+    std::cout << doc.child("html").child("body").child("h1").child_value() << std::endl;
 
 // end::code[]
 }

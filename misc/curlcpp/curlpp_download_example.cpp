@@ -8,6 +8,7 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <mutex>
@@ -37,9 +38,9 @@ struct simple_walker: pugi::xml_tree_walker {
 };
 
 void
-pull_one_url(std::string const& url)
+pull_one_url(std::string const& url, bool maven)
 {
-    std::unique_lock<std::mutex> lk(m);
+    //std::unique_lock<std::mutex> lk(m);
     try {
         // That's all that is needed to do cleanup of used resources (RAII style).
         curlpp::Cleanup myCleanup;
@@ -48,35 +49,34 @@ pull_one_url(std::string const& url)
         curlpp::Easy myRequest;
 
         // Set the URL.
-        //myRequest.setOpt<Url>(url);
         myRequest.setOpt(new curlpp::options::Url(url));
-	std::list<std::string> HeaderData; 
-      	HeaderData.push_back("Content-Type: application/octet-stream"); 
-        myRequest.setOpt(new cURLpp::Options::HttpHeader(HeaderData));
 
         // Send request and get a result.
         // By default the result goes to standard output.
+
+        std::ostringstream os;
+        curlpp::options::WriteStream ws(&os);
+        myRequest.setOpt(ws);
         myRequest.perform();
 
-	std::string xml;
-        for (auto const& h : HeaderData) {
-            xml += h;
-            //std::cout << h << "\n";
-        }
+        pugi::xml_document doc;
+        pugi::xml_parse_result result = doc.load_string(os.str().c_str());
 
-	std::cout << xml.c_str();
-	pugi::xml_document doc;
-	pugi::xml_parse_result result = doc.load_string(xml.c_str());
-	
         if (result) {
             std::cout << "XML parsed without errors\n";
-	} else {
+        } else {
             std::cout << "Error description: " << result.description() << "\n";
-            std::cout << "Error offset: " << result.offset << " (error at [..." << (xml.c_str() + result.offset) << "]\n\n";
-	}
+        }
 
-        simple_walker walker;
-        doc.traverse(walker);
+        //simple_walker walker;
+        //doc.traverse(walker);
+
+        if (maven) {
+            std::cout << "version name: " << doc.child("metadata").child("version").child_value() << std::endl;
+            std::cout << "lastUpdated: " << doc.child("metadata").child("versioning").child("lastUpdated").child_value() << std::endl;
+        } else {
+            std::cout << doc.child("html").child("body").child("h1").child_value() << std::endl;
+        }
     } catch(curlpp::RuntimeError & e) {
         std::cout << e.what() << std::endl;
     }
@@ -91,14 +91,17 @@ pull_one_url(std::string const& url)
 
 int main(int, char **)
 {
-    std::string Url = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/";
-    //std::string Url = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/3.0-BETA-SNAPSHOT/maven-metadata.xml";
-    std::thread t(pull_one_url, Url);
+    std::string Url1 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/";
+    std::string Url2 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/3.0-BETA-SNAPSHOT/maven-metadata.xml";
+    //std::thread t1(pull_one_url, Url1, false);
+    std::thread t2(pull_one_url, Url2, true);
     std::unique_lock<std::mutex> lk(m);
     while (!is_ready) {
         cv.wait(lk);
     }
-    t.join();
+    //t1.join();
+    t2.join();
 
     return 0;
 }
+
