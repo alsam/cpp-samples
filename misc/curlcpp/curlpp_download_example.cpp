@@ -99,7 +99,7 @@ pull_one_url(std::string const& url, bool maven)
         curlpp::options::WriteStream ws(&os);
         myRequest.setOpt(ws);
         myRequest.perform();
-	//std::cout << "os: " << cleanhtml(os.str()) << std::endl;
+	std::cout << "os: " << cleanhtml(os.str()) << std::endl;
 
         pugi::xml_document doc;
         pugi::xml_parse_result result = doc.load_string(cleanhtml(os.str()).c_str());
@@ -117,7 +117,18 @@ pull_one_url(std::string const& url, bool maven)
             std::cout << "version name: " << doc.child("metadata").child("version").child_value() << std::endl;
             std::cout << "lastUpdated: " << doc.child("metadata").child("versioning").child("lastUpdated").child_value() << std::endl;
         } else {
-            std::cout << doc.child("html").child("body").child("h1").child_value() << std::endl;
+            std::cout << "html.body.h1: " << doc.child("html").child("body").child("h1").child_value() << std::endl;
+	    auto table = doc.child("html").child("body").child("table");
+            // tag::code[]
+            for (auto it = table.begin(); it != table.end(); ++it) {
+              std::cout << "TR;";
+	      auto td = it->child("td").child("a");
+              for (pugi::xml_attribute_iterator ait = td.attributes_begin(); ait != td.attributes_end(); ++ait) {
+                  std::cout << " " << ait->name() << " <=> " << ait->value();
+              }
+	      std::cout << " TD " << td << std::endl;
+            }
+            // end::code[]
         }
     } catch(curlpp::RuntimeError & e) {
         std::cout << e.what() << std::endl;
