@@ -24,6 +24,7 @@
 
 // [clean html with C or C++ tidy](http://www.cppfun.com/clean-html-with-c-or-cpp-tidy.htm)
 // [tidy 5.2.0-1](https://www.archlinux.org/packages/extra/x86_64/tidy/)
+// `pacman -S extra/tidy`
 
 #include <tidy.h>
 #include <buffio.h>
