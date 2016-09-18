@@ -22,6 +22,45 @@
 // pugixml
 #include <pugixml.hpp>
 
+// [clean html with C or C++ tidy](http://www.cppfun.com/clean-html-with-c-or-cpp-tidy.htm)
+// [tidy 5.2.0-1](https://www.archlinux.org/packages/extra/x86_64/tidy/)
+
+#include <tidy.h>
+#include <buffio.h>
+ 
+std::string cleanhtml(const std::string &html)
+{
+    // init a tidy document
+    TidyDoc tidy_doc=tidyCreate();
+    TidyBuffer output_buffer= {0};
+ 
+    // configure tidy
+    // the flags tell tidy to output xml and disable warnings
+    bool config_success=tidyOptSetBool(tidy_doc,TidyXmlOut,yes)
+                        && tidyOptSetBool(tidy_doc,TidyQuiet,yes)
+                        && tidyOptSetBool(tidy_doc,TidyNumEntities,yes)
+                        && tidyOptSetBool(tidy_doc,TidyShowWarnings,no);
+ 
+    int tidy_rescode=-1;
+ 
+    // parse input
+    if(config_success)
+        tidy_rescode=tidyParseString(tidy_doc,html.c_str());
+ 
+    // process html
+    if(tidy_rescode>=0)
+        tidy_rescode=tidySaveBuffer(tidy_doc,&output_buffer);
+ 
+    if(tidy_rescode<0)
+        throw("tidy has a error: "+tidy_rescode);
+ 
+    std::string result=(char *)output_buffer.bp;
+    tidyBufFree(&output_buffer);
+    tidyRelease(tidy_doc);
+ 
+    return result;
+}
+
 
 using namespace curlpp::options;
 
@@ -50,6 +89,7 @@ pull_one_url(std::string const& url, bool maven)
 
         // Set the URL.
         myRequest.setOpt(new curlpp::options::Url(url));
+	//myRequest.setOpt(new curlpp::options::FtpListOnly(true));
 
         // Send request and get a result.
         // By default the result goes to standard output.
@@ -58,9 +98,10 @@ pull_one_url(std::string const& url, bool maven)
         curlpp::options::WriteStream ws(&os);
         myRequest.setOpt(ws);
         myRequest.perform();
+	//std::cout << "os: " << cleanhtml(os.str()) << std::endl;
 
         pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load_string(os.str().c_str());
+        pugi::xml_parse_result result = doc.load_string(cleanhtml(os.str()).c_str());
 
         if (result) {
             std::cout << "XML parsed without errors\n";
@@ -93,14 +134,14 @@ int main(int, char **)
 {
     std::string Url1 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/";
     std::string Url2 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/3.0-BETA-SNAPSHOT/maven-metadata.xml";
-    //std::thread t1(pull_one_url, Url1, false);
-    std::thread t2(pull_one_url, Url2, true);
+    std::thread t1(pull_one_url, Url1, false);
+    //std::thread t2(pull_one_url, Url2, true);
     std::unique_lock<std::mutex> lk(m);
     while (!is_ready) {
         cv.wait(lk);
     }
-    //t1.join();
-    t2.join();
+    t1.join();
+    //t2.join();
 
     return 0;
 }
