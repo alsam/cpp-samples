@@ -81,7 +81,7 @@ struct simple_walker: pugi::xml_tree_walker {
 void
 getWebPage(std::string const& url, std::string& page)
 {
-    std::unique_lock<std::mutex> lk(m);
+    //std::unique_lock<std::mutex> lk(m);
     try {
         // That's all that is needed to do cleanup of used resources (RAII style).
         curlpp::Cleanup myCleanup;
@@ -120,20 +120,17 @@ dirList(std::string const& html)
     std::string cleaned_xml{cleanhtml(html)};
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_string(cleaned_xml.c_str());
-    std::cout << "html.body.h1: " << doc.child("html").child("body").child("h1").child_value() << std::endl;
     auto table = doc.child("html").child("body").child("table");
-    // tag::code[]
+    std::vector<std::string> ret;
     for (auto it = table.begin(); it != table.end(); ++it) {
-      std::cout << "TR;";
       auto td = it->child("td").child("a");
       for (pugi::xml_attribute_iterator ait = td.attributes_begin(); ait != td.attributes_end(); ++ait) {
-          std::cout << " " << ait->name() << " <=> " << ait->value();
+          //std::cout << " " << ait->name() << " <=> " << ait->value() << std::endl;
+          ret.emplace_back(ait->value());
       }
-      std::cout << " TD " << td << std::endl;
     }
 
-    std::vector<std::string> ret;
-    return ret;
+    return std::move(ret);
 }
 
 std::vector<std::string>
@@ -155,71 +152,6 @@ parseManifest(std::string const& manifest_xml)
     return ret;
 }
 
-void
-pull_one_url(std::string const& url, bool maven)
-{
-    std::unique_lock<std::mutex> lk(m);
-    try {
-        // That's all that is needed to do cleanup of used resources (RAII style).
-        curlpp::Cleanup myCleanup;
-
-        // Our request to be sent.
-        curlpp::Easy myRequest;
-
-        // Set the URL.
-        myRequest.setOpt(new curlpp::options::Url(url));
-        //myRequest.setOpt(new curlpp::options::FtpListOnly(true));
-
-        // Send request and get a result.
-        // By default the result goes to standard output.
-
-        std::ostringstream os;
-        curlpp::options::WriteStream ws(&os);
-        myRequest.setOpt(ws);
-        myRequest.perform();
-        std::cout << "os: " << cleanhtml(os.str()) << std::endl;
-
-        pugi::xml_document doc;
-        pugi::xml_parse_result result = doc.load_string(cleanhtml(os.str()).c_str());
-
-        if (result) {
-            std::cout << "XML parsed without errors\n";
-        } else {
-            std::cout << "Error description: " << result.description() << "\n";
-        }
-
-        //simple_walker walker;
-        //doc.traverse(walker);
-
-        if (maven) {
-            std::cout << "version name: " << doc.child("metadata").child("version").child_value() << std::endl;
-            std::cout << "lastUpdated: " << doc.child("metadata").child("versioning").child("lastUpdated").child_value() << std::endl;
-        } else {
-            std::cout << "html.body.h1: " << doc.child("html").child("body").child("h1").child_value() << std::endl;
-            auto table = doc.child("html").child("body").child("table");
-            // tag::code[]
-            for (auto it = table.begin(); it != table.end(); ++it) {
-              std::cout << "TR;";
-              auto td = it->child("td").child("a");
-              for (pugi::xml_attribute_iterator ait = td.attributes_begin(); ait != td.attributes_end(); ++ait) {
-                  std::cout << " " << ait->name() << " <=> " << ait->value();
-              }
-              std::cout << " TD " << td << std::endl;
-            }
-            // end::code[]
-        }
-    } catch(curlpp::RuntimeError & e) {
-        std::cout << e.what() << std::endl;
-    }
-
-    catch(curlpp::LogicError & e) {
-        std::cout << e.what() << std::endl;
-    }
-
-    is_ready = true;
-    cv.notify_one();
-}
-
 int main(int, char **)
 {
     std::string url1 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/";
@@ -227,12 +159,26 @@ int main(int, char **)
     std::string page;
     //getWebPage(url1, page);
     std::thread t1(getWebPage, url1, std::ref(page));
-    std::unique_lock<std::mutex> lk(m);
-    while (!is_ready) {
-        cv.wait(lk);
-    }
+    //std::unique_lock<std::mutex> lk(m);
+    //while (!is_ready) {
+    //    cv.wait(lk);
+    //}
     t1.join();
-    dirList(page);
+    auto dirlist = dirList(page);
+    for (auto const& dirent : dirlist) {
+        std::cout << dirent << std::endl;
+    }
+    is_ready = false;
+    std::thread t2(getWebPage, dirlist[1], std::ref(page));
+    //std::unique_lock<std::mutex> lk2(m);
+    //while (!is_ready) {
+    //    cv.wait(lk2);
+    //}
+    t2.join();
+    dirlist = dirList(page);
+    for (auto const& dirent : dirlist) {
+        std::cout << dirent << std::endl;
+    }
 
     return 0;
 }
