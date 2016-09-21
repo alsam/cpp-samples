@@ -82,7 +82,6 @@ struct simple_walker: pugi::xml_tree_walker {
 void
 getWebPage(std::string const& url, std::string& page)
 {
-    //std::unique_lock<std::mutex> lk(m);
     try {
         // That's all that is needed to do cleanup of used resources (RAII style).
         curlpp::Cleanup myCleanup;
@@ -103,9 +102,6 @@ getWebPage(std::string const& url, std::string& page)
 
         page = std::move(os.str());
 
-        is_ready = true;
-        cv.notify_one();
-
     } catch(curlpp::RuntimeError & e) {
         std::cout << e.what() << std::endl;
     }
@@ -124,18 +120,17 @@ dirList(std::string const& html)
     auto table = doc.child("html").child("body").child("table");
     std::vector<std::string> ret;
     for (auto it = table.begin(); it != table.end(); ++it) {
-      auto td = it->child("td").child("a");
-      for (pugi::xml_attribute_iterator ait = td.attributes_begin(); ait != td.attributes_end(); ++ait) {
-          //std::cout << " " << ait->name() << " <=> " << ait->value() << std::endl;
-          ret.emplace_back(ait->value());
-      }
+        auto td = it->child("td").child("a");
+        for (pugi::xml_attribute_iterator ait = td.attributes_begin(); ait != td.attributes_end(); ++ait) {
+            ret.emplace_back(ait->value());
+        }
     }
 
     return std::move(ret);
 }
 
-std::vector<std::string>
-parseManifest(std::string const& manifest_xml)
+void
+parseManifest(std::string const& manifest_xml, std::vector<std::string>& attrs)
 {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_string(manifest_xml.c_str());
@@ -145,52 +140,47 @@ parseManifest(std::string const& manifest_xml)
     } else {
         std::cout << "Error description: " << result.description() << "\n";
     }
-    std::vector<std::string> ret;
 
-    ret.push_back(doc.child("metadata").child("version").child_value());
-    ret.push_back(doc.child("metadata").child("versioning").child("lastUpdated").child_value());
-
-    return ret;
+    attrs.push_back(doc.child("metadata").child("version").child_value());
+    attrs.push_back(doc.child("metadata").child("versioning").child("lastUpdated").child_value());
 }
 
-int main(int, char **)
+bool
+extractManifestAttrs(std::string const& url, std::vector<std::string>& attrs)
 {
-    std::string url1 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/";
-    std::string url2 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/3.0-BETA-SNAPSHOT/maven-metadata.xml";
+    std::unique_lock<std::mutex> lk(m);
     std::string page;
-    //getWebPage(url1, page);
-    std::thread t1(getWebPage, url1, std::ref(page));
-    //std::unique_lock<std::mutex> lk(m);
-    //while (!is_ready) {
-    //    cv.wait(lk);
-    //}
-    t1.join();
+    getWebPage(url, std::ref(page));
     auto dirlist = dirList(page);
-    for (auto const& dirent : dirlist) {
-        std::cout << dirent << std::endl;
-    }
-    is_ready = false;
-    std::thread t2(getWebPage, dirlist[1], std::ref(page));
-    //std::unique_lock<std::mutex> lk2(m);
-    //while (!is_ready) {
-    //    cv.wait(lk2);
-    //}
-    t2.join();
+    getWebPage(dirlist[1], std::ref(page));
     dirlist = dirList(page);
-    std::regex manifest_exp(url1+"(.+?)(metadata\\.xml)");
+    std::regex manifest_exp(url+"(.+?)(metadata\\.xml)");
     std::vector<std::string> manifest_ver_info;
     for (auto const& dirent : dirlist) {
         if (std::regex_match(dirent,manifest_exp)) {
             std::cout << "found manifest: " << dirent << std::endl;
             std::string manifest;
-            std::thread t(getWebPage, dirent, std::ref(manifest));
-            t.join();
-            //std::cout << "manifest: " << manifest << std::endl;
-            manifest_ver_info = parseManifest(manifest);
+            getWebPage(dirent, std::ref(manifest));
+            parseManifest(manifest, attrs);
         }
     }
-    for (auto const& z : manifest_ver_info) {
-        std:: cout << z << std::endl;
+    is_ready = true;
+    cv.notify_one();
+}
+
+int main(int, char **)
+{
+    std::string url1 = "https://oss.sonatype.org/content/repositories/snapshots/edu/berkeley/cs/chisel3_2.11/";
+    std::vector<std::string> manifest_ver_attrs;
+    std::thread t1(extractManifestAttrs, url1, std::ref(manifest_ver_attrs));
+    std::unique_lock<std::mutex> lk(m);
+    while (!is_ready) {
+        cv.wait(lk);
+    }
+    t1.join();
+
+    for (auto const& attr : manifest_ver_attrs) {
+        std::cout << attr << std::endl;
     }
 
     return 0;
