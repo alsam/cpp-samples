@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <regex>
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -144,11 +145,11 @@ parseManifest(std::string const& manifest_xml)
     } else {
         std::cout << "Error description: " << result.description() << "\n";
     }
-
-    std::cout << "version name: " << doc.child("metadata").child("version").child_value() << std::endl;
-    std::cout << "lastUpdated: " << doc.child("metadata").child("versioning").child("lastUpdated").child_value() << std::endl;
-
     std::vector<std::string> ret;
+
+    ret.push_back(doc.child("metadata").child("version").child_value());
+    ret.push_back(doc.child("metadata").child("versioning").child("lastUpdated").child_value());
+
     return ret;
 }
 
@@ -176,8 +177,20 @@ int main(int, char **)
     //}
     t2.join();
     dirlist = dirList(page);
+    std::regex manifest_exp(url1+"(.+?)(metadata\\.xml)");
+    std::vector<std::string> manifest_ver_info;
     for (auto const& dirent : dirlist) {
-        std::cout << dirent << std::endl;
+        if (std::regex_match(dirent,manifest_exp)) {
+            std::cout << "found manifest: " << dirent << std::endl;
+            std::string manifest;
+            std::thread t(getWebPage, dirent, std::ref(manifest));
+            t.join();
+            //std::cout << "manifest: " << manifest << std::endl;
+            manifest_ver_info = parseManifest(manifest);
+        }
+    }
+    for (auto const& z : manifest_ver_info) {
+        std:: cout << z << std::endl;
     }
 
     return 0;
