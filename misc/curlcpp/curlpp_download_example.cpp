@@ -111,22 +111,19 @@ getWebPage(std::string const& url, std::string& page)
     }
 }
 
-std::vector<std::string>
-dirList(std::string const& html)
+void
+dirList(std::string const& html, std::vector<std::string>& attrs)
 {
     std::string cleaned_xml{cleanhtml(html)};
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_string(cleaned_xml.c_str());
     auto table = doc.child("html").child("body").child("table");
-    std::vector<std::string> ret;
     for (auto it = table.begin(); it != table.end(); ++it) {
         auto td = it->child("td").child("a");
         for (pugi::xml_attribute_iterator ait = td.attributes_begin(); ait != td.attributes_end(); ++ait) {
-            ret.emplace_back(ait->value());
+            attrs.emplace_back(ait->value());
         }
     }
-
-    return std::move(ret);
 }
 
 void
@@ -151,9 +148,10 @@ extractManifestAttrs(std::string const& url, std::vector<std::string>& attrs)
     std::unique_lock<std::mutex> lk(m);
     std::string page;
     getWebPage(url, std::ref(page));
-    auto dirlist = dirList(page);
+    std::vector<std::string> dirlist;
+    dirList(page, dirlist);
     getWebPage(dirlist[1], std::ref(page));
-    dirlist = dirList(page);
+    dirList(page, dirlist);
     std::regex manifest_exp(url+"(.+?)(metadata\\.xml)");
     std::vector<std::string> manifest_ver_info;
     for (auto const& dirent : dirlist) {
@@ -174,9 +172,7 @@ int main(int, char **)
     std::vector<std::string> manifest_ver_attrs;
     std::thread t1(extractManifestAttrs, url1, std::ref(manifest_ver_attrs));
     std::unique_lock<std::mutex> lk(m);
-    while (!is_ready) {
-        cv.wait(lk);
-    }
+    cv.wait(lk, []{ return is_ready;} );
     t1.join();
 
     for (auto const& attr : manifest_ver_attrs) {
