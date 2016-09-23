@@ -12,9 +12,12 @@
 #include <string>
 #include <regex>
 #include <vector>
+#include <queue> // for keeping directories list
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+
+#include <boost/algorithm/string/predicate.hpp>
 
 // curlpp specific headers
 #include <curlpp/cURLpp.hpp>
@@ -142,26 +145,65 @@ parseManifest(std::string const& manifest_xml, std::vector<std::string>& attrs)
     attrs.push_back(doc.child("metadata").child("versioning").child("lastUpdated").child_value());
 }
 
+// convenience methods
+bool
+isDirectory(std::string const& path)
+{
+    return boost::ends_with(path, "/");
+}
+
+// is it ".." or "."
+bool
+isSpecialDir(std::string const& path)
+{
+    return boost::ends_with(path, "../")
+        || boost::ends_with(path, "./");
+}
+
+bool
+traverseDirectories(std::string const& url, std::vector<std::string>& flist)
+{
+    std::queue<std::string> directories;
+    directories.push(url);
+    while (!directories.empty()) {
+        std::string dir = directories.front(), page;
+        directories.pop();
+        getWebPage(dir, std::ref(page));
+        std::vector<std::string> dirlist;
+        dirList(page, dirlist);
+        for (std::string const& d : dirlist) {
+            if (!isSpecialDir(d)) { // ignore ``..'' and ``.''
+                if (isDirectory(d)) { // add to queue
+                    directories.push(d);
+                } else {
+                    flist.push_back(d);
+                }
+            }
+        }
+    }
+}
+
 bool
 extractManifestAttrs(std::string const& url, std::vector<std::string>& attrs)
 {
     std::unique_lock<std::mutex> lk(m);
-    std::string page;
-    getWebPage(url, std::ref(page));
-    std::vector<std::string> dirlist;
-    dirList(page, dirlist);
-    getWebPage(dirlist[1], std::ref(page));
-    dirList(page, dirlist);
+    std::vector<std::string> flist;
+
+    // get file list after recursive directories traversal
+    traverseDirectories(url, flist);
+    std::for_each(flist.begin(), flist.end(),
+            [](auto const& f){ std::cout << "f: " << f << std::endl; });
+
+    // find manifest file from the file list
     std::regex manifest_exp(url+"(.+?)(metadata\\.xml)");
-    std::vector<std::string> manifest_ver_info;
-    for (auto const& dirent : dirlist) {
-        if (std::regex_match(dirent,manifest_exp)) {
-            std::cout << "found manifest: " << dirent << std::endl;
-            std::string manifest;
-            getWebPage(dirent, std::ref(manifest));
-            parseManifest(manifest, attrs);
-        }
-    }
+    auto manifest_it = std::find_if(flist.begin(), flist.end(),
+            [=](std::string const& f)->bool{ return std::regex_match(f,manifest_exp); });
+
+    // load manifest file and parse it
+    std::string manifest;
+    getWebPage(*manifest_it, std::ref(manifest));
+    parseManifest(manifest, attrs);
+
     is_ready = true;
     cv.notify_one();
 }
