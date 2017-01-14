@@ -1,7 +1,4 @@
-#ifndef __INCL_logger_HPP__
-#define __INCL_logger_HPP__
-// prevent multiple includes
-
+#pragma once
 // -*- C++ -*-
 
 
@@ -187,4 +184,3 @@ logger& operator<< (logger& log, std::ostream &(*pf)(std::ostream&)) {
 }
 
 // prevent multiple includes
-#endif

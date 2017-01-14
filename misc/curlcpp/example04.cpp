@@ -69,9 +69,10 @@ int main(int argc, char *argv[])
 			<< curlpp::infos::EffectiveUrl::get(request)
 			<< std::endl;
 
+        long response_code = curlpp::infos::ResponseCode::get(request);
 		std::cout << "Response code: " 
-			<< curlpp::infos::ResponseCode::get(request) 
-			<< std::endl;
+			//<< curlpp::infos::ResponseCode::get(request) 
+			<< response_code << std::endl;
 
 		std::cout << "SSL engines: " 
 			<< curlpp::infos::SslEngines::get(request)

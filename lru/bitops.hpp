@@ -1,3 +1,4 @@
+#pragma once
 // -*- C++ -*-
 
 // The MIT License (MIT)
@@ -32,14 +33,11 @@
 //    bitslice and other bit operations
 //
 
-#ifndef __BITOPS_HPP__
-#define __BITOPS_HPP__
-
 #include <bitset>
 #include <stdexcept>
 
-const unsigned long page_4k_mask  = 0xFFFFFFF000L;
-const unsigned long page_64k_mask = 0xFFFFFF0000L;
+const unsigned long page_4k_mask  = 0xFF'FF'FF'F0'00L;
+const unsigned long page_64k_mask = 0xFF'FF'FF'00'00L;
 
 template <ssize_t MSB, ssize_t LSB>
 struct bit_slice {
@@ -78,38 +76,38 @@ inline unsigned long Mask(unsigned int x) { return Exp2(x) - 1L; }
 inline unsigned Log2(unsigned int x) {
     if ((x & (x-1)) != 0) throw std::logic_error("x is not 2^n");
     unsigned n = 1;
-    if ((x & 0x0000FFFF) == 0) {n +=16; x >>=16;}
-    if ((x & 0x000000FF) == 0) {n += 8; x >>= 8;}
-    if ((x & 0x0000000F) == 0) {n += 4; x >>= 4;}
-    if ((x & 0x00000003) == 0) {n += 2; x >>= 2;}
+    if ((x & 0x00'00'FF'FF) == 0) {n +=16; x >>=16;}
+    if ((x & 0x00'00'00'FF) == 0) {n += 8; x >>= 8;}
+    if ((x & 0x00'00'00'0F) == 0) {n += 4; x >>= 4;}
+    if ((x & 0x00'00'00'03) == 0) {n += 2; x >>= 2;}
     return (n - (x&1));
 }
 
 inline unsigned Log2(unsigned long x) {
     if ((x & (x-1)) != 0) throw std::logic_error("x is not 2^n");
     unsigned n = 1;
-    if ((x & 0x00000000FFFFFFFFL) == 0) {n +=32; x >>=32;}
-    if ((x & 0x000000000000FFFFL) == 0) {n +=16; x >>=16;}
-    if ((x & 0x00000000000000FFL) == 0) {n += 8; x >>= 8;}
-    if ((x & 0x000000000000000FL) == 0) {n += 4; x >>= 4;}
-    if ((x & 0x0000000000000003L) == 0) {n += 2; x >>= 2;}
+    if ((x & 0x00'00'00'00'FF'FF'FF'FFL) == 0) {n +=32; x >>=32;}
+    if ((x & 0x00'00'00'00'00'00'FF'FFL) == 0) {n +=16; x >>=16;}
+    if ((x & 0x00'00'00'00'00'00'00'FFL) == 0) {n += 8; x >>= 8;}
+    if ((x & 0x00'00'00'00'00'00'00'0FL) == 0) {n += 4; x >>= 4;}
+    if ((x & 0x00'00'00'00'00'00'00'03L) == 0) {n += 2; x >>= 2;}
     return (n - (x&1));
 }
 
 inline uint16_t bitrev(uint16_t x) {
-    x = ((x >> 1) & 0x5555) | ((x & 0x5555) << 1); // swap odd/even bits
-    x = ((x >> 2) & 0x3333) | ((x & 0x3333) << 2); // swap bit pairs
-    x = ((x >> 4) & 0x0F0F) | ((x & 0x0F0F) << 4); // swap nibbles
-    x = ((x >> 8) & 0x00FF) | ((x & 0x00FF) << 8); // swap bytes
+    x = ((x >> 1) & 0x55'55) | ((x & 0x55'55) << 1); // swap odd/even bits
+    x = ((x >> 2) & 0x33'33) | ((x & 0x33'33) << 2); // swap bit pairs
+    x = ((x >> 4) & 0x0F'0F) | ((x & 0x0F'0F) << 4); // swap nibbles
+    x = ((x >> 8) & 0x00'FF) | ((x & 0x00'FF) << 8); // swap bytes
     return x;
 }
 
 inline uint32_t bitrev(uint32_t x) {
-    x = (x & 0x55555555)  <<  1 | (x >>   1) & 0x55555555;
-    x = (x & 0x33333333)  <<  2 | (x >>   2) & 0x33333333;
-    x = (x & 0x0F0F0F0F)  <<  4 | (x >>   4) & 0x0F0F0F0F;
-    x = (x << 24) | ((x & 0xFF00) << 8) |
-        ((x >> 8) & 0xFF00) | (x >> 24);
+    x = (x & 0x55'55'55'55)  <<  1 | (x >>   1) & 0x55'55'55'55;
+    x = (x & 0x33'33'33'33)  <<  2 | (x >>   2) & 0x33'33'33'33;
+    x = (x & 0x0F'0F'0F'0F)  <<  4 | (x >>   4) & 0x0F'0F'0F'0F;
+    x = (x << 24) | ((x & 0xFF'00) << 8) |
+        ((x >> 8) & 0xFF'00) | (x >> 24);
     return x;
 }
 
@@ -125,4 +123,3 @@ std::ostream& operator<<(std::ostream& out, std::bitset<N> const& b) {
 
 #define bitslicer_word(word,range) bit_slice<word*32+(true?range),word*32+(false?range)>
 
-#endif // __BITOPS_HPP__

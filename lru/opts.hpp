@@ -1,3 +1,4 @@
+#pragma once
 // -*- C++ -*-
 
 
@@ -9,9 +10,6 @@
 //
 //   Brief file description here
 //
-
-#ifndef __OPTS_HPP__
-#define __OPTS_HPP__
 
 #include <iostream>
 #include <fstream>
@@ -229,5 +227,3 @@ inline logger& dlog()
   opts& _ = opts::instance();
   return _.log;
 }
-
-#endif // __OPTS_HPP__

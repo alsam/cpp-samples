@@ -1,3 +1,4 @@
+#pragma once
 // -*- C++ -*-
 
 // The MIT License (MIT)
@@ -26,9 +27,6 @@
 //  Created:            Thursday, October 3, 2012
 //  Original author:    Alexander Samoilov
 //---------------------------------------------------------------------
-
-#ifndef __CACHE_HPP__
-#define __CACHE_HPP__
 
 #include <array>
 #include <unordered_map>
@@ -170,5 +168,3 @@ private:
     //CACHE_LINE lines_[NSETS][NWAYS];
     std::array<SET, NSETS> sets_;
 };
-
-#endif // __CACHE_HPP__
