@@ -1,0 +1,147 @@
+// -*- C++ -*-
+
+
+//---------------------------------------------------------------------
+//  Created:            Friday, September 21, 2012
+//  Original author:    Alexander Samoilov
+//---------------------------------------------------------------------
+
+#include <cmath>
+#include "lin_alg_types.hpp"
+#include "gauss_legendre.hpp"
+
+
+using namespace std;
+
+void
+body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1, 
+             double x2, double y2, double t2, int ngl, int ising, int itype,
+             double rad, double xcnt, double ycnt,
+             double &qqq, double &www)
+{
+    // System generated locals
+    double d__1, d__2;
+
+    // Local variables
+    double g;
+    double t, x, y;
+    extern /* Subroutine */ void lgf_ax_fs(int, double, double, double, double,
+            double&, double&, double&);
+    double dr, cs, td, pi, xd, yd, tm, sn, xm, ym,
+            vnx, vny, dgdx, dgdy;
+    int iopt;
+    double ornt, dists;
+
+/* ========================================= */
+/* FDLIB, BEMLIB, CFDLAB */
+
+/* Copyright by C. Pozrikidis, 1999 */
+/* All rights reserved. */
+
+/* This program is to be used only under the */
+/* stipulations of the licensing agreement. */
+/* ========================================= */
+/* ---------------------------------------------------------- */
+/* Compute the single-layer and double-layer potential over */
+/* a straight segment or circular arc */
+
+/* LEGEND: */
+/* ------- */
+
+/* QQQ: single-layer potential */
+/* WWW: double-layer potential */
+/* ---------------------------------------------------------- */
+/* ---------- */
+/* constants */
+/* ---------- */
+    double constexpr pi2 = M_PI * 2.0;
+    double constexpr pi4 = M_PI * 4.0;
+/* ----------- */
+/* initialize */
+/* ----------- */
+    iopt = 2;
+/* for the Green's function */
+    qqq = 0.0;
+    www = 0.0;
+/* --------------------------- */
+/* prepare for the quadrature  */
+/* --------------------------- */
+    if (itype == 1) { // straight segments
+        xm = 0.5 * (x2 + x1);
+        xd = 0.5 * (x2 - x1);
+        ym = 0.5 * (y2 + y1);
+        yd = 0.5 * (y2 - y1);
+        dr = sqrt(xd * xd + yd * yd);
+        vnx =  yd / dr; // unit normal vector
+        vny = -xd / dr;
+    } else {          // circular arcs
+        tm = 0.5 * (t2 + t1);
+        td = 0.5 * (t2 - t1);
+        dr = rad * abs(td);
+        ornt = (td < 0.0) ? -1.0 : 1.0;    // orientation index, TODO use copysign
+    }
+// --- 
+// loop over Gaussian points
+// --- 
+//  
+    gauss_legendre gl(ngl);
+    auto const& zz = gl.z();
+    auto const& ww = gl.w();
+    for (int i = 0; i < ngl; ++i) {
+        if (itype == 1) {
+            x = xm + xd * zz[i];
+            y = ym + yd * zz[i];
+        } else {
+            t   = tm + td * zz[i];
+            cs  = cos(t);
+            sn  = sin(t);
+            x   = xcnt + rad * cs;
+            y   = ycnt + rad * sn;
+            vnx = cs * ornt; // unit normal vector */
+            vny = sn * ornt; // normal vector points away from center
+                             // when arc is counter-clockwise,
+        }
+        lgf_ax_fs(iopt, x, y, x0, y0, g, dgdx, dgdy);
+/* -------------------------------------------------- */
+/*  treat the slp singularity */
+
+/*  Subtract off */
+/*  the logarithmic singularity corresponding to the */
+/*  free-space Green's function */
+
+/*  NOTE: The double-layer singularity is not treated */
+
+/* -------------------------------------------------- */
+        if (ising == 1) {
+            if (itype == 1) {
+                d__1 = x - x0;
+                d__2 = y - y0;
+                // Computing 2nd power
+                dists = d__1 * d__1 + d__2 * d__2;
+            }
+            if (itype == 2) {
+                // Computing 2nd power
+                d__1 = rad * (t0 - t);
+                dists = d__1 * d__1;
+            }
+            g += log(dists) / pi4;
+        }
+        qqq += g * y * ww[i];
+        www += (dgdx * vnx + dgdy * vny) * y * ww[i];
+    }
+/* ------------------------- */
+/* finish up the quadrature */
+/* ------------------------- */
+    qqq *= dr;
+    www *= dr;
+/* ------------------------------------ */
+/* add slp singularity back to the slp */
+/* ------------------------------------ */
+    if (ising == 1) {
+        qqq -= dr * 2.0 * (log(dr) - 1.0) / pi2;
+    }
+// -----
+// Done
+// -----
+} // body_ax_sdlp
+
