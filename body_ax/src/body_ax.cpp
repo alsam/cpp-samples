@@ -67,16 +67,13 @@ program_options parse_command_line(int argc, char** argv)
         }
 
         popt.verbose               = vm.count("verbose");
-        if (vm.count("flow_type"))
-        {
+        if (vm.count("flow_type")) {
             popt.flow_type = vm["flow_type"].as<int>();
         }
-        if (vm.count("input_data"))
-        {
+        if (vm.count("input_data")) {
             popt.input_data = vm["input_data"].as<std::string>();
         }
-        if (vm.count("asy_name"))
-        {
+        if (vm.count("asy_name")) {
             popt.asy_name = vm["asy_name"].as<std::string>();
         }
 
