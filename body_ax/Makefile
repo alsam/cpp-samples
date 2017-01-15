@@ -25,11 +25,13 @@ DBG ?=0
 EIGEN_INCL = /usr/include/eigen3
 
 INCLUDES := -I$(SDIR)/ -I$(EIGEN_INCL)
+LDLIBS = -lboost_program_options
 
 CXX=g++
 CXX11_FLAGS = -std=c++11
 DEBUG_CXXFLAGS = $(CXX11_FLAGS) -g -O0 $(INCLUDES)
 RELEASE_CXXFLAGS = $(CXX11_FLAGS) -O2 -DNDEBUG=1 $(INCLUDES)
+
 
 ifeq ($(DBG), 1)
     ODIR     = $(ODIR_BASE).debug
@@ -75,7 +77,7 @@ gl_unit_test:
 	./gauss_legendre_unit_test
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
+	$(CXX) $(CXXFLAGS) $(LDLIBS) -o $@ $(OBJS)
 
 dox:
 	doxygen Doxyfile
