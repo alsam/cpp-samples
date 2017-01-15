@@ -77,7 +77,7 @@ gl_unit_test:
 	./gauss_legendre_unit_test
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(LDLIBS) -o $@ $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(LDLIBS) -o $@ 
 
 dox:
 	doxygen Doxyfile
