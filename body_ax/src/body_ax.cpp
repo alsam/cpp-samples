@@ -66,7 +66,7 @@ program_options parse_command_line(int argc, char** argv)
             std::exit(1);
         }
 
-        popt.verbose               = vm.count("verbose");
+        popt.verbose = vm.count("verbose");
         if (vm.count("flow_type")) {
             popt.flow_type = vm["flow_type"].as<int>();
         }
