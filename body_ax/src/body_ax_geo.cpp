@@ -22,17 +22,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
+#include <fstream>
 #include <cmath>
 #include "parameters.hpp"
 #include "program_options.hpp"
 #include "lin_alg_types.hpp"
 
-using namespace std;
-
 int
 body_ax_geo(program_options const& popt)
 {
     if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
+        std::string fname = (popt.input_data == "") ? "sphere.dat" : popt.input_data;
+        std::ifstream ifs(fname); 
+        if (ifs) {
+        }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
     }
 } // body_ax_geo
