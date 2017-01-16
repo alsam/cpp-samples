@@ -105,23 +105,8 @@
 #include <chrono>
 #include <boost/program_options.hpp>
 #include "parameters.hpp"
+#include "program_options.hpp"
 #include "lin_alg_types.hpp"
-
-struct program_options
-{
-    bool verbose                     = {false};
-    int  flow_type                   = {0};            // legacy Fortran constants for flow type, 50 for sphere, 51 for torus
-    std::string input_data           = {""};           // name of the input file e.g. `sphere.dat`, `torus_trgl.dat`
-    std::string asy_name             = {""};           // dump streamlines to vector `.asy` file if name is given
-};
-
-std::ostream& operator<<(std::ostream& os, program_options const& popt)
-{
-    os << "program options: " << std::boolalpha << " verbose: " << popt.verbose << std::endl
-       << " flow_type: " << popt.flow_type << " input_data: " << popt.input_data << " asy_name: " << popt.asy_name << std::endl;
-
-    return os;
-}
 
 program_options parse_command_line(int argc, char** argv)
 {
