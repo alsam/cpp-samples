@@ -1,5 +1,3 @@
-#pragma once
-
 // -*- C++ -*-
 
 // The MIT License (MIT)
@@ -24,20 +22,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <type_traits>
+#include <cmath>
+#include "parameters.hpp"
+#include "program_options.hpp"
+#include "lin_alg_types.hpp"
 
-constexpr unsigned MAX_SEGMENTS = 10;
-constexpr unsigned MAX_ELEMS = 512;
-constexpr unsigned MAX_QUADRATURE_POINTS = 20;
-constexpr unsigned MAX_DIM = MAX_SEGMENTS * MAX_ELEMS;
+using namespace std;
 
-template <typename E>
-constexpr auto to_underlying(E e) noexcept
+int
+body_ax_geo(program_options const& popt)
 {
-    return static_cast<std::underlying_type_t<E>>(e);
-}
+    if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
+    } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
+    }
+} // body_ax_geo
 
-enum class FlowType : unsigned char {
-    SPHERE = 50,
-    THORUS = 51,
-};
