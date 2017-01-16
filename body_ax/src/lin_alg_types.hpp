@@ -26,4 +26,5 @@
 
 #include <Eigen/Dense>
 
-typedef Eigen::RowVectorXd vec_t;
+using vec_t  = Eigen::RowVectorXd;
+using mat2_t = Eigen::Matrix2Xd;

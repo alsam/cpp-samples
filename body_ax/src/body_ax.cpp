@@ -22,11 +22,90 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// ==========================================
+//  FDLIB, CFDLAB, BEMLIB
+//
+//  Copyright by C. Pozrikidis, 1999
+//  All rights reserved.
+//
+//  This program is to be used only under the
+//  stipulations of the licensing agreement.
+// ==========================================
+//
+// ---------------------------------------------------
+//  Axisymmetric streaming (uniform)
+//  potential flow past a stationary body.
+//
+//  This program solves
+//  an integral equation of the second kind
+//  for the disturbance harmonic potential
+//  over the body contour
+//  and computes streamlines
+//
+//  The contour of the body in the xy upper half-plane
+//  consists of a Number of SeGments (NSG)
+//
+//  The segments may be straight lines or circular arcs.
+//
+//  Each segment is discretized into a number of elements
+//
+//
+//  Symbols:
+//  --------
+//
+//  NSG: Number of segments defining the body contour
+//
+//  NE(i): Number of elements on the ith segment
+//
+//  RT(i): Stretch ratio of elements on ith segment
+//
+//  Itp(i): Index for shape of the ith segment:
+//          1 for a straight segment
+//          2 for a circular arc
+//
+//  (Xe, Ye):  end-nodes of elements on a segment
+//  (Xm, Ym):  mid-nodes of elements on a segment
+//  (Xw, Yw):  end-nodes of elements on all segments
+//
+//  (X0, Y0):  coordinates of collocation points
+//
+//  T0(i): angle subtended from the center of a circular element
+//         at ith collocation point
+//
+//  arel(i):  axisymmetric surface area of ith element
+//
+//  phi: disturbance potential at collocation points
+//
+//  dphidn0: normal derivative of disturbance potential
+//                  at collocation points
+//
+//  dphids0: tangential derivative of potential
+//                  at collocation points
+//
+//  cp:      pressure coefficient at collocation points
+//
+//  NGL: Number of Gaussian points for integration
+//       over each element
+//
+//  Icross: Index for stopping the computation of the streamlines
+//          Default value is 0
+//          If Icross = 1, computation stops when a streamline
+//          crosses the yz plane
+//
+//  Notes:
+//  ------
+//
+//  Normal vector points into the flow
+//
+// ----------------------------
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <chrono>
 #include <boost/program_options.hpp>
+#include "parameters.hpp"
+#include "lin_alg_types.hpp"
 
 struct program_options
 {
@@ -93,6 +172,10 @@ int main(int argc, char **argv)
     if (popt.verbose) {
         std::cout << popt;
     }
+
+    mat2_t phi(MAX_SEGMENTS, MAX_ELEMS);
+    vec_t velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
+
 
 }
 
