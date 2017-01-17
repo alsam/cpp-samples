@@ -37,6 +37,8 @@ body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
     parameters params;
+    // TODO consider using generic variadic lambdas
+    // e.g. [Fun with Lambdas: C++14 Style (part 3)](http://cpptruths.blogspot.ru/2014/08/fun-with-lambdas-c14-style-part-3.html)
     auto get_item = [&ifs](auto& item) {
         std::string line;
         std::getline(ifs, line);
