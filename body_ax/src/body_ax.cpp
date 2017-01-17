@@ -107,6 +107,7 @@
 #include "parameters.hpp"
 #include "program_options.hpp"
 #include "lin_alg_types.hpp"
+#include "body_ax_geo.hpp"
 
 program_options parse_command_line(int argc, char** argv)
 {
@@ -158,9 +159,13 @@ int main(int argc, char **argv)
         std::cout << popt;
     }
 
-    mat2_t phi(MAX_SEGMENTS, MAX_ELEMS);
+    mat_t phi(MAX_SEGMENTS, MAX_ELEMS);
     vec_t velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
 
+    int ngl = body_ax_geo(popt);
+    if (popt.verbose) {
+        std::cout << "-I- ngl: " << ngl << "\n";
+    }
 
 }
 

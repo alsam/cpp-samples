@@ -1,5 +1,3 @@
-#pragma once
-
 // -*- C++ -*-
 
 // The MIT License (MIT)
@@ -24,7 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <Eigen/Dense>
+#include "program_options.hpp"
+#include "lin_alg_types.hpp"
 
-using vec_t = Eigen::RowVectorXd;
-using mat_t = Eigen::MatrixXd;
+int body_ax_geo(program_options const& popt);
+

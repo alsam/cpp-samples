@@ -30,30 +30,28 @@
 #include <iterator>
 #include <cmath>
 #include "parameters.hpp"
-#include "program_options.hpp"
-#include "lin_alg_types.hpp"
-
-std::vector<std::string>
-split_string(std::string s)
-{
-    std::stringstream ss(s);
-    std::istream_iterator<std::string> begin(ss);
-    std::istream_iterator<std::string> end;
-    std::vector<std::string> vstrings(begin, end);
-    std::copy(vstrings.begin(), vstrings.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
-    std::move(vstrings);
-}
+#include "body_ax_geo.hpp"
 
 int
 body_ax_geo(program_options const& popt)
 {
-    std::string line;
+    std::ifstream ifs;
+    auto get_item = [&ifs](auto& item) {
+        std::string line;
+        std::getline(ifs, line);
+        std::istringstream iss(line);
+        iss >> item;
+    };
     if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
         std::string fname = (popt.input_data == "") ? "sphere.dat" : popt.input_data;
-        std::ifstream ifs(fname);
+        ifs.open(fname);
         if (ifs) {
             int ngl;
-            std::getline(ifs, line); *split_string(line).begin();
+            double rad;
+            get_item(ngl);
+            get_item(rad);
+
+            return ngl;
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
     }

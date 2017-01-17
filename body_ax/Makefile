@@ -79,6 +79,9 @@ gl_unit_test:
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(LDLIBS) -o $@ 
 
+sample_run:
+	obj.debug/body_ax --flow_type 50 --input_data data/sphere.dat --verbose
+
 dox:
 	doxygen Doxyfile
 
