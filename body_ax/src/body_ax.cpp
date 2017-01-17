@@ -162,9 +162,15 @@ int main(int argc, char **argv)
     mat_t phi(MAX_SEGMENTS, MAX_ELEMS);
     vec_t velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
 
-    int ngl = body_ax_geo(popt);
+    parameters run_params = body_ax_geo(popt);
     if (popt.verbose) {
-        std::cout << "-I- ngl: " << ngl << "\n";
+        std::cout << "-I- ngl: " << run_params.ngl << "\n";
+        if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
+            std::cout << "-I- rad: " << run_params.sphere_params.rad << "\n";
+        } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
+            std::cout << "-I- xfirst: " << run_params.thorus_params.xfirst
+                      << "    yfirst: " << run_params.thorus_params.yfirst << "\n";
+        }
     }
 
 }

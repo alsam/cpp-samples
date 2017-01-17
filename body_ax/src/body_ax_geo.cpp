@@ -32,28 +32,39 @@
 #include "parameters.hpp"
 #include "body_ax_geo.hpp"
 
-int
+parameters
 body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
+    parameters params;
     auto get_item = [&ifs](auto& item) {
         std::string line;
         std::getline(ifs, line);
         std::istringstream iss(line);
         iss >> item;
     };
+    auto get_2items = [&ifs](auto& item1, auto& item2) {
+        std::string line;
+        std::getline(ifs, line);
+        std::istringstream iss(line);
+        iss >> item1 >> item2;
+    };
     if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
         std::string fname = (popt.input_data == "") ? "sphere.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
-            int ngl;
-            double rad;
-            get_item(ngl);
-            get_item(rad);
+            get_item(params.ngl);
+            get_item(params.sphere_params.rad);
 
-            return ngl;
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
+        std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
+        ifs.open(fname);
+        if (ifs) {
+            get_item(params.ngl);
+            get_2items(params.thorus_params.xfirst, params.thorus_params.yfirst);
+        }
     }
+    return std::move(params);
 } // body_ax_geo
 

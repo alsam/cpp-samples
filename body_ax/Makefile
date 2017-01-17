@@ -28,7 +28,7 @@ INCLUDES := -I$(SDIR)/ -I$(EIGEN_INCL)
 LDLIBS = -lboost_program_options
 
 CXX=g++
-CXX11_FLAGS = -std=c++14
+CXX11_FLAGS = -std=c++1z
 DEBUG_CXXFLAGS = $(CXX11_FLAGS) -g -O0 $(INCLUDES)
 RELEASE_CXXFLAGS = $(CXX11_FLAGS) -O2 -DNDEBUG=1 $(INCLUDES)
 
@@ -81,6 +81,7 @@ $(TARGET): $(OBJS)
 
 sample_run:
 	obj.debug/body_ax --flow_type 50 --input_data data/sphere.dat --verbose
+	obj.debug/body_ax --flow_type 51 --input_data data/torus_trgl.dat --verbose
 
 dox:
 	doxygen Doxyfile

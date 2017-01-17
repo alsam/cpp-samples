@@ -25,6 +25,7 @@
 // SOFTWARE.
 
 #include <type_traits>
+//#include <variant>
 
 constexpr unsigned MAX_SEGMENTS = 10;
 constexpr unsigned MAX_ELEMS = 512;
@@ -40,4 +41,26 @@ constexpr auto to_underlying(E e) noexcept
 enum class FlowType : unsigned char {
     SPHERE = 50,
     THORUS = 51,
+};
+
+struct parameters {
+    int ngl;
+    //std::variant<int,double> var;
+    union {
+        struct {
+            double rad;
+            double xcenter;
+            double vx; // velocity of incident flow
+            double cr; // line vortex ring strength
+            // ...
+        } sphere_params;
+        struct {
+            double xfirst,  yfirst;  // 1st vertex
+            double xsecond, ysecond; // 2nd vertex
+            double xthird,  ythird;  // 3d vertex
+            double vx;
+            double cr; // line vortex ring strength
+            // ..
+        } thorus_params;
+    };
 };

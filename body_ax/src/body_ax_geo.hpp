@@ -23,7 +23,7 @@
 // SOFTWARE.
 
 #include "program_options.hpp"
-#include "lin_alg_types.hpp"
+#include "parameters.hpp"
 
-int body_ax_geo(program_options const& popt);
+parameters body_ax_geo(program_options const& popt);
 
