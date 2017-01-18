@@ -27,6 +27,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <functional>
 #include <iterator>
 #include <cmath>
 #include "parameters.hpp"
@@ -53,26 +54,32 @@ body_ax_geo(program_options const& popt)
     };
     // TODO
     // http://stackoverflow.com/questions/27375089/what-is-the-easiest-way-to-print-a-variadic-parameter-pack-using-stdostream
-    // auto get_items = [&ifs](auto& ...items) {
-    //     std::string line;
-    //     std::getline(ifs, line);
-    //     std::istringstream iss(line);
-    //     iss >> ...items;
-    // };
+    auto get_items = [&ifs](auto&& ...items) {
+        std::string line;
+        std::getline(ifs, line);
+        std::istringstream iss(line);
+        for (auto&& item : {items...}) {
+            //iss.operator>>(item);
+            iss >> std::ref(item);
+        }
+    };
     if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
         std::string fname = (popt.input_data == "") ? "sphere.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
-            get_item(params.ngl);
-            get_item(params.sphere_params.rad);
-
+            //get_item(params.ngl);
+            //get_item(params.sphere_params.rad);
+            get_items(std::ref(params.ngl));
+            get_items(std::ref(params.sphere_params.rad));
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
-            get_item(params.ngl);
-            get_2items(params.thorus_params.xfirst, params.thorus_params.yfirst);
+            //get_item(params.ngl);
+            //get_2items(params.thorus_params.xfirst, params.thorus_params.yfirst);
+            get_items(std::ref(params.ngl));
+            get_items(std::ref(params.thorus_params.xfirst), std::ref(params.thorus_params.yfirst));
         }
     }
     return std::move(params);
