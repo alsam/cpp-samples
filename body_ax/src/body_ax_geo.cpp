@@ -38,37 +38,18 @@ body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
     parameters params;
-    // TODO consider using generic variadic lambdas
-    // e.g. [Fun with Lambdas: C++14 Style (part 3)](http://cpptruths.blogspot.ru/2014/08/fun-with-lambdas-c14-style-part-3.html)
-    auto get_item = [&ifs](auto& item) {
-        std::string line;
-        std::getline(ifs, line);
-        std::istringstream iss(line);
-        iss >> item;
-    };
-    auto get_2items = [&ifs](auto& item1, auto& item2) {
-        std::string line;
-        std::getline(ifs, line);
-        std::istringstream iss(line);
-        iss >> item1 >> item2;
-    };
-    // TODO
-    // http://stackoverflow.com/questions/27375089/what-is-the-easiest-way-to-print-a-variadic-parameter-pack-using-stdostream
     auto get_items = [&ifs](auto&& ...items) {
         std::string line;
         std::getline(ifs, line);
         std::istringstream iss(line);
         for (auto&& item : {items...}) {
-            //iss.operator>>(item);
-            iss >> std::ref(item);
+            iss >> item;
         }
     };
     if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
         std::string fname = (popt.input_data == "") ? "sphere.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
-            //get_item(params.ngl);
-            //get_item(params.sphere_params.rad);
             get_items(std::ref(params.ngl));
             get_items(std::ref(params.sphere_params.rad));
         }
@@ -76,8 +57,6 @@ body_ax_geo(program_options const& popt)
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
-            //get_item(params.ngl);
-            //get_2items(params.thorus_params.xfirst, params.thorus_params.yfirst);
             get_items(std::ref(params.ngl));
             get_items(std::ref(params.thorus_params.xfirst), std::ref(params.thorus_params.yfirst));
         }
