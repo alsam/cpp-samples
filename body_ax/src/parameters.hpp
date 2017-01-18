@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <array>
 #include <type_traits>
-//#include <variant>
 
 constexpr unsigned MAX_SEGMENTS = 10;
 constexpr unsigned MAX_ELEMS = 512;
@@ -45,7 +45,7 @@ enum class FlowType : unsigned char {
 
 struct parameters {
     int ngl;
-    //std::variant<int,double> var;
+    std::array<int, MAX_SEGMENTS> ne, itp;
     union {
         struct {
             double rad;

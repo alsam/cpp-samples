@@ -26,6 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <array>
 #include <vector>
 #include <functional>
 #include <iterator>
@@ -38,6 +39,7 @@ body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
     parameters params;
+    std::array<double, MAX_SEGMENTS> rt;
     auto get_items = [&ifs](auto&& ...items) {
         std::string line;
         std::getline(ifs, line);
@@ -58,7 +60,16 @@ body_ax_geo(program_options const& popt)
         ifs.open(fname);
         if (ifs) {
             get_items(std::ref(params.ngl));
-            get_items(std::ref(params.thorus_params.xfirst), std::ref(params.thorus_params.yfirst));
+            get_items(std::ref(params.thorus_params.xfirst),  std::ref(params.thorus_params.yfirst));
+            get_items(std::ref(params.thorus_params.xsecond), std::ref(params.thorus_params.ysecond));
+            get_items(std::ref(params.thorus_params.xthird),  std::ref(params.thorus_params.ythird));
+            get_items(std::ref(params.thorus_params.vx));
+            get_items(std::ref(params.thorus_params.cr));
+            // FIXME error: unable to deduce ‘std::initializer_list<auto>&&’ from ‘<brace-enclosed initializer list>()’
+            //get_items();
+            // FIXME error: unable to deduce ‘std::initializer_list<auto>&&’ from ‘{items#0, items#1}’
+            // note:   deduced conflicting types for parameter ‘auto’ (‘std::reference_wrapper<int>’ and ‘std::reference_wrapper<double>’)
+            //get_items(std::ref(params.ne[0]),  std::ref(rt[0]));
         }
     }
     return std::move(params);
