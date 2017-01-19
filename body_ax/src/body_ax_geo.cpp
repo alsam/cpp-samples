@@ -88,6 +88,10 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.cr);
             readln(ifs);
             readln(ifs, params.ne[0]);
+            readln(ifs);
+            readln(ifs, params.xwmin, params.xwmax);
+            readln(ifs, params.ywmin, params.ywmax);
+
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
@@ -101,6 +105,12 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.cr);
             readln(ifs);
             readln(ifs, params.ne[0], rt[0]);
+            readln(ifs, params.ne[1], rt[1]);
+            readln(ifs, params.ne[2], rt[2]);
+            readln(ifs);
+            readln(ifs, params.xwmin, params.xwmax);
+            readln(ifs, params.ywmin, params.ywmax);
+
         }
     }
     return std::move(params);

@@ -48,6 +48,8 @@ struct parameters {
     std::array<int, MAX_SEGMENTS> ne, itp;
     double vx; // velocity of incident flow
     double cr; // line vortex ring strength
+    double xwmin, xwmax;
+    double ywmin, ywmax;
     union {
         struct {
             double rad;

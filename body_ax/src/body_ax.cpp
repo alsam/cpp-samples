@@ -168,6 +168,8 @@ int main(int argc, char **argv)
         std::cout << "-I- vx: " << run_params.vx << "\n";
         std::cout << "-I- cr: " << run_params.cr << "\n";
         std::cout << "-I- ne[0]: " << run_params.ne[0] << "\n";
+        std::cout << "-I- xwmin: " << run_params.xwmin << "\n";
+        std::cout << "-I- ywmin: " << run_params.ywmin << "\n";
         if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
             std::cout << "-I- rad: " << run_params.sphere_params.rad << "\n";
         } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
