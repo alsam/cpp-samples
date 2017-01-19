@@ -46,20 +46,18 @@ enum class FlowType : unsigned char {
 struct parameters {
     int ngl;
     std::array<int, MAX_SEGMENTS> ne, itp;
+    double vx; // velocity of incident flow
+    double cr; // line vortex ring strength
     union {
         struct {
             double rad;
             double xcenter;
-            double vx; // velocity of incident flow
-            double cr; // line vortex ring strength
             // ...
         } sphere_params;
         struct {
             double xfirst,  yfirst;  // 1st vertex
             double xsecond, ysecond; // 2nd vertex
             double xthird,  ythird;  // 3d vertex
-            double vx;
-            double cr; // line vortex ring strength
             // ..
         } thorus_params;
     };

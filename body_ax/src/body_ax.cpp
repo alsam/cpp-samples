@@ -165,6 +165,9 @@ int main(int argc, char **argv)
     parameters run_params = body_ax_geo(popt);
     if (popt.verbose) {
         std::cout << "-I- ngl: " << run_params.ngl << "\n";
+        std::cout << "-I- vx: " << run_params.vx << "\n";
+        std::cout << "-I- cr: " << run_params.cr << "\n";
+        std::cout << "-I- ne[0]: " << run_params.ne[0] << "\n";
         if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
             std::cout << "-I- rad: " << run_params.sphere_params.rad << "\n";
         } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {

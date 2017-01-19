@@ -68,6 +68,7 @@ body_ax_geo(program_options const& popt)
     std::ifstream ifs;
     parameters params;
     std::array<double, MAX_SEGMENTS> rt;
+    // `get_items` is unused, left for posterity
     auto get_items = [&ifs](auto&& ...items) {
         std::string line;
         std::getline(ifs, line);
@@ -82,6 +83,11 @@ body_ax_geo(program_options const& popt)
         if (ifs) {
             readln(ifs, params.ngl);
             readln(ifs, params.sphere_params.rad);
+            readln(ifs, params.sphere_params.xcenter);
+            readln(ifs, params.vx);
+            readln(ifs, params.cr);
+            readln(ifs);
+            readln(ifs, params.ne[0]);
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
@@ -91,8 +97,8 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.thorus_params.xfirst,  params.thorus_params.yfirst);
             readln(ifs, params.thorus_params.xsecond, params.thorus_params.ysecond);
             readln(ifs, params.thorus_params.xthird,  params.thorus_params.ythird);
-            readln(ifs, params.thorus_params.vx);
-            readln(ifs, params.thorus_params.cr);
+            readln(ifs, params.vx);
+            readln(ifs, params.cr);
             readln(ifs);
             readln(ifs, params.ne[0], rt[0]);
         }
