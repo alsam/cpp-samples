@@ -34,6 +34,34 @@
 #include "parameters.hpp"
 #include "body_ax_geo.hpp"
 
+namespace {
+
+size_t read(std::istream&)
+{
+    return 0;
+}
+
+template <typename T, typename... Ts>
+size_t read(std::istream& is, T& var, Ts&... ts) {
+    is >> var;
+    return read(is, ts...) + 1;
+}
+
+template <typename... Ts>
+size_t readln(std::istream& is, Ts&... ts)
+{
+    std::string line;
+    std::getline(is, line);
+    if (sizeof...(ts) == 0) {
+        return 0;
+    } else {
+        std::istringstream iss(line);
+        return read(iss, ts...);
+    }
+}
+
+}
+
 parameters
 body_ax_geo(program_options const& popt)
 {
@@ -52,24 +80,21 @@ body_ax_geo(program_options const& popt)
         std::string fname = (popt.input_data == "") ? "sphere.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
-            get_items(std::ref(params.ngl));
-            get_items(std::ref(params.sphere_params.rad));
+            readln(ifs, params.ngl);
+            readln(ifs, params.sphere_params.rad);
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
-            get_items(std::ref(params.ngl));
-            get_items(std::ref(params.thorus_params.xfirst),  std::ref(params.thorus_params.yfirst));
-            get_items(std::ref(params.thorus_params.xsecond), std::ref(params.thorus_params.ysecond));
-            get_items(std::ref(params.thorus_params.xthird),  std::ref(params.thorus_params.ythird));
-            get_items(std::ref(params.thorus_params.vx));
-            get_items(std::ref(params.thorus_params.cr));
-            // FIXME error: unable to deduce ‘std::initializer_list<auto>&&’ from ‘<brace-enclosed initializer list>()’
-            //get_items();
-            // FIXME error: unable to deduce ‘std::initializer_list<auto>&&’ from ‘{items#0, items#1}’
-            // note:   deduced conflicting types for parameter ‘auto’ (‘std::reference_wrapper<int>’ and ‘std::reference_wrapper<double>’)
-            //get_items(std::ref(params.ne[0]),  std::ref(rt[0]));
+            readln(ifs, params.ngl);
+            readln(ifs, params.thorus_params.xfirst,  params.thorus_params.yfirst);
+            readln(ifs, params.thorus_params.xsecond, params.thorus_params.ysecond);
+            readln(ifs, params.thorus_params.xthird,  params.thorus_params.ythird);
+            readln(ifs, params.thorus_params.vx);
+            readln(ifs, params.thorus_params.cr);
+            readln(ifs);
+            readln(ifs, params.ne[0], rt[0]);
         }
     }
     return std::move(params);
