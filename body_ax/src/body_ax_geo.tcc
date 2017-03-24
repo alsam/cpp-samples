@@ -69,7 +69,9 @@ body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
     parameters<T> params;
-    std::array<double, MAX_SEGMENTS> rt;
+    std::array<T, MAX_ELEMS + 1> xe, ye, te, se;
+    std::array<T, MAX_ELEMS> xm, ym, sm;
+    std::array<T, MAX_SEGMENTS> rt;
     // `get_items` is unused, left for posterity
     auto get_items = [&ifs](auto&& ...items) {
         std::string line;
@@ -107,7 +109,20 @@ body_ax_geo(program_options const& popt)
             //---
 
             params.sphere.ycenter = ZERO<T>;        // sphere center is on the x axis
+            T dth = PI<T> / params.ne[0];
+            for (int i = 0; i <= params.ne[0]; ++i) {
+                T angle = i * dth;
+                te[i] = angle;
+                se[i] = angle * params.sphere.rad;
+                xe[i] = params.sphere.xcenter + params.sphere.rad * std::cos(angle);
+                ye[i] =                         params.sphere.rad * std::sin(angle);
+            }
 
+            //---
+            // prepare
+            //---
+
+            params.nsg = 1;                         // one circular segment
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;

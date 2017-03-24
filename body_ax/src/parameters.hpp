@@ -46,6 +46,7 @@ enum class FlowType : unsigned char {
 template <typename T>
 struct parameters {
     int ngl;
+    int nsg; // number of segments
     std::array<int, MAX_SEGMENTS> ne, itp;
     T vx; // velocity of incident flow
     T cr; // line vortex ring strength
