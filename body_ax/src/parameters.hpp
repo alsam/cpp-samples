@@ -49,6 +49,7 @@ struct parameters {
     std::array<int, MAX_SEGMENTS> ne, itp;
     T vx; // velocity of incident flow
     T cr; // line vortex ring strength
+    T xlvr,  ylvr;
     T xwmin, xwmax;
     T ywmin, ywmax;
     union {
@@ -56,12 +57,12 @@ struct parameters {
             T rad;
             T xcenter;
             // ...
-        } sphere_params;
+        } sphere;
         struct {
             T xfirst,  yfirst;  // 1st vertex
             T xsecond, ysecond; // 2nd vertex
             T xthird,  ythird;  // 3d vertex
             // ..
-        } thorus_params;
+        } thorus;
     };
 };

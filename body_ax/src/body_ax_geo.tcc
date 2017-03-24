@@ -31,6 +31,7 @@
 #include <functional>
 #include <iterator>
 #include <cmath>
+#include "math_consts.hpp"
 #include "parameters.hpp"
 #include "body_ax_geo.hpp"
 
@@ -83,8 +84,8 @@ body_ax_geo(program_options const& popt)
         ifs.open(fname);
         if (ifs) {
             readln(ifs, params.ngl);
-            readln(ifs, params.sphere_params.rad);
-            readln(ifs, params.sphere_params.xcenter);
+            readln(ifs, params.sphere.rad);
+            readln(ifs, params.sphere.xcenter);
             readln(ifs, params.vx);
             readln(ifs, params.cr);
             readln(ifs);
@@ -93,15 +94,22 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.xwmin, params.xwmax);
             readln(ifs, params.ywmin, params.ywmax);
 
+            //--------------------------------
+            // place the lvr inside the center
+            //--------------------------------
+
+            params.xlvr = params.sphere.xcenter;
+            params.ylvr = half<T> * params.sphere.rad;
+
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
             readln(ifs, params.ngl);
-            readln(ifs, params.thorus_params.xfirst,  params.thorus_params.yfirst);
-            readln(ifs, params.thorus_params.xsecond, params.thorus_params.ysecond);
-            readln(ifs, params.thorus_params.xthird,  params.thorus_params.ythird);
+            readln(ifs, params.thorus.xfirst,  params.thorus.yfirst);
+            readln(ifs, params.thorus.xsecond, params.thorus.ysecond);
+            readln(ifs, params.thorus.xthird,  params.thorus.ythird);
             readln(ifs, params.vx);
             readln(ifs, params.cr);
             readln(ifs);

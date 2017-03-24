@@ -30,6 +30,9 @@ template<typename T>
 constexpr T pi = T(M_PI);
 
 template<typename T>
+constexpr T zero = T(0);
+
+template<typename T>
 constexpr T half = T(0.5);
 
 template<typename T>

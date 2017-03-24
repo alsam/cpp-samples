@@ -171,10 +171,10 @@ int main(int argc, char **argv)
         std::cout << "-I- xwmin: " << run_params.xwmin << "\n";
         std::cout << "-I- ywmin: " << run_params.ywmin << "\n";
         if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
-            std::cout << "-I- rad: " << run_params.sphere_params.rad << "\n";
+            std::cout << "-I- rad: " << run_params.sphere.rad << "\n";
         } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
-            std::cout << "-I- xfirst: " << run_params.thorus_params.xfirst
-                      << "    yfirst: " << run_params.thorus_params.yfirst << "\n";
+            std::cout << "-I- xfirst: " << run_params.thorus.xfirst
+                      << "    yfirst: " << run_params.thorus.yfirst << "\n";
         }
     }
 
