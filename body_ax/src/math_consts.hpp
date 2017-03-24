@@ -27,19 +27,19 @@
 #include <cmath>
 
 template<typename T>
-constexpr T pi = T(M_PI);
+constexpr T PI = T(M_PI);
 
 template<typename T>
-constexpr T zero = T(0);
+constexpr T ZERO = T(0);
 
 template<typename T>
-constexpr T half = T(0.5);
+constexpr T HALF = T(0.5);
 
 template<typename T>
-constexpr T one = T(1);
+constexpr T ONE = T(1);
 
 template<typename T>
-constexpr T two = T(2);
+constexpr T TWO = T(2);
 
 
 

@@ -55,7 +55,7 @@ struct parameters {
     union {
         struct {
             T rad;
-            T xcenter;
+            T xcenter, ycenter;
             // ...
         } sphere;
         struct {

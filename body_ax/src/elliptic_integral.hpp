@@ -39,19 +39,19 @@
 template <typename T>
 void elliptic_integral (T const& rk2, T& f, T& e)
 {
-    constexpr T accuracy = T(1.0e-12);
-    T rk = sqrt(rk2), g = one<T>, b = rk, c, d;
+    constexpr T ACCURACY = T(1.0e-12);
+    T rk = sqrt(rk2), g = ONE<T>, b = rk, c, d;
 
-    f = T(0.5) * pi<T>;
-    e = one<T>;
+    f = T(0.5) * PI<T>;
+    e = ONE<T>;
     do {
-        c = sqrt(one<T> - b*b);
-        b = (one<T> - c) / (one<T> + c);
+        c = sqrt(ONE<T> - b*b);
+        b = (ONE<T> - c) / (ONE<T> + c);
         d = f*b;
         f += d;
-        g = half<T>*g*b;
+        g = HALF<T>*g*b;
         e += g;
-    } while (fabs(d) > accuracy);
-    e = f * (one<T> - half<T>*rk2*e);
+    } while (std::fabs(d) > ACCURACY);
+    e = f * (ONE<T> - HALF<T>*rk2*e);
 }
 

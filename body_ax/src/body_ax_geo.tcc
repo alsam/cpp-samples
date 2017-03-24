@@ -99,7 +99,14 @@ body_ax_geo(program_options const& popt)
             //--------------------------------
 
             params.xlvr = params.sphere.xcenter;
-            params.ylvr = half<T> * params.sphere.rad;
+            params.ylvr = HALF<T> * params.sphere.rad;
+
+            //---
+            // one semi-circular contour
+            // with evenly distributed arcs
+            //---
+
+            params.sphere.ycenter = ZERO<T>;        // sphere center is on the x axis
 
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
