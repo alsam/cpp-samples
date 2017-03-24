@@ -62,11 +62,12 @@ size_t readln(std::istream& is, Ts&... ts)
 
 }
 
-parameters
+template <typename T>
+parameters<T>
 body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
-    parameters params;
+    parameters<T> params;
     std::array<double, MAX_SEGMENTS> rt;
     // `get_items` is unused, left for posterity
     auto get_items = [&ifs](auto&& ...items) {

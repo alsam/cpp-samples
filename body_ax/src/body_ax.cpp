@@ -162,7 +162,7 @@ int main(int argc, char **argv)
     mat_t phi(MAX_SEGMENTS, MAX_ELEMS);
     vec_t velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
 
-    parameters run_params = body_ax_geo(popt);
+    auto const& run_params = body_ax_geo<double>(popt);
     if (popt.verbose) {
         std::cout << "-I- ngl: " << run_params.ngl << "\n";
         std::cout << "-I- vx: " << run_params.vx << "\n";

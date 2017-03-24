@@ -43,23 +43,24 @@ enum class FlowType : unsigned char {
     THORUS = 51,
 };
 
+template <typename T>
 struct parameters {
     int ngl;
     std::array<int, MAX_SEGMENTS> ne, itp;
-    double vx; // velocity of incident flow
-    double cr; // line vortex ring strength
-    double xwmin, xwmax;
-    double ywmin, ywmax;
+    T vx; // velocity of incident flow
+    T cr; // line vortex ring strength
+    T xwmin, xwmax;
+    T ywmin, ywmax;
     union {
         struct {
-            double rad;
-            double xcenter;
+            T rad;
+            T xcenter;
             // ...
         } sphere_params;
         struct {
-            double xfirst,  yfirst;  // 1st vertex
-            double xsecond, ysecond; // 2nd vertex
-            double xthird,  ythird;  // 3d vertex
+            T xfirst,  yfirst;  // 1st vertex
+            T xsecond, ysecond; // 2nd vertex
+            T xthird,  ythird;  // 3d vertex
             // ..
         } thorus_params;
     };

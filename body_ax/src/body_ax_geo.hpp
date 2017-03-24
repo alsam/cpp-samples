@@ -1,3 +1,5 @@
+#pragma once
+
 // -*- C++ -*-
 
 // The MIT License (MIT)
@@ -25,5 +27,6 @@
 #include "program_options.hpp"
 #include "parameters.hpp"
 
-parameters body_ax_geo(program_options const& popt);
+parameters<double> body_ax_geo(program_options const& popt);
 
+#include "body_ax_geo.tcc"
