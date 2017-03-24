@@ -25,33 +25,19 @@
 // SOFTWARE.
 
 #include <cmath>
-#include "math_consts.hpp"
 
-/*! \file elliptic_integral.h
-    \brief computation of elliptic integrals of the first and second kinds by iteration method
+template<typename T>
+constexpr T pi = T(M_PI);
 
-    Details.
-*/
+template<typename T>
+constexpr T half = T(0.5);
 
-/**
- * \f$ F\left(k\right)\equiv\int_0^{\pi/2}\frac{d\eta}{\sqrt{1-k^2\cos^2\eta}} \f$
- */
-template <typename T>
-void elliptic_integral (T const& rk2, T& f, T& e)
-{
-    constexpr T accuracy = T(1.0e-12);
-    T rk = sqrt(rk2), g = one<T>, b = rk, c, d;
+template<typename T>
+constexpr T one = T(1);
 
-    f = T(0.5) * pi<T>;
-    e = one<T>;
-    do {
-        c = sqrt(one<T> - b*b);
-        b = (one<T> - c) / (one<T> + c);
-        d = f*b;
-        f += d;
-        g = half<T>*g*b;
-        e += g;
-    } while (fabs(d) > accuracy);
-    e = f * (one<T> - half<T>*rk2*e);
-}
+template<typename T>
+constexpr T two = T(2);
+
+
+
 
