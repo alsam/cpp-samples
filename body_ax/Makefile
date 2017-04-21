@@ -83,8 +83,10 @@ sample_run:
 	obj.debug/body_ax --flow_type 50 --input_data data/sphere.dat --verbose
 	obj.debug/body_ax --flow_type 51 --input_data data/torus_trgl.dat --verbose
 
-dox:
-	doxygen Doxyfile
+docs:
+	#doxygen Doxyfile
+	pandoc --include-in-header=fontoptions.tex -s README.md --highlight-style pygments --latex-engine=xelatex -o README.pdf
+
 
 .PHONY: clean
 
