@@ -52,3 +52,13 @@ satisfies the integral equation of the second kind
 
 where $G(x,x_0)$ is the free-space Green’s function of Laplace’s equation in an axisymmetric
 domain, and the point $x_0$ lies on the contour of the body $C$.
+Inserting the boundary condition (3) into (4) and rearranging, we obtain
+
+\begin{equation}
+    \phi^D(x_0) -2\int^{PV}_C\phi^D(x)[n(x)\cdot\nabla  G(x,x_0)]dl(x) = 2\int_C (u^\infty + v)\cdot G(x,x_0)n(x)dl(x)
+\end{equation}
+
+## Numerical Method
+The contour of the body in a meridional plane is discretized into a collection of
+
+
