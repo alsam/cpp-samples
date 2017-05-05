@@ -54,11 +54,30 @@ where $G(x,x_0)$ is the free-space Green’s function of Laplace’s equation in
 domain, and the point $x_0$ lies on the contour of the body $C$.
 Inserting the boundary condition (3) into (4) and rearranging, we obtain
 
+
+![\quad  Streamlines of flow past a sphere](sphere_body_ax.pdf)
+
+![\quad  Streamlines of flow past a triangular thorus](thorus_body_ax.pdf)
+
 \begin{equation}
     \phi^D(x_0) -2\int^{PV}_C\phi^D(x)[n(x)\cdot\nabla  G(x,x_0)]dl(x) = 2\int_C (u^\infty + v)\cdot G(x,x_0)n(x)dl(x)
 \end{equation}
 
 ## Numerical Method
-The contour of the body in a meridional plane is discretized into a collection of
+The contour of the body in a meridional plane is discretized into a collection of $N$ boundary elements denoted by $E_i, i=1,\ldots,N$.
+The boundary elements can be straight segments or circular arcs. The disturbance potential and its normal derivative
+are approximated with constant functions the ith element denoted respectively by $\varphi^D_i$ and
 
+\begin{equation}
+\left(\frac{\partial{\phi^D}}{\partial{n}}\right)_i=(u^\infty+v^{(i)})\cdot n^{(i)}
+\end{equation}
+
+where $n^{(i)}$ and $v^{(i)}$ are the normal vector and velocity induced by the line vortex ring evaluated at the mid-point of the $i$-th element.
+Subject to these approximations, the integral equation (5) assumes the discretized
+form
+
+\begin{equation}
+    \phi^D_j - 2\sum_{i=1}^N \phi^D_i\int_{E_i}^{PV}n(x)\nabla G\left(x,x_j^M\right)dl(x) = 2\sum_{i=1}^N
+\left(u_\infty+v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_j^M\right)dl(x)
+\end{equation}
 
