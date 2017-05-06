@@ -46,9 +46,12 @@ potential,
 Using the standard boundary-integral formulation, we find that the disturbance potential
 satisfies the integral equation of the second kind
 
-\begin{equation}
-    \phi^D(x_0) = -2\int_C G(x,x_0)[n(x)\cdot\nabla\phi^D(x)]dl(x) + 2\int^{PV}_C\phi^D(x)[n(x)\cdot\nabla G(x,x_0)]dl(x)
-\end{equation}
+\begin{align}
+\begin{split}
+    \phi^D(x_0) & = -2\int_C G(x,x_0)[n(x)\cdot\nabla\phi^D(x)]dl(x) \\
+                & + 2\int^{PV}_C\phi^D(x)[n(x)\cdot\nabla G(x,x_0)]dl(x)
+\end{split}
+\end{align}
 
 where $G(x,x_0)$ is the free-space Green’s function of Laplace’s equation in an axisymmetric
 domain, and the point $x_0$ lies on the contour of the body $C$.
@@ -59,9 +62,12 @@ Inserting the boundary condition (3) into (4) and rearranging, we obtain
 
 ![\quad  Streamlines of flow past a triangular thorus](thorus_body_ax.pdf)
 
-\begin{equation}
-    \phi^D(x_0) -2\int^{PV}_C\phi^D(x)[n(x)\cdot\nabla  G(x,x_0)]dl(x) = 2\int_C (u^\infty + v)\cdot G(x,x_0)n(x)dl(x)
-\end{equation}
+\begin{align}
+\begin{split}
+    \phi^D(x_0) & -2\int^{PV}_C\phi^D(x)[n(x)\cdot\nabla  G(x,x_0)]dl(x) \\
+                & = 2\int_C (u^\infty + v)\cdot G(x,x_0)n(x)dl(x)
+\end{split}
+\end{align}
 
 ## Numerical Method
 The contour of the body in a meridional plane is discretized into a collection of $N$ boundary elements denoted by $E_i, i=1,\ldots,N$.
@@ -76,8 +82,10 @@ where $n^{(i)}$ and $v^{(i)}$ are the normal vector and velocity induced by the 
 Subject to these approximations, the integral equation (5) assumes the discretized
 form
 
-\begin{equation}
-    \phi^D_j - 2\sum_{i=1}^N \phi^D_i\int_{E_i}^{PV}n(x)\nabla G\left(x,x_j^M\right)dl(x) = 2\sum_{i=1}^N
-\left(u_\infty+v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_j^M\right)dl(x)
-\end{equation}
+\begin{align}
+\begin{split}
+    \phi^D_j & - 2\sum_{i=1}^N \phi^D_i\int_{E_i}^{PV}n(x)\nabla G\left(x,x_j^M\right)dl(x) \\
+             & = 2\sum_{i=1}^N \left(u_\infty+v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_j^M\right)dl(x)
+\end{split}
+\end{align}
 
