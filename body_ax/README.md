@@ -84,8 +84,97 @@ form
 
 \begin{align}
 \begin{split}
-    \phi^D_j & - 2\sum_{i=1}^N \phi^D_i\int_{E_i}^{PV}n(x)\nabla G\left(x,x_j^M\right)dl(x) \\
-             & = 2\sum_{i=1}^N \left(u_\infty+v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_j^M\right)dl(x)
+    \phi^D(x_0) & - 2\sum_{i=1}^N \phi^D_i\int_{E_i}^{PV}n(x)\nabla G\left(x,x_0\right)dl(x) \\
+             & = 2\sum_{i=1}^N \left(u^\infty+v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_0\right)dl(x)
 \end{split}
 \end{align}
+
+Identifying the point $x_0$ with the mid-point of the $j$-th element denoted by $x_j^M$, where
+$j = 1,\ldots,N$, we obtain a system of linear equations for the unknown values $\phi_i^D$,
+
+\begin{align}
+\begin{split}
+    \phi_j^D & - 2\sum_{i=1}^N \phi^D_i\int_{E_i}^{PV}n(x)\nabla G\left(x,x_j^M\right)dl(x) \\
+             & = 2\sum_{i=1}^N \left(u^\infty+v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_j^M\right)dl(x)
+\end{split}
+\end{align}
+
+where $j = 1,\ldots,N$.
+
+To illustrate the structure of the linear system more clearly, we collect the two terms
+on the left-hand side of (8) and rearrange to obtain
+
+\begin{align}
+\begin{split}
+    \sum_{i=1}^N \phi^D_i &  \left[\frac{1}{2}\delta_{ij} - \int_{E_i}^{PV}n(x)\nabla G\left(x,x_j^M\right)dl(x)\right] \\
+        & = \sum_{i=1}^N \left(u^\infty+v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_j^M\right)dl(x)
+\end{split}
+\end{align}
+
+The integrals in equation (9) are computed by numerical methods and the linear
+system is solved by Gauss elimination.
+
+## Tangential Velocity
+The normal component of the disturbance velocity along the boundary contour is
+computed by solving an integral equation. The tangential component is computed
+numerically by differentiating the disturbance potential with respect to arc length
+along the contour. The tangential component is then added to the normal compo-
+nent to yield the total disturbance velocity. The total velocity is computed from the
+decomposition expressed by equation (1).
+
+## Computation of the Velocity at a Point in the Flow
+To obtain the velocity at a point in the flow, we compute the gradient of the disturbance potential on the right-hand side of
+equation (2) using centered differences.
+The disturbance potential is evaluated using the discretized integral representation
+
+\begin{align}
+\begin{split}
+    \phi^D(x_0) & =   \sum_{i=1}^N \left(u^\infty + v^{(i)}\right)\cdot n^{(i)} \int_{E_i}G\left(x,x_0\right)dl(x) \\
+                & + \sum_{i=1}^N \phi^D_i\int_{E_i}n(x)\cdot\nabla G\left(x,x_0\right)dl(x)
+\end{split}
+\end{align}
+
+where the point $x_0$ lies in the domain of the flow.
+
+## Program Depiction
+
++ Main program: _body\_ax_  
+The main program solves an integral equation of the second kind for the boundary
+distribution of the disturbance potential, computes the boundary distribution of the
+pressure coefficient and the force exerted on the body, and generates streamlines
+originating from specified points in the flow.
+
++ Files to be linked
+1. _elm\_arc_  
+Discretization of a circular segment into arc elements.
+2. _elm\_line_  
+Discretization of a straight segment into straight (linear) elements.
+3. _body\_ax\_geo_  
+Discretization of the boundary geometry.
+4. _body\_ax\_sdlp_  
+Evaluation of the single- and double-layer harmonic potential over boundary
+elements.
+5. _body\_ax\_vel_  
+Evaluation of the velocity at a specified point in the flow.
+6. _ell\_int_  
+Evaluation of complete elliptic integrals of the first and second kind.
+7. _gauss\_leg_  
+Base points and weights for the Gauss-Legendre quadrature.
+8. _gel_  
+Solution of a linear algebraic system by Gauss elimination.
+9. _lgf\_ax\_fs_  
+Free-space Green’s function of Laplace’s equation in an axisymmetric domain.
+10. _lvr\_ax\_fs_  
+Potential and velocity due to a line vortex ring.
+
++ Input files:
+1. _sphere.dat_  
+Parameters for flow past a sphere.
+2. _torus\_trgl.dat_  
+Parameters for flow past a triangular torus.
++ Output files:
+1. _body ax.str_  
+Streamlines.
+2. _body 2d.out_  
+Boundary distribution of the disturbance potential and tangential velocity.
 
