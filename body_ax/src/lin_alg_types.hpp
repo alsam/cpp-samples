@@ -28,3 +28,6 @@
 
 using vec_t = Eigen::RowVectorXd;
 using mat_t = Eigen::MatrixXd;
+
+template<class T, int M = Eigen::Dynamic, int N = Eigen::Dynamic>
+using matg_t = Eigen::Matrix<T, M, N>;

@@ -26,6 +26,7 @@
 
 #include <array>
 #include <type_traits>
+#include "lin_alg_types.hpp"
 
 constexpr unsigned MAX_SEGMENTS = 10;
 constexpr unsigned MAX_ELEMS = 512;
@@ -48,6 +49,8 @@ struct parameters {
     int ngl;
     int nsg; // number of segments
     std::array<int, MAX_SEGMENTS> ne, itp;
+    matg_t<T, MAX_SEGMENTS, MAX_ELEMS + 1> xw, yw, tw;
+    std::array<T, MAX_SEGMENTS> actis, xcntr, ycntr;
     T vx; // velocity of incident flow
     T cr; // line vortex ring strength
     T xlvr,  ylvr;

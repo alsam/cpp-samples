@@ -123,6 +123,24 @@ body_ax_geo(program_options const& popt)
             //---
 
             params.nsg = 1;                         // one circular segment
+            params.actis[0] = params.sphere.rad;
+            params.xcntr[0] = params.sphere.xcenter;
+            params.ycntr[0] = params.sphere.ycenter;
+
+            //---
+            // semicircular contour
+            //---
+            params.itp[0] = 2;
+            for (int i = 0; i < params.ne[0]+1; ++i) {
+                params.tw(0,i) = te[i];
+                params.xw(0,i) = xe[i];
+                params.yw(0,i) = ye[i];
+            }
+
+            //---
+            // Collocation points
+            //---
+
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
