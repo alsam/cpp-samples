@@ -26,8 +26,6 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <array>
-#include <vector>
 #include <functional>
 #include <iterator>
 #include <cmath>
@@ -69,9 +67,9 @@ body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
     parameters<T> params;
-    std::array<T, MAX_ELEMS + 1> xe, ye, te, se;
-    std::array<T, MAX_ELEMS> xm, ym, sm;
-    std::array<T, MAX_SEGMENTS> rt;
+    vecg_t<T, MAX_ELEMS + 1> xe, ye, te, se;
+    vecg_t<T, MAX_ELEMS> xm, ym, sm;
+    vecg_t<T, MAX_SEGMENTS> rt;
     // `get_items` is unused, left for posterity
     auto get_items = [&ifs](auto&& ...items) {
         std::string line;

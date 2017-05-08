@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <array>
 #include <type_traits>
 #include "lin_alg_types.hpp"
 
@@ -48,9 +47,9 @@ template <typename T>
 struct parameters {
     int ngl;
     int nsg; // number of segments
-    std::array<int, MAX_SEGMENTS> ne, itp;
+    vecg_t<int, MAX_SEGMENTS> ne, itp;
     matg_t<T, MAX_SEGMENTS, MAX_ELEMS + 1> xw, yw, tw;
-    std::array<T, MAX_SEGMENTS> actis, xcntr, ycntr;
+    vecg_t<T, MAX_SEGMENTS> actis, xcntr, ycntr;
     T vx; // velocity of incident flow
     T cr; // line vortex ring strength
     T xlvr,  ylvr;
