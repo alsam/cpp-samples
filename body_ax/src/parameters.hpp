@@ -27,6 +27,8 @@
 #include <type_traits>
 #include "lin_alg_types.hpp"
 
+using FLOATING_TYPE = double;
+
 constexpr unsigned MAX_SEGMENTS = 10;
 constexpr unsigned MAX_ELEMS = 512;
 constexpr unsigned MAX_QUADRATURE_POINTS = 20;

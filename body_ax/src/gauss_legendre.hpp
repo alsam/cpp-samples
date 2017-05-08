@@ -53,10 +53,10 @@ public:
     unsigned order() const { return order_; }
 
     /// knots
-    vec_t const& z() const { return z_; }
+    vecg_t<T> const& z() const { return z_; }
 
     /// weights
-    vec_t const& w() const { return w_; }
+    vecg_t<T> const& w() const { return w_; }
 };
 
 #include "gauss_legendre.tcc"

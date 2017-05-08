@@ -159,8 +159,8 @@ int main(int argc, char **argv)
         std::cout << popt;
     }
 
-    mat_t phi(MAX_SEGMENTS, MAX_ELEMS);
-    vec_t velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
+    matg_t<FLOATING_TYPE> phi(MAX_SEGMENTS, MAX_ELEMS);
+    vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
 
     auto const& run_params = body_ax_geo<double>(popt);
     if (popt.verbose) {

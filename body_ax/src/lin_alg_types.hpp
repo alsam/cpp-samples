@@ -26,9 +26,6 @@
 
 #include <Eigen/Dense>
 
-using vec_t = Eigen::RowVectorXd;
-using mat_t = Eigen::MatrixXd;
-
 template<typename T, int N = Eigen::Dynamic>
 using vecg_t = Eigen::Matrix<T, 1, N>;
 

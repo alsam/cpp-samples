@@ -25,6 +25,7 @@
 #include <cmath>
 #include "lin_alg_types.hpp"
 #include "gauss_legendre.hpp"
+#include "parameters.hpp"
 
 using namespace std;
 
@@ -100,7 +101,7 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
 // --- 
 //
     // TODO parameterize over float type
-    gauss_legendre<double> gl(ngl);
+    gauss_legendre<FLOATING_TYPE> gl(ngl);
     auto const& zz = gl.z();
     auto const& ww = gl.w();
     for (int i = 0; i < ngl; ++i) {
