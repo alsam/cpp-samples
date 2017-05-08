@@ -98,8 +98,9 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
 // --- 
 // loop over Gaussian points
 // --- 
-//  
-    gauss_legendre gl(ngl);
+//
+    // TODO parameterize over float type
+    gauss_legendre<double> gl(ngl);
     auto const& zz = gl.z();
     auto const& ww = gl.w();
     for (int i = 0; i < ngl; ++i) {

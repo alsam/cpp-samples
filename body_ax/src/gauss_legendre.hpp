@@ -1,5 +1,3 @@
-#pragma once
-
 // -*- C++ -*-
 
 // The MIT License (MIT)
@@ -24,18 +22,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#pragma once
+
 #include "lin_alg_types.hpp"
 
 /// the most complete is
 /// http://processingjs.nihongoresources.com/bezierinfo/legendre-gauss-values.php
 
+template <typename T>
 class gauss_legendre {
 
 private:
 
     unsigned order_;
 
-    vec_t z_, w_;
+    vecg_t<T> z_, w_;
 
     /// imitate fortran90 statements Z(7:12) = -Z(6:1:-1); W(7:12) = W(6:1:-1)
     void reflect ();
@@ -57,3 +58,5 @@ public:
     /// weights
     vec_t const& w() const { return w_; }
 };
+
+#include "gauss_legendre.tcc"
