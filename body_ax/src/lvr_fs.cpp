@@ -25,8 +25,7 @@
 #include <cmath>
 #include "elliptic_integral.hpp"
 
-using namespace std;
-
+// free space
 void
 lvr_fs (int iopt, double x, double s, 
 	double x0, double s0, double &u, double &v, 
@@ -82,7 +81,7 @@ lvr_fs (int iopt, double x, double s,
 /* --- */
 /* compute the Stokes stream function */
 /* --- */
-    rk = sqrt(rks);
+    rk = std::sqrt(rks);
     rj11 = ((2. - rks) * f - e * 2.) / rks;
 /* Computing 2nd power */
     d__1 = s + s0;

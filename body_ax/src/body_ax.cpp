@@ -162,7 +162,7 @@ int main(int argc, char **argv)
     matg_t<FLOATING_TYPE> phi(MAX_SEGMENTS, MAX_ELEMS);
     vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
 
-    auto const& run_params = body_ax_geo<double>(popt);
+    auto const& run_params = body_ax_geo<FLOATING_TYPE>(popt);
     if (popt.verbose) {
         std::cout << "-I- ngl: " << run_params.ngl << "\n";
         std::cout << "-I- vx: " << run_params.vx << "\n";

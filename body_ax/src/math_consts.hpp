@@ -41,6 +41,12 @@ constexpr T ONE = T(1);
 template<typename T>
 constexpr T TWO = T(2);
 
+template<typename T>
+constexpr T FOUR = T(4);
 
+template<typename T>
+constexpr T TWO_PI = PI<T> * TWO<T>;
 
+template<typename T>
+constexpr T FOUR_PI = PI<T> * FOUR<T>;
 

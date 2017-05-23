@@ -88,10 +88,10 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.ngl);
             readln(ifs, params.sphere.rad);
             readln(ifs, params.sphere.xcenter);
-            readln(ifs, params.vx);
-            readln(ifs, params.cr);
+            readln(ifs, params.vx);                 // velocity of indident flow
+            readln(ifs, params.cr);                 // line vortex ring strength
             readln(ifs);
-            readln(ifs, params.ne[0]);
+            readln(ifs, params.ne[0]);              // one segment consisting of arc elems
             readln(ifs);
             readln(ifs, params.xwmin, params.xwmax);
             readln(ifs, params.ywmin, params.ywmax);
@@ -140,6 +140,22 @@ body_ax_geo(program_options const& popt)
             //---
             // Collocation points
             //---
+            params.ncl = params.ne[0];
+            for (int i = 0; i < params.ne[0]; ++i) {
+                params.t0[i] = HALF<T>*(te[i]+te(i+1));
+                params.x0[i] = params.sphere.xcenter + params.sphere.rad*std::cos(params.t0[i]);
+                params.y0[i] = params.sphere.ycenter + params.sphere.rad*std::sin(params.t0[i]);
+                params.s0[i] = HALF<T>*(se[i]+se[i+1]);
+
+                params.arel[i] =  dth * params.sphere.rad * TWO_PI<T> * params.y0[i];
+                params.tnx0[i] = -std::sin(params.t0[i]);
+                params.tny0[i] =  std::cos(params.t0[i]);
+                params.vnx0[i] =  params.tny0[i];
+                params.vny0[i] = -params.tnx0[i];
+
+                params.dphidn0[i] = -params.vx * params.vnx0[i];
+
+            }
 
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {

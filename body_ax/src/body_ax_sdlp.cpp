@@ -26,6 +26,7 @@
 #include "lin_alg_types.hpp"
 #include "gauss_legendre.hpp"
 #include "parameters.hpp"
+#include "math_consts.hpp"
 
 using namespace std;
 
@@ -67,11 +68,6 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
 /* QQQ: single-layer potential */
 /* WWW: double-layer potential */
 /* ---------------------------------------------------------- */
-/* ---------- */
-/* constants */
-/* ---------- */
-    double constexpr pi2 = M_PI * 2.0;
-    double constexpr pi4 = M_PI * 4.0;
 /* ----------- */
 /* initialize */
 /* ----------- */
@@ -141,7 +137,7 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
                 d__1 = rad * (t0 - t);
                 dists = d__1 * d__1;
             }
-            g += log(dists) / pi4;
+            g += std::log(dists) / FOUR_PI<FLOATING_TYPE>;
         }
         qqq += g * y * ww[i];
         www += (dgdx * vnx + dgdy * vny) * y * ww[i];
@@ -155,7 +151,7 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
 /* add slp singularity back to the slp */
 /* ------------------------------------ */
     if (ising == 1) {
-        qqq -= dr * 2.0 * (log(dr) - 1.0) / pi2;
+        qqq -= dr * TWO<FLOATING_TYPE> * (std::log(dr) - ONE<FLOATING_TYPE>) / TWO_PI<FLOATING_TYPE>;
     }
 // -----
 // Done
