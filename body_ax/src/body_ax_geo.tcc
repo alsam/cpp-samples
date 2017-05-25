@@ -34,6 +34,7 @@
 #include "math_consts.hpp"
 #include "parameters.hpp"
 #include "body_ax_geo.hpp"
+#include "lvr_fs.tcc"
 
 namespace {
 
@@ -72,6 +73,9 @@ body_ax_geo(program_options const& popt)
     vecg_t<T, MAX_ELEMS + 1> xe, ye, te, se;
     vecg_t<T, MAX_ELEMS> xm, ym, sm;
     vecg_t<T, MAX_SEGMENTS> rt;
+
+    T psi, ulvr, vlvr;
+
     // `get_items` is unused, left for posterity
     auto get_items = [&ifs](auto&& ...items) {
         std::string line;
@@ -155,8 +159,11 @@ body_ax_geo(program_options const& popt)
 
                 params.dphidn0[i] = -params.vx * params.vnx0[i];
 
-            }
+                int iopt = 1;
+                lvr_fs<T>(iopt, params.x0[i], params.y0[i], params.xlvr, params.ylvr, ulvr, vlvr, psi);
 
+                params.dphidn0[i] -= params.cr*(ulvr*params.vnx0[i]+vlvr*params.vny0[i]);
+            }
         }
     } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
@@ -176,6 +183,14 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.xwmin, params.xwmax);
             readln(ifs, params.ywmin, params.ywmax);
 
+            //----------
+            // over-ride
+            //----------
+
+            // if (itry > 1) {
+            //     cr      = cr_new;               // graphics
+            //     ycenter = ycenter_new;          // graphics
+            // }
         }
     }
     return std::move(params);

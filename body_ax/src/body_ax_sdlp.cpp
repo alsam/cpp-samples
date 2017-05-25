@@ -27,6 +27,7 @@
 #include "gauss_legendre.hpp"
 #include "parameters.hpp"
 #include "math_consts.hpp"
+#include "lgf_ax_fs.tcc"
 
 using namespace std;
 
@@ -42,8 +43,6 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
     // Local variables
     double g;
     double t, x, y;
-    extern /* Subroutine */ void lgf_ax_fs(int, double, double, double, double,
-            double&, double&, double&);
     double dr, cs, td, pi, xd, yd, tm, sn, xm, ym,
             vnx, vny, dgdx, dgdy;
     int iopt;
@@ -114,6 +113,7 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
             vny = sn * ornt; // normal vector points away from center
                              // when arc is counter-clockwise,
         }
+        // TODO parameterize over float type
         lgf_ax_fs(iopt, x, y, x0, y0, g, dgdx, dgdy);
 /* -------------------------------------------------- */
 /*  treat the slp singularity */
