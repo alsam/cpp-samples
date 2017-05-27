@@ -108,6 +108,7 @@
 #include "program_options.hpp"
 #include "lin_alg_types.hpp"
 #include "body_ax_geo.hpp"
+#include "body_ax_sdlp.tcc"
 
 program_options parse_command_line(int argc, char** argv)
 {
@@ -214,11 +215,20 @@ int main(int argc, char **argv)
                 FLOATING_TYPE t2 = run_params.tw(k,l+1);
 
                 j = j+1;
-                int ising = (i == j) ? 1 : 0;
+                bool ising = (i == j);
+                FLOATING_TYPE qqq, www;
+                body_ax_sdlp (run_params.x0[i], run_params.y0[i], run_params.t0[i],
+                              x1, y1, t1, x2, y2, t2, run_params.ngl, ising,
+                              run_params.itp[k], rad,xcnt,ycnt,
+                              qqq, www);
+
+                al(i, j) = www;
+                bl(i) += qqq * run_params.dphidn0[j];
 
             }
 
         }
+        al(i, i) -= HALF<FLOATING_TYPE>;
 
     }
 

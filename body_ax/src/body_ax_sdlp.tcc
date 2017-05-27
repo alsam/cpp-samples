@@ -29,19 +29,20 @@
 #include "math_consts.hpp"
 #include "lgf_ax_fs.tcc"
 
+template <typename T>
 void
-body_ax_sdlp(FLOATING_TYPE x0, FLOATING_TYPE y0, FLOATING_TYPE t0, FLOATING_TYPE x1, FLOATING_TYPE y1, FLOATING_TYPE t1,
-             FLOATING_TYPE x2, FLOATING_TYPE y2, FLOATING_TYPE t2, int ngl, int ising, int itype,
-             FLOATING_TYPE rad, FLOATING_TYPE xcnt, FLOATING_TYPE ycnt,
-             FLOATING_TYPE &qqq, FLOATING_TYPE &www)
+body_ax_sdlp(T x0, T y0, T t0, T x1, T y1, T t1,
+             T x2, T y2, T t2, int ngl, bool ising, int itype,
+             T rad, T xcnt, T ycnt,
+             T &qqq, T &www)
 {
     // Local variables
-    FLOATING_TYPE g;
-    FLOATING_TYPE t, x, y;
-    FLOATING_TYPE dr, cs, td, pi, xd, yd, tm, sn, xm, ym,
+    T g;
+    T t, x, y;
+    T dr, cs, td, pi, xd, yd, tm, sn, xm, ym,
             vnx, vny, dgdx, dgdy;
     int iopt;
-    FLOATING_TYPE ornt;
+    T ornt;
 
 // =========================================
 // FDLIB, BEMLIB, CFDLAB
@@ -67,32 +68,31 @@ body_ax_sdlp(FLOATING_TYPE x0, FLOATING_TYPE y0, FLOATING_TYPE t0, FLOATING_TYPE
 // -----------
     iopt = 2;
 // for the Green's function
-    qqq = ZERO<FLOATING_TYPE>;
-    www = ZERO<FLOATING_TYPE>;
+    qqq = ZERO<T>;
+    www = ZERO<T>;
 // ---------------------------
 // prepare for the quadrature 
 // ---------------------------
     if (itype == 1) { // straight segments
-        xm = HALF<FLOATING_TYPE> * (x2 + x1);
-        xd = HALF<FLOATING_TYPE> * (x2 - x1);
-        ym = HALF<FLOATING_TYPE> * (y2 + y1);
-        yd = HALF<FLOATING_TYPE> * (y2 - y1);
+        xm = HALF<T> * (x2 + x1);
+        xd = HALF<T> * (x2 - x1);
+        ym = HALF<T> * (y2 + y1);
+        yd = HALF<T> * (y2 - y1);
         dr = sqrt(xd * xd + yd * yd);
         vnx =  yd / dr; // unit normal vector
         vny = -xd / dr;
     } else {          // circular arcs
-        tm = HALF<FLOATING_TYPE> * (t2 + t1);
-        td = HALF<FLOATING_TYPE> * (t2 - t1);
+        tm = HALF<T> * (t2 + t1);
+        td = HALF<T> * (t2 - t1);
         dr = rad * std::abs(td);
-        ornt = std::copysign( ONE<FLOATING_TYPE>, td ); // orientation index
-        //ornt = (td < ZERO<FLOATING_TYPE>) ? MINUS_ONE<FLOATING_TYPE> : ONE<FLOATING_TYPE>;
+        ornt = std::copysign( ONE<T>, td ); // orientation index
+        //ornt = (td < ZERO<T>) ? MINUS_ONE<T> : ONE<T>;
     }
 // --- 
 // loop over Gaussian points
 // --- 
 //
-    // TODO parameterize over float type
-    gauss_legendre<FLOATING_TYPE> gl(ngl);
+    gauss_legendre<T> gl(ngl);
     auto const& zz = gl.z();
     auto const& ww = gl.w();
     for (int i = 0; i < ngl; ++i) {
@@ -109,8 +109,7 @@ body_ax_sdlp(FLOATING_TYPE x0, FLOATING_TYPE y0, FLOATING_TYPE t0, FLOATING_TYPE
             vny = sn * ornt; // normal vector points away from center
                              // when arc is counter-clockwise,
         }
-        // TODO parameterize over float type
-        lgf_ax_fs(iopt, x, y, x0, y0, g, dgdx, dgdy);
+        lgf_ax_fs<T>(iopt, x, y, x0, y0, g, dgdx, dgdy);
 // --------------------------------------------------
 //  treat the slp singularity
 
@@ -121,18 +120,18 @@ body_ax_sdlp(FLOATING_TYPE x0, FLOATING_TYPE y0, FLOATING_TYPE t0, FLOATING_TYPE
 //  NOTE: The double-layer singularity is not treated
 
 // --------------------------------------------------
-        if (ising == 1) {
-            FLOATING_TYPE dists;
+        if (ising) {
+            T dists;
             if (itype == 1) {
-                FLOATING_TYPE d1 = x - x0;
-                FLOATING_TYPE d2 = y - y0;
+                T d1 = x - x0;
+                T d2 = y - y0;
                 dists = d1 * d1 + d2 * d2;
             }
             if (itype == 2) {
-                FLOATING_TYPE d1 = rad * (t0 - t);
+                T d1 = rad * (t0 - t);
                 dists = d1 * d1;
             }
-            g += std::log(dists) / FOUR_PI<FLOATING_TYPE>;
+            g += std::log(dists) / FOUR_PI<T>;
         }
         qqq += g * y * ww[i];
         www += (dgdx * vnx + dgdy * vny) * y * ww[i];
@@ -145,8 +144,8 @@ body_ax_sdlp(FLOATING_TYPE x0, FLOATING_TYPE y0, FLOATING_TYPE t0, FLOATING_TYPE
 // ------------------------------------
 // add slp singularity back to the slp
 // ------------------------------------
-    if (ising == 1) {
-        qqq -= dr * TWO<FLOATING_TYPE> * (std::log(dr) - ONE<FLOATING_TYPE>) / TWO_PI<FLOATING_TYPE>;
+    if (ising) {
+        qqq -= dr * TWO<T> * (std::log(dr) - ONE<T>) / TWO_PI<T>;
     }
 // -----
 // Done
