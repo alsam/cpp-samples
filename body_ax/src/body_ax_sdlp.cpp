@@ -29,67 +29,63 @@
 #include "math_consts.hpp"
 #include "lgf_ax_fs.tcc"
 
-using namespace std;
-
 void
-body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1, 
-             double x2, double y2, double t2, int ngl, int ising, int itype,
-             double rad, double xcnt, double ycnt,
-             double &qqq, double &www)
+body_ax_sdlp(FLOATING_TYPE x0, FLOATING_TYPE y0, FLOATING_TYPE t0, FLOATING_TYPE x1, FLOATING_TYPE y1, FLOATING_TYPE t1,
+             FLOATING_TYPE x2, FLOATING_TYPE y2, FLOATING_TYPE t2, int ngl, int ising, int itype,
+             FLOATING_TYPE rad, FLOATING_TYPE xcnt, FLOATING_TYPE ycnt,
+             FLOATING_TYPE &qqq, FLOATING_TYPE &www)
 {
-    // System generated locals
-    double d__1, d__2;
-
     // Local variables
-    double g;
-    double t, x, y;
-    double dr, cs, td, pi, xd, yd, tm, sn, xm, ym,
+    FLOATING_TYPE g;
+    FLOATING_TYPE t, x, y;
+    FLOATING_TYPE dr, cs, td, pi, xd, yd, tm, sn, xm, ym,
             vnx, vny, dgdx, dgdy;
     int iopt;
-    double ornt, dists;
+    FLOATING_TYPE ornt;
 
-/* ========================================= */
-/* FDLIB, BEMLIB, CFDLAB */
+// =========================================
+// FDLIB, BEMLIB, CFDLAB
 
-/* Copyright by C. Pozrikidis, 1999 */
-/* All rights reserved. */
+// Copyright by C. Pozrikidis, 1999
+// All rights reserved.
 
-/* This program is to be used only under the */
-/* stipulations of the licensing agreement. */
-/* ========================================= */
-/* ---------------------------------------------------------- */
-/* Compute the single-layer and double-layer potential over */
-/* a straight segment or circular arc */
+// This program is to be used only under the
+// stipulations of the licensing agreement.
+// =========================================
+// ----------------------------------------------------------
+// Compute the single-layer and double-layer potential over
+// a straight segment or circular arc
 
-/* LEGEND: */
-/* ------- */
+// LEGEND:
+// -------
 
-/* QQQ: single-layer potential */
-/* WWW: double-layer potential */
-/* ---------------------------------------------------------- */
-/* ----------- */
-/* initialize */
-/* ----------- */
+// QQQ: single-layer potential
+// WWW: double-layer potential
+// ----------------------------------------------------------
+// -----------
+// initialize
+// -----------
     iopt = 2;
-/* for the Green's function */
-    qqq = 0.0;
-    www = 0.0;
-/* --------------------------- */
-/* prepare for the quadrature  */
-/* --------------------------- */
+// for the Green's function
+    qqq = ZERO<FLOATING_TYPE>;
+    www = ZERO<FLOATING_TYPE>;
+// ---------------------------
+// prepare for the quadrature 
+// ---------------------------
     if (itype == 1) { // straight segments
-        xm = 0.5 * (x2 + x1);
-        xd = 0.5 * (x2 - x1);
-        ym = 0.5 * (y2 + y1);
-        yd = 0.5 * (y2 - y1);
+        xm = HALF<FLOATING_TYPE> * (x2 + x1);
+        xd = HALF<FLOATING_TYPE> * (x2 - x1);
+        ym = HALF<FLOATING_TYPE> * (y2 + y1);
+        yd = HALF<FLOATING_TYPE> * (y2 - y1);
         dr = sqrt(xd * xd + yd * yd);
         vnx =  yd / dr; // unit normal vector
         vny = -xd / dr;
     } else {          // circular arcs
-        tm = 0.5 * (t2 + t1);
-        td = 0.5 * (t2 - t1);
-        dr = rad * abs(td);
-        ornt = (td < 0.0) ? -1.0 : 1.0;    // orientation index, TODO use copysign
+        tm = HALF<FLOATING_TYPE> * (t2 + t1);
+        td = HALF<FLOATING_TYPE> * (t2 - t1);
+        dr = rad * std::abs(td);
+        ornt = std::copysign( ONE<FLOATING_TYPE>, td ); // orientation index
+        //ornt = (td < ZERO<FLOATING_TYPE>) ? MINUS_ONE<FLOATING_TYPE> : ONE<FLOATING_TYPE>;
     }
 // --- 
 // loop over Gaussian points
@@ -105,51 +101,50 @@ body_ax_sdlp(double x0, double y0, double t0, double x1, double y1, double t1,
             y = ym + yd * zz[i];
         } else {
             t   = tm + td * zz[i];
-            cs  = cos(t);
-            sn  = sin(t);
+            cs  = std::cos(t);
+            sn  = std::sin(t);
             x   = xcnt + rad * cs;
             y   = ycnt + rad * sn;
-            vnx = cs * ornt; // unit normal vector */
+            vnx = cs * ornt; // unit normal vector
             vny = sn * ornt; // normal vector points away from center
                              // when arc is counter-clockwise,
         }
         // TODO parameterize over float type
         lgf_ax_fs(iopt, x, y, x0, y0, g, dgdx, dgdy);
-/* -------------------------------------------------- */
-/*  treat the slp singularity */
+// --------------------------------------------------
+//  treat the slp singularity
 
-/*  Subtract off */
-/*  the logarithmic singularity corresponding to the */
-/*  free-space Green's function */
+//  Subtract off
+//  the logarithmic singularity corresponding to the
+//  free-space Green's function
 
-/*  NOTE: The double-layer singularity is not treated */
+//  NOTE: The double-layer singularity is not treated
 
-/* -------------------------------------------------- */
+// --------------------------------------------------
         if (ising == 1) {
+            FLOATING_TYPE dists;
             if (itype == 1) {
-                d__1 = x - x0;
-                d__2 = y - y0;
-                // Computing 2nd power
-                dists = d__1 * d__1 + d__2 * d__2;
+                FLOATING_TYPE d1 = x - x0;
+                FLOATING_TYPE d2 = y - y0;
+                dists = d1 * d1 + d2 * d2;
             }
             if (itype == 2) {
-                // Computing 2nd power
-                d__1 = rad * (t0 - t);
-                dists = d__1 * d__1;
+                FLOATING_TYPE d1 = rad * (t0 - t);
+                dists = d1 * d1;
             }
             g += std::log(dists) / FOUR_PI<FLOATING_TYPE>;
         }
         qqq += g * y * ww[i];
         www += (dgdx * vnx + dgdy * vny) * y * ww[i];
     }
-/* ------------------------- */
-/* finish up the quadrature */
-/* ------------------------- */
+// -------------------------
+// finish up the quadrature
+// -------------------------
     qqq *= dr;
     www *= dr;
-/* ------------------------------------ */
-/* add slp singularity back to the slp */
-/* ------------------------------------ */
+// ------------------------------------
+// add slp singularity back to the slp
+// ------------------------------------
     if (ising == 1) {
         qqq -= dr * TWO<FLOATING_TYPE> * (std::log(dr) - ONE<FLOATING_TYPE>) / TWO_PI<FLOATING_TYPE>;
     }

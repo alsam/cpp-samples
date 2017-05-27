@@ -25,9 +25,16 @@
 // SOFTWARE.
 
 #include <cmath>
+#include <limits>       // std::numeric_limits
 
 template<typename T>
-constexpr T PI = T(M_PI);
+constexpr T EPS = T(1e-2);
+
+template<typename T>
+constexpr T ACC = T(1e-9);
+
+template<typename T>
+constexpr T MINUS_ONE = T(-1);
 
 template<typename T>
 constexpr T ZERO = T(0);
@@ -45,8 +52,13 @@ template<typename T>
 constexpr T FOUR = T(4);
 
 template<typename T>
+constexpr T PI = T(M_PI);
+
+template<typename T>
 constexpr T TWO_PI = PI<T> * TWO<T>;
 
 template<typename T>
 constexpr T FOUR_PI = PI<T> * FOUR<T>;
 
+template<typename T>
+constexpr T NaN = std::numeric_limits<T>::quiet_NaN();

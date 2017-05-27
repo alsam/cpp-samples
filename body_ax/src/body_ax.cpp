@@ -161,6 +161,8 @@ int main(int argc, char **argv)
 
     matg_t<FLOATING_TYPE> phi(MAX_SEGMENTS, MAX_ELEMS);
     vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
+    matg_t<FLOATING_TYPE> al(MAX_DIM, MAX_DIM);      // for the linear system
+    vecg_t<FLOATING_TYPE> bl(MAX_DIM), sol(MAX_DIM); // ditto
 
     auto const& run_params = body_ax_geo<FLOATING_TYPE>(popt);
     if (popt.verbose) {
@@ -178,5 +180,48 @@ int main(int argc, char **argv)
         }
     }
 
+    // ...
+
+    //---------------------------------------------
+    // Generate the linear system
+    // for the potential at the collocation points
+    //
+    // Generate the influence matrix
+    // consisting of integrals of the
+    // single-layer potential
+    //
+    // Compute the rhs by evaluating the dlp
+    //-------------------------------------------------------
+
+    // stiffness matrix and rhs
+    for (int i = 0; i < run_params.ncl; ++i) {           // loop over collocation points
+        bl[i] = ZERO<FLOATING_TYPE>;
+        int j = -1;
+        for (int k = 0; k < run_params.nsg; ++k) {       // loop over segments
+            FLOATING_TYPE rad = NaN<FLOATING_TYPE>, xcnt = NaN<FLOATING_TYPE>, ycnt = NaN<FLOATING_TYPE>;
+            if (run_params.itp[k] == 2) {
+                rad  = run_params.actis[k];
+                xcnt = run_params.xcntr[k];
+                ycnt = run_params.ycntr[k];
+            }
+            for (int l = 0; l < run_params.ne[k]; ++l) { // loop over elements
+                FLOATING_TYPE x1 = run_params.xw(k,l);
+                FLOATING_TYPE y1 = run_params.yw(k,l);
+                FLOATING_TYPE t1 = run_params.tw(k,l);
+
+                FLOATING_TYPE x2 = run_params.xw(k,l+1);
+                FLOATING_TYPE y2 = run_params.yw(k,l+1);
+                FLOATING_TYPE t2 = run_params.tw(k,l+1);
+
+                j = j+1;
+                int ising = (i == j) ? 1 : 0;
+
+            }
+
+        }
+
+    }
+
+    //
 }
 
