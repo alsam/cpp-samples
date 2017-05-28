@@ -191,6 +191,30 @@ body_ax_geo(program_options const& popt)
             //     cr      = cr_new;               // graphics
             //     ycenter = ycenter_new;          // graphics
             // }
+
+            //--------------------------------
+            // place the lvr at the centroid
+            // of the triangle
+            //--------------------------------
+
+            params.xlvr = ( params.thorus.xfirst + params.thorus.xsecond + params.thorus.xthird ) / THREE<T>;
+            params.ylvr = ( params.thorus.yfirst + params.thorus.ysecond + params.thorus.ythird ) / THREE<T>;
+
+            //-------------
+            // preparations
+            //-------------
+
+            params.nsg   = 3;
+            int ic       = 0;         // collocation point counter
+            T sinit      = ZERO<T>;   // initialize arc length
+
+            //---
+            // side # 1
+            //---
+
+            params.itp[0] = 1;    // straight segment
+            int isym      = 1;
+
         }
     }
     return std::move(params);

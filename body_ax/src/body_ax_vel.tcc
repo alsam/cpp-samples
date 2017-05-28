@@ -95,30 +95,17 @@ velocity(parameters<T> const& params,
  
             T qqq, www;
 
-            body_ax_sdlp(x01, y00, unused, x1, y1, t1, x2, y2, t2,
-                         params.ngl, ising, params.itp[k], rad, xcnt, ycnt,
-                         qqq, www);
+            auto integrate = [&](T x, T y, T& phis) {
+                body_ax_sdlp(x, y, unused, x1, y1, t1, x2, y2, t2,
+                             params.ngl, ising, params.itp[k], rad, xcnt, ycnt,
+                             qqq, www);
+                phis = phis - params.dphidn0[j] * qqq + phi(k,l) * www;
+            };
 
-            phi1 = phi1 - params.dphidn0[j] * qqq + phi(k,l) * www;
-
-            body_ax_sdlp(x02, y00, unused, x1, y1, t1, x2, y2, t2,
-                         params.ngl, ising, params.itp[k], rad, xcnt, ycnt,
-                         qqq, www);
-
-            phi2 = phi2 - params.dphidn0[j] * qqq + phi(k,l) * www;
-
-            body_ax_sdlp(x00, y01, unused, x1, y1, t1, x2, y2, t2,
-                         params.ngl, ising, params.itp[k], rad, xcnt, ycnt,
-                         qqq, www);
-
-            phi3 = phi3 - params.dphidn0[j] * qqq + phi(k,l) * www;
-
-            body_ax_sdlp(x00, y02, unused, x1, y1, t1, x2, y2, t2,
-                         params.ngl, ising, params.itp[k], rad, xcnt, ycnt,
-                         qqq, www);
-
-            phi4 = phi4 - params.dphidn0[j] * qqq + phi(k,l) * www;
-
+            integrate(x01, y00, phi1);
+            integrate(x02, y00, phi2);
+            integrate(x00, y01, phi3);
+            integrate(x00, y02, phi4);
         }
     }
 // --------------------------

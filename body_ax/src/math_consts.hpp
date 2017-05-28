@@ -49,6 +49,9 @@ template<typename T>
 constexpr T TWO = T(2);
 
 template<typename T>
+constexpr T THREE = T(3);
+
+template<typename T>
 constexpr T FOUR = T(4);
 
 template<typename T>
