@@ -92,7 +92,7 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.ngl);
             readln(ifs, params.sphere.rad);
             readln(ifs, params.sphere.xcenter);
-            readln(ifs, params.vx);                 // velocity of indident flow
+            readln(ifs, params.vx);                 // velocity of incident flow
             readln(ifs, params.cr);                 // line vortex ring strength
             readln(ifs);
             readln(ifs, params.ne[0]);              // one segment consisting of arc elems

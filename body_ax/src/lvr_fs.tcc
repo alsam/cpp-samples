@@ -68,7 +68,7 @@ lvr_fs (int iopt,
     u = (-s * ri31 + s0 * ri30) / FOUR_PI<T>;
     v = dx * ri31 / FOUR_PI<T>;
     if (iopt == 1) {
-	    return;
+        return;
     }
 // ---
 // compute the Stokes stream function

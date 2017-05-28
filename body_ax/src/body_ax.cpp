@@ -109,6 +109,7 @@
 #include "lin_alg_types.hpp"
 #include "body_ax_geo.hpp"
 #include "body_ax_sdlp.tcc"
+#include "body_ax_vel.tcc"
 
 program_options parse_command_line(int argc, char** argv)
 {
@@ -232,6 +233,16 @@ int main(int argc, char **argv)
 
     }
 
+    // ...
     //
+
+    FLOATING_TYPE x00, y00, ux1, uy1;
+    //---------------
+    // integrate ODEs
+    //---------------
+
+      velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00,y00, ux1,uy1);
+
+
 }
 
