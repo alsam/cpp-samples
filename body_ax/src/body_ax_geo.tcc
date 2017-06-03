@@ -35,6 +35,7 @@
 #include "parameters.hpp"
 #include "body_ax_geo.hpp"
 #include "lvr_fs.tcc"
+#include "elm_line.tcc"
 
 namespace {
 
@@ -215,8 +216,20 @@ body_ax_geo(program_options const& popt)
             params.itp[0] = 1;    // straight segment
             int isym      = 1;
 
+            elm_line(params.ne[0], rt[0],
+                     params.thorus.xfirst,  params.thorus.yfirst,
+                     params.thorus.xsecond, params.thorus.ysecond,
+                     sinit, isym,
+                     xe, ye, se, xm, ym, sm);
+
+            for (size_t i = 0; i <= params.ne[0]; ++i) {
+                xw[0,i] = xe[i];
+                yw[0,i] = ye[i];
+            }
+
         }
     }
+
     return std::move(params);
 } // body_ax_geo
 
