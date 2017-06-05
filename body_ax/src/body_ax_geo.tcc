@@ -223,9 +223,90 @@ body_ax_geo(program_options const& popt)
                      xe, ye, se, xm, ym, sm);
 
             for (size_t i = 0; i <= params.ne[0]; ++i) {
-                xw[0,i] = xe[i];
-                yw[0,i] = ye[i];
+                params.xw(0, i) = xe[i];
+                params.yw(0, i) = ye[i];
             }
+
+            //---
+            // collocation points
+            //---
+
+            for (size_t i = 0; i < params.ne[0]; ++i) {
+                ++ic;
+                params.x0[ic] = xm[i];
+                params.y0[ic] = ym[i];
+                params.s0[ic] = sm[i];
+
+                T ddx = xe[i+1]-xe[i];
+                T ddy = ye[i+1]-ye[i];
+                T ddl = std::sqrt(ddx*ddx + ddy*ddy);
+
+                params.tnx0[ic] = ddx / ddl;
+                params.tny0[ic] = ddy / ddl;
+                params.vnx0[ic] =  params.tny0[ic];
+                params.vny0[ic] = -params.tnx0[ic];
+
+                params.arel[ic] = ddl * TWO_PI<T> * params.y0[ic];
+
+                params.dphidn0[i] = -params.vx * params.vnx0[ic];
+
+                int iopt = 1;
+                lvr_fs<T>(iopt, params.x0[ic], params.y0[ic], params.xlvr, params.ylvr, ulvr, vlvr, psi);
+
+                params.dphidn0[ic] -= params.cr*(ulvr*params.vnx0[ic]+vlvr*params.vny0[ic]);
+            }
+
+            sinit = se[params.ne[0]];
+
+            //---
+            // side # 2
+            //---
+
+            params.itp[1] = 1;    // straight segment
+            int isym      = 1;
+
+            elm_line(params.ne[1], rt[1],
+                     params.thorus.xsecond, params.thorus.ysecond,
+                     params.thorus.xthird,  params.thorus.ythird,
+                     sinit, isym,
+                     xe, ye, se, xm, ym, sm);
+
+            for (size_t i = 0; i <= params.ne[1]; ++i) {
+                params.xw(1, i) = xe[i];
+                params.yw(1, i) = ye[i];
+            }
+
+            //---
+            // collocation points
+            //---
+
+            for (size_t i = 0; i < params.ne[1]; ++i) {
+                ++ic;
+                params.x0[ic] = xm[i];
+                params.y0[ic] = ym[i];
+                params.s0[ic] = sm[i];
+
+                T ddx = xe[i+1]-xe[i];
+                T ddy = ye[i+1]-ye[i];
+                T ddl = std::sqrt(ddx*ddx + ddy*ddy);
+
+                params.tnx0[ic] = ddx / ddl;
+                params.tny0[ic] = ddy / ddl;
+                params.vnx0[ic] =  params.tny0[ic];
+                params.vny0[ic] = -params.tnx0[ic];
+
+                params.arel[ic] = ddl * TWO_PI<T> * params.y0[ic];
+
+                params.dphidn0[i] = -params.vx * params.vnx0[ic];
+
+                int iopt = 1;
+                lvr_fs<T>(iopt, params.x0[ic], params.y0[ic], params.xlvr, params.ylvr, ulvr, vlvr, psi);
+
+                params.dphidn0[ic] -= params.cr*(ulvr*params.vnx0[ic]+vlvr*params.vny0[ic]);
+            }
+
+            sinit = se[params.ne[1]];
+
 
         }
     }
