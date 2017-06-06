@@ -205,6 +205,7 @@ body_ax_geo(program_options const& popt)
             // preparations
             //-------------
 
+            int isym     = 1;
             params.nsg   = 3;
             int ic       = 0;         // collocation point counter
             T sinit      = ZERO<T>;   // initialize arc length
@@ -214,7 +215,6 @@ body_ax_geo(program_options const& popt)
             //---
 
             params.itp[0] = 1;    // straight segment
-            int isym      = 1;
 
             elm_line(params.ne[0], rt[0],
                      params.thorus.xfirst,  params.thorus.yfirst,
@@ -263,7 +263,6 @@ body_ax_geo(program_options const& popt)
             //---
 
             params.itp[1] = 1;    // straight segment
-            int isym      = 1;
 
             elm_line(params.ne[1], rt[1],
                      params.thorus.xsecond, params.thorus.ysecond,
@@ -308,8 +307,60 @@ body_ax_geo(program_options const& popt)
             sinit = se[params.ne[1]];
 
 
+            //---
+            // side # 3
+            //---
+
+            params.itp[2] = 1;    // straight segment
+
+            elm_line(params.ne[2], rt[2],
+                     params.thorus.xthird,  params.thorus.ythird,
+                     params.thorus.xfirst,  params.thorus.yfirst,
+                     sinit, isym,
+                     xe, ye, se, xm, ym, sm);
+
+            for (size_t i = 0; i <= params.ne[2]; ++i) {
+                params.xw(2, i) = xe[i];
+                params.yw(2, i) = ye[i];
+            }
+
+            //---
+            // collocation points
+            //---
+
+            for (size_t i = 0; i < params.ne[2]; ++i) {
+                ++ic;
+                params.x0[ic] = xm[i];
+                params.y0[ic] = ym[i];
+                params.s0[ic] = sm[i];
+
+                T ddx = xe[i+1]-xe[i];
+                T ddy = ye[i+1]-ye[i];
+                T ddl = std::sqrt(ddx*ddx + ddy*ddy);
+
+                params.tnx0[ic] = ddx / ddl;
+                params.tny0[ic] = ddy / ddl;
+                params.vnx0[ic] =  params.tny0[ic];
+                params.vny0[ic] = -params.tnx0[ic];
+
+                params.arel[ic] = ddl * TWO_PI<T> * params.y0[ic];
+
+                params.dphidn0[i] = -params.vx * params.vnx0[ic];
+
+                int iopt = 1;
+                lvr_fs<T>(iopt, params.x0[ic], params.y0[ic], params.xlvr, params.ylvr, ulvr, vlvr, psi);
+
+                params.dphidn0[ic] -= params.cr*(ulvr*params.vnx0[ic]+vlvr*params.vny0[ic]);
+            }
+
+            params.ncl = ic;  // number of collocation points
+
         }
     }
+
+    //-----
+    // Done
+    //-----
 
     return std::move(params);
 } // body_ax_geo

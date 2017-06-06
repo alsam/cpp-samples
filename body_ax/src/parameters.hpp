@@ -63,13 +63,11 @@ struct parameters {
         struct {
             T rad;
             T xcenter, ycenter;
-            // ...
         } sphere;
         struct {
             T xfirst,  yfirst;  // 1st vertex
             T xsecond, ysecond; // 2nd vertex
             T xthird,  ythird;  // 3d vertex
-            // ..
         } thorus;
     };
 };
