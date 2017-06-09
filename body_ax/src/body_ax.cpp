@@ -240,6 +240,16 @@ int main(int argc, char **argv)
     // Solve the linear system
     //------------------------
     sol = al.partialPivLu().solve(bl);
+    if (popt.verbose) {
+        for (size_t i = 0; i < run_params.ncl; ++i) {
+            //for (size_t j = 0; j < run_params.ncl; ++j) {
+            //    std::cout << "al(" << i << "," << j << ") : " << al(i,j) << std::endl;
+            //    std::cout << "bl(" << i << "," << j << ") : " << bl(i,j) << std::endl;
+            //    std::cout << "sol(" << i << "," << j << ") : " << sol(i,j) << std::endl;
+                std::cout << "sol(" << i << ") : " << sol(i,0) << std::endl;
+            //}
+        }
+    }
 
     FLOATING_TYPE x00, y00, ux1, uy1;
     //---------------

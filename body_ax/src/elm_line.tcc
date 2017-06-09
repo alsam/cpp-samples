@@ -132,7 +132,7 @@ elm_line(int n, T ratio, T x1, T y1, T x2, T y2, T sinit, int isym,             
                     alpha  = ONE<T>;
                     factor = ONE<T> / nh;
                 } else {
-                    texp   = ONE<T> / (n - ONE<T>);
+                    texp   = ONE<T> / (nh - ONE<T>);
                     alpha  = std::pow(ratio, texp); // ratio ** texp
                     factor = (ONE<T> - alpha) / (ONE<T> - std::pow(alpha, nh));
                 }

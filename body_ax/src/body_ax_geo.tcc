@@ -207,7 +207,7 @@ body_ax_geo(program_options const& popt)
 
             int isym     = 1;
             params.nsg   = 3;
-            int ic       = 0;         // collocation point counter
+            int ic       = -1;        // collocation point counter
             T sinit      = ZERO<T>;   // initialize arc length
 
             //---
@@ -248,7 +248,7 @@ body_ax_geo(program_options const& popt)
 
                 params.arel[ic] = ddl * TWO_PI<T> * params.y0[ic];
 
-                params.dphidn0[i] = -params.vx * params.vnx0[ic];
+                params.dphidn0[ic] = -params.vx * params.vnx0[ic];
 
                 int iopt = 1;
                 lvr_fs<T>(iopt, params.x0[ic], params.y0[ic], params.xlvr, params.ylvr, ulvr, vlvr, psi);
@@ -296,7 +296,7 @@ body_ax_geo(program_options const& popt)
 
                 params.arel[ic] = ddl * TWO_PI<T> * params.y0[ic];
 
-                params.dphidn0[i] = -params.vx * params.vnx0[ic];
+                params.dphidn0[ic] = -params.vx * params.vnx0[ic];
 
                 int iopt = 1;
                 lvr_fs<T>(iopt, params.x0[ic], params.y0[ic], params.xlvr, params.ylvr, ulvr, vlvr, psi);
@@ -345,7 +345,7 @@ body_ax_geo(program_options const& popt)
 
                 params.arel[ic] = ddl * TWO_PI<T> * params.y0[ic];
 
-                params.dphidn0[i] = -params.vx * params.vnx0[ic];
+                params.dphidn0[ic] = -params.vx * params.vnx0[ic];
 
                 int iopt = 1;
                 lvr_fs<T>(iopt, params.x0[ic], params.y0[ic], params.xlvr, params.ylvr, ulvr, vlvr, psi);
@@ -353,7 +353,7 @@ body_ax_geo(program_options const& popt)
                 params.dphidn0[ic] -= params.cr*(ulvr*params.vnx0[ic]+vlvr*params.vny0[ic]);
             }
 
-            params.ncl = ic;  // number of collocation points
+            params.ncl = ic + 1;  // number of collocation points
 
         }
     }
