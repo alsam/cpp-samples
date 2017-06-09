@@ -164,7 +164,7 @@ int main(int argc, char **argv)
     matg_t<FLOATING_TYPE> phi(MAX_SEGMENTS, MAX_ELEMS);
     vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
     matg_t<FLOATING_TYPE> al(MAX_DIM, MAX_DIM);      // for the linear system
-    vecg_t<FLOATING_TYPE> bl(MAX_DIM), sol(MAX_DIM); // ditto
+    matg_t<FLOATING_TYPE> bl(MAX_DIM, MAX_DIM), sol(MAX_DIM, MAX_DIM); // ditto
 
     auto const& run_params = body_ax_geo<FLOATING_TYPE>(popt);
     if (popt.verbose) {
@@ -195,9 +195,12 @@ int main(int argc, char **argv)
     // Compute the rhs by evaluating the dlp
     //-------------------------------------------------------
 
+    // resizing
+    al.resize(run_params.ncl, run_params.ncl);
+    bl.resize(run_params.ncl, run_params.ncl);
     // stiffness matrix and rhs
     for (int i = 0; i < run_params.ncl; ++i) {           // loop over collocation points
-        bl[i] = ZERO<FLOATING_TYPE>;
+        bl(i, 0) = ZERO<FLOATING_TYPE>;
         int j = -1;
         for (int k = 0; k < run_params.nsg; ++k) {       // loop over segments
             FLOATING_TYPE rad = NaN<FLOATING_TYPE>, xcnt = NaN<FLOATING_TYPE>, ycnt = NaN<FLOATING_TYPE>;
@@ -224,7 +227,7 @@ int main(int argc, char **argv)
                               qqq, www);
 
                 al(i, j) = www;
-                bl(i) += qqq * run_params.dphidn0[j];
+                bl(i, 0) += qqq * run_params.dphidn0[j];
 
             }
 
@@ -233,15 +236,17 @@ int main(int argc, char **argv)
 
     }
 
-    // ...
-    //
+    //------------------------
+    // Solve the linear system
+    //------------------------
+    sol = al.partialPivLu().solve(bl);
 
     FLOATING_TYPE x00, y00, ux1, uy1;
     //---------------
     // integrate ODEs
     //---------------
 
-      velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00,y00, ux1,uy1);
+    velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00,y00, ux1,uy1);
 
 
 }

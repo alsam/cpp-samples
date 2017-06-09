@@ -19,7 +19,7 @@ ODIR_BASE  = obj
 SUFFIXES += .dep
 NODEPS:=clean tags
 
-DBG ?=0
+DBG ?=1
 
 #EIGEN_INCL = /usr/local/include/eigen3
 EIGEN_INCL = /usr/include/eigen3
