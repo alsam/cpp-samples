@@ -164,7 +164,7 @@ int main(int argc, char **argv)
     matg_t<FLOATING_TYPE> phi(MAX_SEGMENTS, MAX_ELEMS);
     vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
     matg_t<FLOATING_TYPE> al(MAX_DIM, MAX_DIM);      // for the linear system
-    matg_t<FLOATING_TYPE> bl(MAX_DIM, MAX_DIM), sol(MAX_DIM, MAX_DIM); // ditto
+    matg_t<FLOATING_TYPE> bl(MAX_DIM, 1), sol(MAX_DIM, 1); // ditto
 
     auto const& run_params = body_ax_geo<FLOATING_TYPE>(popt);
     if (popt.verbose) {
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 
     // resizing
     al.resize(run_params.ncl, run_params.ncl);
-    bl.resize(run_params.ncl, run_params.ncl);
+    bl.resize(run_params.ncl, 1 /* run_params.ncl */);
     // stiffness matrix and rhs
     for (int i = 0; i < run_params.ncl; ++i) {           // loop over collocation points
         bl(i, 0) = ZERO<FLOATING_TYPE>;
@@ -239,7 +239,7 @@ int main(int argc, char **argv)
     //------------------------
     // Solve the linear system
     //------------------------
-    sol = al.partialPivLu().solve(bl);
+    sol = al.lu().solve(bl);
     if (popt.verbose) {
         for (size_t i = 0; i < run_params.ncl; ++i) {
             //for (size_t j = 0; j < run_params.ncl; ++j) {
