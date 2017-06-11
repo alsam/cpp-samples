@@ -97,7 +97,7 @@ velocity(parameters<T> const& params,
 
             auto integrate = [&](T x, T y, T& phis) {
                 body_ax_sdlp(x, y, unused, x1, y1, t1, x2, y2, t2,
-                             params.ngl, ising, params.itp[k], rad, xcnt, ycnt,
+                             params.gl, ising, params.itp[k], rad, xcnt, ycnt,
                              qqq, www);
                 phis = phis - params.dphidn0[j] * qqq + phi(k,l) * www;
             };

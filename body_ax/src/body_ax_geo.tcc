@@ -117,18 +117,31 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.xwmin, params.xwmax);
             readln(ifs, params.ywmin, params.ywmax);
 
-            xe.resize(params.ne[0] + 1);
-            ye.resize(params.ne[0] + 1);
-            te.resize(params.ne[0] + 1);
-            se.resize(params.ne[0] + 1);
+            size_t max_size = params.ne[0] + 1;
 
-            xm.resize(params.ne[0]);
-            ym.resize(params.ne[0]);
-            sm.resize(params.ne[0]);
+            xe.resize(max_size);
+            ye.resize(max_size);
+            te.resize(max_size);
+            se.resize(max_size);
 
-            params.tw.resize(params.nsg, params.ne[0] + 1);
-            params.xw.resize(params.nsg, params.ne[0] + 1);
-            params.yw.resize(params.nsg, params.ne[0] + 1);
+            xm.resize(max_size - 1);
+            ym.resize(max_size - 1);
+            sm.resize(max_size - 1);
+
+            params.x0.resize(max_size);
+            params.y0.resize(max_size);
+            params.t0.resize(max_size);
+            params.s0.resize(max_size);
+            params.dphidn0.resize(max_size);
+            params.tnx0.resize(max_size);
+            params.tny0.resize(max_size);
+            params.vnx0.resize(max_size);
+            params.vny0.resize(max_size);
+            params.arel.resize(max_size);
+
+            params.tw.resize(params.nsg, max_size);
+            params.xw.resize(params.nsg, max_size);
+            params.yw.resize(params.nsg, max_size);
 
             //--------------------------------
             // place the lvr inside the center
@@ -207,6 +220,10 @@ body_ax_geo(program_options const& popt)
             params.itp.resize(params.nsg);
             rt.resize(params.nsg);
 
+            params.actis.resize(params.nsg);
+            params.xcntr.resize(params.nsg);
+            params.ycntr.resize(params.nsg);
+
             T xfirst,  yfirst;  // 1st vertex
             T xsecond, ysecond; // 2nd vertex
             T xthird,  ythird;  // 3d vertex
@@ -236,7 +253,12 @@ body_ax_geo(program_options const& popt)
             int ic       = -1;        // collocation point counter
             T sinit      = ZERO<T>;   // initialize arc length
 
-            size_t max_size = std::max(params.ne[0], std::max(params.ne[1], params.ne[2])) + 1;
+            size_t max_size = 0;
+            for (size_t i = 0; i < params.nsg; ++i) {
+                max_size += params.ne[ i ];
+            }
+            // final adjustment
+            ++max_size;
 
             xe.resize(max_size);
             ye.resize(max_size);
@@ -247,9 +269,20 @@ body_ax_geo(program_options const& popt)
             ym.resize(max_size - 1);
             sm.resize(max_size - 1);
 
-            params.tw.resize(params.nsg, max_size);
-            params.xw.resize(params.nsg, max_size);
-            params.yw.resize(params.nsg, max_size);
+            params.x0.resize(max_size);
+            params.y0.resize(max_size);
+            params.t0.resize(max_size);
+            params.s0.resize(max_size);
+            params.dphidn0.resize(max_size);
+            params.tnx0.resize(max_size);
+            params.tny0.resize(max_size);
+            params.vnx0.resize(max_size);
+            params.vny0.resize(max_size);
+            params.arel.resize(max_size);
+
+            params.tw.resize(params.nsg, params.ne.maxCoeff() + 1 );
+            params.xw.resize(params.nsg, params.ne.maxCoeff() + 1 );
+            params.yw.resize(params.nsg, params.ne.maxCoeff() + 1 );
 
             //---
             // side # 1
@@ -398,6 +431,8 @@ body_ax_geo(program_options const& popt)
 
         }
     }
+
+    params.gl = gauss_legendre<T>(params.ngl);
 
     //-----
     // Done

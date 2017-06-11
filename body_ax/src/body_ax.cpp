@@ -161,7 +161,7 @@ int main(int argc, char **argv)
         std::cout << popt;
     }
 
-    matg_t<FLOATING_TYPE> phi(MAX_SEGMENTS, MAX_ELEMS);
+    matg_t<FLOATING_TYPE> phi;
     vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
     matg_t<FLOATING_TYPE> al;      // for the linear system
     vecg_t<FLOATING_TYPE> bl, sol; // ditto
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
                 bool ising = (i == j);
                 FLOATING_TYPE qqq, www;
                 body_ax_sdlp (run_params.x0[i], run_params.y0[i], run_params.t0[i],
-                              x1, y1, t1, x2, y2, t2, run_params.ngl, ising,
+                              x1, y1, t1, x2, y2, t2, run_params.gl, ising,
                               run_params.itp[k], rad,xcnt,ycnt,
                               qqq, www);
 
@@ -240,6 +240,30 @@ int main(int argc, char **argv)
             std::cout << "sol(" << i << ") : " << sol(i) << std::endl;
         }
     }
+
+    //------------------------
+    // Distribute the solution
+    //------------------------
+
+    size_t max_elems = run_params.ne.maxCoeff();
+    phi.resize(run_params.nsg, max_elems);
+
+    size_t k = 0;        // counter
+    for (size_t i = 0; i < run_params.nsg; ++i) {
+        for (size_t j = 0; j < run_params.ne[i]; ++j) {
+            phi(i, j) = sol(k);
+            ++k;
+        }
+    }
+
+    //------------------------------------------------
+    // Compute the tangential disturbance velocity
+    //             by taking tangential derivative of \phi
+    //
+    // Compute the pressure coefficient cp
+    //             drag force
+    //------------------------------------------------
+
 
     FLOATING_TYPE x00, y00, ux1, uy1;
     //---------------

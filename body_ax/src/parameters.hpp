@@ -26,6 +26,7 @@
 
 #include <type_traits>
 #include "lin_alg_types.hpp"
+#include "gauss_legendre.hpp"
 
 using FLOATING_TYPE = double;
 
@@ -52,11 +53,13 @@ struct parameters {
     int nsg; // number of segments
     vecg_t<int> ne, itp;
     matg_t<T> xw, yw, tw;
-    vecg_t<T, MAX_SEGMENTS> actis, xcntr, ycntr;
-    vecg_t<T, MAX_SEGMENTS * MAX_ELEMS> x0, y0, t0, s0, dphidn0, tnx0, tny0, vnx0, vny0, arel;
+    vecg_t<T> actis, xcntr, ycntr;
+    vecg_t<T> x0, y0, t0, s0, dphidn0, tnx0, tny0, vnx0, vny0, arel;
     T vx; // velocity of incident flow
     T cr; // line vortex ring strength
     T xlvr,  ylvr;
     T xwmin, xwmax;
     T ywmin, ywmax;
+
+    gauss_legendre<T> gl;
 };

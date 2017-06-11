@@ -34,7 +34,7 @@
 template <typename T>
 void
 body_ax_sdlp(T x0, T y0, T t0, T x1, T y1, T t1,
-             T x2, T y2, T t2, int ngl, bool ising, int itype,
+             T x2, T y2, T t2, gauss_legendre<T> const& gl, bool ising, int itype,
              T rad, T xcnt, T ycnt,
              T &qqq, T &www)
 {
@@ -45,6 +45,7 @@ body_ax_sdlp(T x0, T y0, T t0, T x1, T y1, T t1,
             vnx, vny, dgdx, dgdy;
     int iopt;
     T ornt;
+    size_t ngl = gl.order();
 
 // =========================================
 // FDLIB, BEMLIB, CFDLAB
@@ -94,7 +95,6 @@ body_ax_sdlp(T x0, T y0, T t0, T x1, T y1, T t1,
 // loop over Gaussian points
 // --- 
 //
-    gauss_legendre<T> gl(ngl);
     auto const& zz = gl.z();
     auto const& ww = gl.w();
     for (int i = 0; i < ngl; ++i) {

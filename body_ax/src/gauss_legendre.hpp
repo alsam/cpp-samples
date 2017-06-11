@@ -44,7 +44,7 @@ private:
 public:
 
     /// constructor
-    gauss_legendre(unsigned order);
+    gauss_legendre(unsigned order = 6);
 
     /// another constructor - slow and more accurate
     gauss_legendre(unsigned order, unsigned);
