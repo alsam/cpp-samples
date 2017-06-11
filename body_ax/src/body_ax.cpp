@@ -162,7 +162,7 @@ int main(int argc, char **argv)
     }
 
     matg_t<FLOATING_TYPE> phi;
-    vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
+    vecg_t<FLOATING_TYPE> velt, veln, cp;
     matg_t<FLOATING_TYPE> al;      // for the linear system
     vecg_t<FLOATING_TYPE> bl, sol; // ditto
 
@@ -247,12 +247,14 @@ int main(int argc, char **argv)
 
     size_t max_elems = run_params.ne.maxCoeff();
     phi.resize(run_params.nsg, max_elems);
+    velt.resize(run_params.nsg * max_elems);
+    veln.resize(run_params.nsg * max_elems);
+    cp.resize(run_params.nsg * max_elems);
 
     size_t k = 0;        // counter
     for (size_t i = 0; i < run_params.nsg; ++i) {
         for (size_t j = 0; j < run_params.ne[i]; ++j) {
-            phi(i, j) = sol(k);
-            ++k;
+            phi(i, j) = sol(k++);
         }
     }
 
@@ -263,7 +265,72 @@ int main(int argc, char **argv)
     // Compute the pressure coefficient cp
     //             drag force
     //------------------------------------------------
+ 
+    FLOATING_TYPE forcex = ZERO<FLOATING_TYPE>, dphids0;
+    k = 0;        // counter
+    for (size_t i = 0; i < run_params.nsg; ++i) {
+        for (size_t j = 0; j < run_params.ne[i]; ++j) {
+            //--------------------------------
+            // tangential disturbance velocity
+            // computed by differentiating phi
+            //--------------------------------
+            if (j == 0) {                          // forward differencing
+                dphids0 = (phi(i,j+1)-phi(i,j))/(run_params.s0(k+1)-run_params.s0(k));
+            } else if(j == run_params.ne(i) - 1) { // backward differencing
+                dphids0 = (phi(i,j)-phi(i,j-1))/(run_params.s0(k)-run_params.s0(k-1));
+            } else {                               // second-order differencing
+                FLOATING_TYPE g1 = phi(i,j-1);
+                FLOATING_TYPE g2 = phi(i,j);
+                FLOATING_TYPE g3 = phi(i,j+1);
+                FLOATING_TYPE h1 = run_params.s0(k-1);
+                FLOATING_TYPE h2 = run_params.s0(k);
+                FLOATING_TYPE h3 = run_params.s0(k+1);
+                FLOATING_TYPE aa = ((g3-g2)/(h3-h2)-(g1-g2)/(h1-h2))/(h3-h1);
+                FLOATING_TYPE bb = (g3-g2)/(h3-h2)-aa*(h3-h2);
+                dphids0 = bb;
+            }
+            //---------------
+            // total velocity
+            //---------------
 
+            FLOATING_TYPE velx = run_params.dphidn0(k)*run_params.vnx0(k)+dphids0*run_params.tnx0(k);
+            FLOATING_TYPE vely = run_params.dphidn0(k)*run_params.vny0(k)+dphids0*run_params.tny0(k);
+
+            velx = velx + run_params.vx;        // add incident flow
+
+            //---
+            // add line vortex ring
+            //---
+
+            int iopt = 1;
+            FLOATING_TYPE ulvr, vlvr, psi;
+            lvr_fs<FLOATING_TYPE>(iopt, run_params.x0[i], run_params.y0[i], run_params.xlvr, run_params.ylvr, ulvr, vlvr, psi);
+ 
+            velx = velx + run_params.cr*ulvr;
+            vely = vely + run_params.cr*vlvr;
+
+            //-------------------------------
+            // tangential and normal velocity
+            // and pressure coefficient
+            //-------------------------------
+
+            // ...
+            velt(k) = velx*run_params.tnx0(k)+vely*run_params.tny0(k);
+            veln(k) = velx*run_params.vnx0(k)+vely*run_params.vny0(k);
+
+            //------------
+            // axial force
+            //------------
+
+            cp(k) = ONE<FLOATING_TYPE> - (velt(k)*velt(k)) / (run_params.vx*run_params.vx);
+
+            forcex = forcex + cp(k)*run_params.vnx0(k)*run_params.arel(k);
+
+            ++k;
+        }
+    }
+
+    std::cout << "Axail Force: " << forcex << std::endl;
 
     FLOATING_TYPE x00, y00, ux1, uy1;
     //---------------

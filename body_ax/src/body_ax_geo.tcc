@@ -253,6 +253,7 @@ body_ax_geo(program_options const& popt)
             int ic       = -1;        // collocation point counter
             T sinit      = ZERO<T>;   // initialize arc length
 
+            // FIXME
             size_t max_size = 0;
             for (size_t i = 0; i < params.nsg; ++i) {
                 max_size += params.ne[ i ];
