@@ -330,7 +330,7 @@ int main(int argc, char **argv)
         }
     }
 
-    std::cout << "Axail Force: " << forcex << std::endl;
+    std::cout << "Axial Force: " << forcex << std::endl;
 
     FLOATING_TYPE x00, y00, ux1, uy1;
     //---------------
