@@ -71,9 +71,9 @@ body_ax_geo(program_options const& popt)
 {
     std::ifstream ifs;
     parameters<T> params;
-    vecg_t<T, MAX_ELEMS + 1> xe, ye, te, se;
-    vecg_t<T, MAX_ELEMS> xm, ym, sm;
-    vecg_t<T, MAX_SEGMENTS> rt;
+    vecg_t<T> xe, ye, te, se;
+    vecg_t<T> xm, ym, sm;
+    vecg_t<T> rt;
 
     T psi, ulvr, vlvr;
 
@@ -90,9 +90,25 @@ body_ax_geo(program_options const& popt)
         std::string fname = (popt.input_data == "") ? "sphere.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
+            //---
+            // prepare: resize
+            //---
+            params.nsg = 1;                         // one circular segment
+
+            params.actis.resize(params.nsg);
+            params.xcntr.resize(params.nsg);
+            params.ycntr.resize(params.nsg);
+
+            // resize ne, itp
+            params.ne.resize(params.nsg);
+            params.itp.resize(params.nsg);
+            rt.resize(params.nsg);
+
+            T rad, xcenter, ycenter;
+
             readln(ifs, params.ngl);
-            readln(ifs, params.sphere.rad);
-            readln(ifs, params.sphere.xcenter);
+            readln(ifs, rad);
+            readln(ifs, xcenter);
             readln(ifs, params.vx);                 // velocity of incident flow
             readln(ifs, params.cr);                 // line vortex ring strength
             readln(ifs);
@@ -101,45 +117,54 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.xwmin, params.xwmax);
             readln(ifs, params.ywmin, params.ywmax);
 
+            xe.resize(params.ne[0] + 1);
+            ye.resize(params.ne[0] + 1);
+            te.resize(params.ne[0] + 1);
+            se.resize(params.ne[0] + 1);
+
+            xm.resize(params.ne[0]);
+            ym.resize(params.ne[0]);
+            sm.resize(params.ne[0]);
+
+            params.tw.resize(params.nsg, params.ne[0] + 1);
+            params.xw.resize(params.nsg, params.ne[0] + 1);
+            params.yw.resize(params.nsg, params.ne[0] + 1);
+
             //--------------------------------
             // place the lvr inside the center
             //--------------------------------
 
-            params.xlvr = params.sphere.xcenter;
-            params.ylvr = HALF<T> * params.sphere.rad;
+            params.xlvr = xcenter;
+            params.ylvr = HALF<T> * rad;
 
             //---
             // one semi-circular contour
             // with evenly distributed arcs
             //---
 
-            params.sphere.ycenter = ZERO<T>;        // sphere center is on the x axis
+            ycenter = ZERO<T>;        // sphere center is on the x axis
             T dth = PI<T> / params.ne[0];
             for (int i = 0; i <= params.ne[0]; ++i) {
                 T angle = i * dth;
                 te[i] = angle;
-                se[i] = angle * params.sphere.rad;
-                xe[i] = params.sphere.xcenter + params.sphere.rad * std::cos(angle);
-                ye[i] =                         params.sphere.rad * std::sin(angle);
+                se[i] = angle * rad;
+                xe[i] = xcenter + rad * std::cos(angle);
+                ye[i] =           rad * std::sin(angle);
             }
 
-            //---
-            // prepare
-            //---
 
-            params.nsg = 1;                         // one circular segment
-            params.actis[0] = params.sphere.rad;
-            params.xcntr[0] = params.sphere.xcenter;
-            params.ycntr[0] = params.sphere.ycenter;
+            params.actis[0] = rad;
+            params.xcntr[0] = xcenter;
+            params.ycntr[0] = ycenter;
 
             //---
             // semicircular contour
             //---
             params.itp[0] = 2;
-            for (int i = 0; i < params.ne[0]+1; ++i) {
-                params.tw(0,i) = te[i];
-                params.xw(0,i) = xe[i];
-                params.yw(0,i) = ye[i];
+            for (int i = 0; i <= params.ne[0]; ++i) {
+                params.tw(0, i) = te[i];
+                params.xw(0, i) = xe[i];
+                params.yw(0, i) = ye[i];
             }
 
             //---
@@ -148,11 +173,11 @@ body_ax_geo(program_options const& popt)
             params.ncl = params.ne[0];
             for (int i = 0; i < params.ne[0]; ++i) {
                 params.t0[i] = HALF<T>*(te[i]+te(i+1));
-                params.x0[i] = params.sphere.xcenter + params.sphere.rad*std::cos(params.t0[i]);
-                params.y0[i] = params.sphere.ycenter + params.sphere.rad*std::sin(params.t0[i]);
+                params.x0[i] = xcenter + rad * std::cos(params.t0[i]);
+                params.y0[i] = ycenter + rad * std::sin(params.t0[i]);
                 params.s0[i] = HALF<T>*(se[i]+se[i+1]);
 
-                params.arel[i] =  dth * params.sphere.rad * TWO_PI<T> * params.y0[i];
+                params.arel[i] =  dth * rad * TWO_PI<T> * params.y0[i];
                 params.tnx0[i] = -std::sin(params.t0[i]);
                 params.tny0[i] =  std::cos(params.t0[i]);
                 params.vnx0[i] =  params.tny0[i];
@@ -170,10 +195,26 @@ body_ax_geo(program_options const& popt)
         std::string fname = (popt.input_data == "") ? "torus_trgl.dat" : popt.input_data;
         ifs.open(fname);
         if (ifs) {
+            //-------------
+            // preparations
+            //-------------
+
+            int isym     = 1;
+            params.nsg   = 3;
+
+            // resize ne, itp
+            params.ne.resize(params.nsg);
+            params.itp.resize(params.nsg);
+            rt.resize(params.nsg);
+
+            T xfirst,  yfirst;  // 1st vertex
+            T xsecond, ysecond; // 2nd vertex
+            T xthird,  ythird;  // 3d vertex
+
             readln(ifs, params.ngl);
-            readln(ifs, params.thorus.xfirst,  params.thorus.yfirst);
-            readln(ifs, params.thorus.xsecond, params.thorus.ysecond);
-            readln(ifs, params.thorus.xthird,  params.thorus.ythird);
+            readln(ifs, xfirst,  yfirst);
+            readln(ifs, xsecond, ysecond);
+            readln(ifs, xthird,  ythird);
             readln(ifs, params.vx);
             readln(ifs, params.cr);
             readln(ifs);
@@ -184,31 +225,31 @@ body_ax_geo(program_options const& popt)
             readln(ifs, params.xwmin, params.xwmax);
             readln(ifs, params.ywmin, params.ywmax);
 
-            //----------
-            // over-ride
-            //----------
-
-            // if (itry > 1) {
-            //     cr      = cr_new;               // graphics
-            //     ycenter = ycenter_new;          // graphics
-            // }
-
             //--------------------------------
             // place the lvr at the centroid
             // of the triangle
             //--------------------------------
 
-            params.xlvr = ( params.thorus.xfirst + params.thorus.xsecond + params.thorus.xthird ) / THREE<T>;
-            params.ylvr = ( params.thorus.yfirst + params.thorus.ysecond + params.thorus.ythird ) / THREE<T>;
+            params.xlvr = ( xfirst + xsecond + xthird ) / THREE<T>;
+            params.ylvr = ( yfirst + ysecond + ythird ) / THREE<T>;
 
-            //-------------
-            // preparations
-            //-------------
-
-            int isym     = 1;
-            params.nsg   = 3;
             int ic       = -1;        // collocation point counter
             T sinit      = ZERO<T>;   // initialize arc length
+
+            size_t max_size = std::max(params.ne[0], std::max(params.ne[1], params.ne[2])) + 1;
+
+            xe.resize(max_size);
+            ye.resize(max_size);
+            te.resize(max_size);
+            se.resize(max_size);
+
+            xm.resize(max_size - 1);
+            ym.resize(max_size - 1);
+            sm.resize(max_size - 1);
+
+            params.tw.resize(params.nsg, max_size);
+            params.xw.resize(params.nsg, max_size);
+            params.yw.resize(params.nsg, max_size);
 
             //---
             // side # 1
@@ -217,8 +258,8 @@ body_ax_geo(program_options const& popt)
             params.itp[0] = 1;    // straight segment
 
             elm_line(params.ne[0], rt[0],
-                     params.thorus.xfirst,  params.thorus.yfirst,
-                     params.thorus.xsecond, params.thorus.ysecond,
+                     xfirst,  yfirst,
+                     xsecond, ysecond,
                      sinit, isym,
                      xe, ye, se, xm, ym, sm);
 
@@ -265,8 +306,8 @@ body_ax_geo(program_options const& popt)
             params.itp[1] = 1;    // straight segment
 
             elm_line(params.ne[1], rt[1],
-                     params.thorus.xsecond, params.thorus.ysecond,
-                     params.thorus.xthird,  params.thorus.ythird,
+                     xsecond, ysecond,
+                     xthird,  ythird,
                      sinit, isym,
                      xe, ye, se, xm, ym, sm);
 
@@ -314,8 +355,8 @@ body_ax_geo(program_options const& popt)
             params.itp[2] = 1;    // straight segment
 
             elm_line(params.ne[2], rt[2],
-                     params.thorus.xthird,  params.thorus.ythird,
-                     params.thorus.xfirst,  params.thorus.yfirst,
+                     xthird,  ythird,
+                     xfirst,  yfirst,
                      sinit, isym,
                      xe, ye, se, xm, ym, sm);
 

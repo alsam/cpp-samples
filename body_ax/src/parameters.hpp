@@ -47,11 +47,11 @@ enum class FlowType : unsigned char {
 
 template <typename T>
 struct parameters {
-    int ncl; // number of collcation points
-    int ngl;
+    int ncl; // number of collocation points
+    int ngl; // number of Gauss-Lobatto points
     int nsg; // number of segments
-    vecg_t<int, MAX_SEGMENTS> ne, itp;
-    matg_t<T, MAX_SEGMENTS, MAX_ELEMS + 1> xw, yw, tw;
+    vecg_t<int> ne, itp;
+    matg_t<T> xw, yw, tw;
     vecg_t<T, MAX_SEGMENTS> actis, xcntr, ycntr;
     vecg_t<T, MAX_SEGMENTS * MAX_ELEMS> x0, y0, t0, s0, dphidn0, tnx0, tny0, vnx0, vny0, arel;
     T vx; // velocity of incident flow
@@ -59,15 +59,4 @@ struct parameters {
     T xlvr,  ylvr;
     T xwmin, xwmax;
     T ywmin, ywmax;
-    union {
-        struct {
-            T rad;
-            T xcenter, ycenter;
-        } sphere;
-        struct {
-            T xfirst,  yfirst;  // 1st vertex
-            T xsecond, ysecond; // 2nd vertex
-            T xthird,  ythird;  // 3d vertex
-        } thorus;
-    };
 };

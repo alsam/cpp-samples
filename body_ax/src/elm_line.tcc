@@ -31,9 +31,9 @@
 
 template <typename T>
 void
-elm_line(int n, T ratio, T x1, T y1, T x2, T y2, T sinit, int isym,                                // input parameters
-         vecg_t<T, MAX_ELEMS + 1>& xe, vecg_t<T, MAX_ELEMS + 1>& ye, vecg_t<T, MAX_ELEMS + 1>& se, // output parameters
-         vecg_t<T, MAX_ELEMS>&     xm, vecg_t<T, MAX_ELEMS>&     ym, vecg_t<T, MAX_ELEMS>&     sm) // output parameters
+elm_line(int n, T ratio, T x1, T y1, T x2, T y2, T sinit, int isym, // input parameters
+         vecg_t<T>& xe, vecg_t<T>& ye, vecg_t<T>& se, // output parameters
+         vecg_t<T>& xm, vecg_t<T>& ym, vecg_t<T>& sm) // output parameters
 {
 
     //-----------------------------------------

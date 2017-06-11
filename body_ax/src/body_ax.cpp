@@ -174,12 +174,6 @@ int main(int argc, char **argv)
         std::cout << "-I- ne[0]: " << run_params.ne[0] << "\n";
         std::cout << "-I- xwmin: " << run_params.xwmin << "\n";
         std::cout << "-I- ywmin: " << run_params.ywmin << "\n";
-        if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
-            std::cout << "-I- rad: " << run_params.sphere.rad << "\n";
-        } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
-            std::cout << "-I- xfirst: " << run_params.thorus.xfirst
-                      << "    yfirst: " << run_params.thorus.yfirst << "\n";
-        }
     }
 
     // ...
@@ -240,6 +234,7 @@ int main(int argc, char **argv)
     // Solve the linear system
     //------------------------
     sol = al.lu().solve(bl.transpose());
+
     if (popt.verbose) {
         for (size_t i = 0; i < run_params.ncl; ++i) {
             std::cout << "sol(" << i << ") : " << sol(i) << std::endl;
