@@ -163,8 +163,8 @@ int main(int argc, char **argv)
 
     matg_t<FLOATING_TYPE> phi(MAX_SEGMENTS, MAX_ELEMS);
     vecg_t<FLOATING_TYPE> velt(MAX_DIM), veln(MAX_DIM), cp(MAX_DIM);
-    matg_t<FLOATING_TYPE> al(MAX_DIM, MAX_DIM);      // for the linear system
-    matg_t<FLOATING_TYPE> bl(MAX_DIM, 1), sol(MAX_DIM, 1); // ditto
+    matg_t<FLOATING_TYPE> al;      // for the linear system
+    vecg_t<FLOATING_TYPE> bl, sol; // ditto
 
     auto const& run_params = body_ax_geo<FLOATING_TYPE>(popt);
     if (popt.verbose) {
@@ -197,10 +197,10 @@ int main(int argc, char **argv)
 
     // resizing
     al.resize(run_params.ncl, run_params.ncl);
-    bl.resize(run_params.ncl, 1 /* run_params.ncl */);
+    bl.resize(run_params.ncl);
     // stiffness matrix and rhs
     for (int i = 0; i < run_params.ncl; ++i) {           // loop over collocation points
-        bl(i, 0) = ZERO<FLOATING_TYPE>;
+        bl(i) = ZERO<FLOATING_TYPE>;
         int j = -1;
         for (int k = 0; k < run_params.nsg; ++k) {       // loop over segments
             FLOATING_TYPE rad = NaN<FLOATING_TYPE>, xcnt = NaN<FLOATING_TYPE>, ycnt = NaN<FLOATING_TYPE>;
@@ -227,7 +227,7 @@ int main(int argc, char **argv)
                               qqq, www);
 
                 al(i, j) = www;
-                bl(i, 0) += qqq * run_params.dphidn0[j];
+                bl(i) += qqq * run_params.dphidn0[j];
 
             }
 
@@ -239,15 +239,10 @@ int main(int argc, char **argv)
     //------------------------
     // Solve the linear system
     //------------------------
-    sol = al.lu().solve(bl);
+    sol = al.lu().solve(bl.transpose());
     if (popt.verbose) {
         for (size_t i = 0; i < run_params.ncl; ++i) {
-            //for (size_t j = 0; j < run_params.ncl; ++j) {
-            //    std::cout << "al(" << i << "," << j << ") : " << al(i,j) << std::endl;
-            //    std::cout << "bl(" << i << "," << j << ") : " << bl(i,j) << std::endl;
-            //    std::cout << "sol(" << i << "," << j << ") : " << sol(i,j) << std::endl;
-                std::cout << "sol(" << i << ") : " << sol(i,0) << std::endl;
-            //}
+            std::cout << "sol(" << i << ") : " << sol(i) << std::endl;
         }
     }
 
