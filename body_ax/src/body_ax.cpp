@@ -336,6 +336,25 @@ int main(int argc, char **argv)
 
     std::cout << "Axial Force: " << forcex << std::endl;
 
+    //-------------------
+    // print the solution
+    //-------------------
+    std::ofstream sol_out("body_ax.out");
+    if (sol_out) {
+        k = 0;
+        for (size_t i = 0; i < run_params.nsg; ++i) {
+            sol_out << run_params.ne[i] << std::endl;
+            for (size_t j = 0; j < run_params.ne[i]; ++j) {
+                sol_out << j << " " << run_params.x0(k) << " " << run_params.y0(k) << " " << run_params.s0(k) << " "
+                        << phi(i, j) << " " << velt(k) << " " << veln(k) << " " << cp(k) << std::endl;
+            
+                ++k;
+            }
+        }
+    }
+    sol_out << 0 << std::endl;
+    sol_out.close();
+
     FLOATING_TYPE x00, y00, ux1, uy1;
     //---------------
     // integrate ODEs
