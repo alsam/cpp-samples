@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 
             int iopt = 1;
             FLOATING_TYPE ulvr, vlvr, psi;
-            lvr_fs<FLOATING_TYPE>(iopt, run_params.x0[i], run_params.y0[i], run_params.xlvr, run_params.ylvr, ulvr, vlvr, psi);
+            lvr_fs<FLOATING_TYPE>(iopt, run_params.x0[k], run_params.y0[k], run_params.xlvr, run_params.ylvr, ulvr, vlvr, psi);
  
             velx = velx + run_params.cr*ulvr;
             vely = vely + run_params.cr*vlvr;
@@ -325,6 +325,10 @@ int main(int argc, char **argv)
             cp(k) = ONE<FLOATING_TYPE> - (velt(k)*velt(k)) / (run_params.vx*run_params.vx);
 
             forcex = forcex + cp(k)*run_params.vnx0(k)*run_params.arel(k);
+            if (popt.verbose) {
+                std::cout << "velt(" << k << "): " << velt(k) << " veln(" << k << "): " << veln(k)
+                          << " cp(" << k << "): " << cp(k) << std::endl;
+            }
 
             ++k;
         }
