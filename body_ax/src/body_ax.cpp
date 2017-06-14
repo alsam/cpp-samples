@@ -154,6 +154,10 @@ program_options parse_command_line(int argc, char** argv)
     }
 }
 
+using Time = std::chrono::high_resolution_clock;
+using ms = std::chrono::milliseconds;
+using fsec = std::chrono::duration<float>;
+
 int main(int argc, char **argv)
 {
     auto popt = parse_command_line(argc, argv);
@@ -230,10 +234,16 @@ int main(int argc, char **argv)
 
     }
 
+    auto t0 = Time::now();
     //------------------------
     // Solve the linear system
     //------------------------
     sol = al.lu().solve(bl.transpose());
+    auto t1 = Time::now();
+    fsec fs = t1 - t0;
+    ms d = std::chrono::duration_cast<ms>(fs);
+    std::cout << "linear system solution took " << fs.count() << "s\n";
+    std::cout <<  "linear system solution took " << d.count() << "ms\n";
 
     if (popt.verbose) {
         for (size_t i = 0; i < run_params.ncl; ++i) {
@@ -345,7 +355,10 @@ int main(int argc, char **argv)
         for (size_t i = 0; i < run_params.nsg; ++i) {
             sol_out << run_params.ne[i] << std::endl;
             for (size_t j = 0; j < run_params.ne[i]; ++j) {
-                sol_out << j << " " << run_params.x0(k) << " " << run_params.y0(k) << " " << run_params.s0(k) << " "
+                sol_out << j << " "
+                        << run_params.x0(k) << " "
+                        << run_params.y0(k) << " "
+                        << run_params.s0(k) << " "
                         << phi(i, j) << " " << velt(k) << " " << veln(k) << " " << cp(k) << std::endl;
             
                 ++k;
@@ -355,7 +368,32 @@ int main(int argc, char **argv)
     sol_out << 0 << std::endl;
     sol_out.close();
 
-    FLOATING_TYPE x00, y00, ux1, uy1;
+    bool detailed_iso = false;
+    FLOATING_TYPE dl, x00, y00, ux1, uy1;
+    int irk;
+
+    if (detailed_iso) {
+        dl    = static_cast<FLOATING_TYPE>(0.05) * static_cast<FLOATING_TYPE>(0.125);
+        irk   = 4;   // Runge-Kutta 4th order
+    } else {
+        dl    = static_cast<FLOATING_TYPE>(0.05);
+        irk   = 2;
+    }
+
+    //--------------------------
+    // prepare for crossing test
+    //--------------------------
+    bool icross;
+    if (popt.flow_type == to_underlying(FlowType::SPHERE)) {
+        icross = true;
+    } else if (popt.flow_type == to_underlying(FlowType::THORUS)) {
+        icross = false;
+    }
+
+    //--------------------------
+    // begin drawing streamlines
+    //--------------------------
+
     //---------------
     // integrate ODEs
     //---------------
