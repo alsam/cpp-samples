@@ -433,6 +433,25 @@ body_ax_geo(program_options const& popt)
         }
     }
 
+    // read x00, y00 for isolines
+    readln(ifs);
+    for(;;) {
+        T x00s, y00s;
+        constexpr T eps = T(1e-7);
+
+        readln(ifs, x00s, y00s);
+        if (std::fabs(x00s-99) < eps || std::fabs(y00s-99) < eps) {
+            break;
+        }
+        params.x00.push_back(x00s);
+        params.y00.push_back(y00s);
+    }
+
+    for (size_t i = 0; i < params.x00.size(); ++i) {
+        std::cout << "x00[" << i << "]: " << params.x00[i] << " y00[" << i << "]: " << params.y00[i] << std::endl;
+    }
+
+    ifs.close();
     params.gl = gauss_legendre<T>(params.ngl);
 
     //-----

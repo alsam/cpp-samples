@@ -25,6 +25,7 @@
 // SOFTWARE.
 
 #include <type_traits>
+#include <vector> // there is no `push_back` in Eigen, use `std::vector` for `x00`, `y00` (used for isolines)
 #include "lin_alg_types.hpp"
 #include "gauss_legendre.hpp"
 
@@ -62,4 +63,8 @@ struct parameters {
     T ywmin, ywmax;
 
     gauss_legendre<T> gl;
+
+    // there is no `push_back` in Eigen, use `std::vector`
+    // [Eigen MatrixXd push back in c++](https://stackoverflow.com/questions/14130699/eigen-matrixxd-push-back-in-c)
+    std::vector<T> x00, y00; // for isolines
 };

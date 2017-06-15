@@ -170,6 +170,8 @@ int main(int argc, char **argv)
     matg_t<FLOATING_TYPE> al;      // for the linear system
     vecg_t<FLOATING_TYPE> bl, sol; // ditto
 
+    vecg_t<FLOATING_TYPE> xstr, ystr; // for streamlines
+
     auto const& run_params = body_ax_geo<FLOATING_TYPE>(popt);
     if (popt.verbose) {
         std::cout << "-I- ngl: " << run_params.ngl << "\n";
@@ -369,7 +371,7 @@ int main(int argc, char **argv)
     sol_out.close();
 
     bool detailed_iso = false;
-    FLOATING_TYPE dl, x00, y00, ux1, uy1;
+    FLOATING_TYPE dl, ux1, uy1, ux2, uy2;
     int irk;
 
     if (detailed_iso) {
@@ -393,12 +395,126 @@ int main(int argc, char **argv)
     //--------------------------
     // begin drawing streamlines
     //--------------------------
+    size_t n_streamlines = run_params.x00.size(), l;
+    constexpr size_t mstr = 1200;
+    xstr.resize(mstr);
+    ystr.resize(mstr);
+    for (size_t i = 0; i < n_streamlines; ++i) {
+        FLOATING_TYPE x00s = run_params.x00[i], y00s = run_params.y00[i];
+        FLOATING_TYPE xcross = x00s;   // to be used for crossing check
 
-    //---------------
-    // integrate ODEs
-    //---------------
+        //------
 
-    velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00,y00, ux1,uy1);
+        l = 0;     // local counter for inquiry
+        for (size_t k = 0; k < mstr; ++k) {
+            //k = 0;     // total counter
+
+            xstr(l) = x00s;
+            ystr(l) = y00s;
+
+            //---------------
+            // integrate ODEs
+            //---------------
+
+            velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00s,y00s, ux1,uy1);
+
+            FLOATING_TYPE step = dl / std::sqrt(ux1*ux1 + uy1*uy1);     // set the frozen-time step
+
+            FLOATING_TYPE xsv = x00s;  // save
+            FLOATING_TYPE ysv = y00s;  // save
+
+            //----------------------
+            if (irk == 2) {
+            //----------------------
+
+                FLOATING_TYPE steph = HALF<FLOATING_TYPE> * step;
+
+                x00s = xsv + step * ux1;
+                y00s = ysv + step * uy1;
+
+                velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00s,y00s, ux2,uy2);
+
+                x00s = xsv + steph * (ux1 + ux2);
+                y00s = ysv + steph * (uy1 + uy2);
+
+            //---------------------------
+            } else if (irk == 4) {
+            //---------------------------
+
+                FLOATING_TYPE steph = HALF<FLOATING_TYPE> * step, ux3, uy3, ux4, uy4;
+                FLOATING_TYPE step6 = step / FLOATING_TYPE(6.0);
+
+                x00s = xsv + steph * ux1;
+                y00s = ysv + steph * uy1;
+
+                velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00s,y00s, ux2,uy2);
+
+                x00s = xsv + steph * ux2;
+                y00s = ysv + steph * uy2;
+
+                velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00s,y00s, ux3,uy3);
+
+                x00s = xsv + step * ux3;
+                y00s = ysv + step * uy3;
+
+                velocity<FLOATING_TYPE>(run_params, phi, run_params.dphidn0, x00s,y00s, ux4,uy4);
+
+                x00s = xsv + step/FLOATING_TYPE(6.0) * (ux1+FLOATING_TYPE(2.0)*ux2+FLOATING_TYPE(2.0)*ux3+ux4);
+                y00s = ysv + step/FLOATING_TYPE(6.0) * (uy1+FLOATING_TYPE(2.0)*uy2+FLOATING_TYPE(2.0)*uy3+uy4);
+
+            //-----------
+            }
+            //-----------
+
+            //k = k+1;
+            l = l+1;
+
+            //---------------------------
+            // test for x=0 plane crossing
+            //---------------------------
+
+            if (icross) {
+                auto test = xcross*x00s;
+                if (test < ZERO<FLOATING_TYPE>) {
+                    std::cout << " Crossed the x=0 plane: I will stop\n";
+                    break; // to the next streamline
+                }
+            }
+
+            //-------------------------
+            // test for sphere crossing
+            //-------------------------
+            if (icross) {
+                FLOATING_TYPE crosss = std::hypot(x00s-run_params.xcntr[0], y00s-run_params.ycntr[0]);
+                if (crosss < run_params.actis[0]) {
+                    l = l - 1;
+                    //break;
+                    goto finish_streamline;
+                }
+            }
+
+            //-----------------------
+            // window crossing checks
+            //-----------------------
+
+            if (x00s < run_params.xwmin) break;
+            if (x00s < run_params.xwmax) break;
+            if (y00s < run_params.ywmin) break;
+            if (y00s < run_params.ywmax) break;
+
+
+        } // k loop
+
+        xstr(l) = x00s;
+        ystr(l) = y00s;
+
+finish_streamline:;
+        std::cout << " One streamline with " << l << " points completed\n";
+        for (size_t i = 0; i < l; ++i) {
+            std::cout << '(' << xstr(i) << ',' << ystr(i) << "),\n";
+        }
+    }
+
 
 
 }
