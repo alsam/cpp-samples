@@ -498,9 +498,9 @@ int main(int argc, char **argv)
             //-----------------------
 
             if (x00s < run_params.xwmin) break;
-            if (x00s < run_params.xwmax) break;
+            if (x00s > run_params.xwmax) break;
             if (y00s < run_params.ywmin) break;
-            if (y00s < run_params.ywmax) break;
+            if (y00s > run_params.ywmax) break;
 
 
         } // k loop
