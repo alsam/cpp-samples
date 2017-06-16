@@ -19,7 +19,7 @@ ODIR_BASE  = obj
 SUFFIXES += .dep
 NODEPS:=clean tags
 
-DBG ?=1
+DBG ?=0
 
 #EIGEN_INCL = /usr/local/include/eigen3
 EIGEN_INCL = /usr/include/eigen3
@@ -61,7 +61,9 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPDIR)/%.dep
 	@$(MKDIR) $(dir $@)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-all: $(TARGET)
+all: nice_pic
+	
+nice_pic: $(TARGET)
 
 gl_print:
 	$(CXX) $(CXXFLAGS) -DPRINT_ME $(SDIR)/gauss_legendre.cpp -o gauss_legendre_print 
@@ -82,6 +84,10 @@ $(TARGET): $(OBJS)
 sample_run:
 	obj.debug/body_ax --flow_type 50 --input_data data/sphere.dat --verbose
 	obj.debug/body_ax --flow_type 51 --input_data data/torus_trgl.dat --verbose
+
+nice_pic:
+	obj.release/body_ax --flow_type 51 --input_data data/torus_trgl.dat.BIG
+	asy -f pdf body_ax.asy
 
 docs:
 	#doxygen Doxyfile

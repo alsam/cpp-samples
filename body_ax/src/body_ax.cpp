@@ -368,7 +368,7 @@ int main(int argc, char **argv)
     sol_out << 0 << std::endl;
     sol_out.close();
 
-    bool detailed_iso = false;
+    bool detailed_iso = true; //false;
     FLOATING_TYPE dl, ux1, uy1, ux2, uy2;
     int irk;
 
@@ -393,6 +393,45 @@ int main(int argc, char **argv)
     //--------------------------
     // begin drawing streamlines
     //--------------------------
+    std::ofstream fstr;
+    fstr.open("body_ax.asy");
+    if (fstr) {
+        fstr <<
+                "import graph;\n"
+                "import patterns;\n"
+                "size(350,350,IgnoreAspect);\n"
+                "add(\"crosshatch\",crosshatch(3mm));\n"
+                "\n"
+                "pair reflect_y(pair pt)\n"
+                "{\n"
+                "  return (pt.x, -pt.y);\n"
+                "}\n"
+                "\n"
+                "pair[] reflect_y(pair[] pts)\n"
+                "{\n"
+                "  pair[] ret;\n"
+                "  for (int i = 0; i < pts.length; ++i) {\n"
+                "    ret.push((pts[i].x, -pts[i].y));\n"
+                "  }\n"
+                "  return ret;\n"
+                "}\n"
+                "\n"
+                "pair[][] toru = {\n";
+
+        for (size_t i = 0; i < run_params.nsg; ++i) {
+            fstr << "  {\n";
+            for (size_t j = 0; j < run_params.ne[i]; ++j) {
+                fstr << "(" << run_params.xw(i,j) << ","  << run_params.yw(i,j) << "),\n";
+            }
+            fstr << "  },\n";
+        }
+
+        fstr << "};\n"
+                "pair[][] stream_lines = {\n";
+    }
+
+                
+
     size_t n_streamlines = run_params.x00.size();
     constexpr size_t mstr = 1200;
     std::vector<FLOATING_TYPE> xstr, ystr; // for streamlines
@@ -505,12 +544,32 @@ int main(int argc, char **argv)
 
 finish_streamline:;
         std::cout << " One streamline with " << xstr.size() << " points completed\n";
-        for (size_t i = 0; i < xstr.size(); ++i) {
-            std::cout << '(' << xstr[i] << ',' << ystr[i] << "),\n";
+        if (fstr) {
+            fstr << "{\n";
+            for (size_t i = 0; i < xstr.size(); ++i) {
+                fstr << '(' << xstr[i] << ',' << ystr[i] << "),\n";
+            }
+            fstr << "},\n";
         }
     }
 
-
+    if (fstr) {
+        fstr <<
+            "};\n"
+            "\n"
+            "filldraw((toru[0][0]--toru[1][0]--toru[2][0]--cycle),magenta+0.7);\n"
+            "filldraw((reflect_y(toru[0][0])--reflect_y(toru[1][0])--reflect_y(toru[2][0])--cycle),magenta+0.7);\n"
+            "\n"
+            "for (int i = 0; i < stream_lines.length; ++i) {\n"
+            "  draw(graph(stream_lines[i]),            heavygreen+0.2);\n"
+            "  draw(graph(reflect_y(stream_lines[i])), heavygreen+0.2);\n"
+            "}\n"
+            "\n"
+            "real ticks[] = {-2,-1.5,-1,-0.5,0,0.5,1,1.5,2};\n"
+            "\n"
+            "xaxis(\"X\", BottomTop, LeftTicks(Label(fontsize(6pt)), ticks));\n"
+            "yaxis(rotate(90)*\"Y\", LeftRight, RightTicks(Label(fontsize(6pt)), ticks));\n";
+    }
 
 }
 
