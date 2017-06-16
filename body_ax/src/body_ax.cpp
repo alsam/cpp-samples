@@ -170,8 +170,6 @@ int main(int argc, char **argv)
     matg_t<FLOATING_TYPE> al;      // for the linear system
     vecg_t<FLOATING_TYPE> bl, sol; // ditto
 
-    vecg_t<FLOATING_TYPE> xstr, ystr; // for streamlines
-
     auto const& run_params = body_ax_geo<FLOATING_TYPE>(popt);
     if (popt.verbose) {
         std::cout << "-I- ngl: " << run_params.ngl << "\n";
@@ -395,22 +393,22 @@ int main(int argc, char **argv)
     //--------------------------
     // begin drawing streamlines
     //--------------------------
-    size_t n_streamlines = run_params.x00.size(), l;
+    size_t n_streamlines = run_params.x00.size();
     constexpr size_t mstr = 1200;
-    xstr.resize(mstr);
-    ystr.resize(mstr);
+    std::vector<FLOATING_TYPE> xstr, ystr; // for streamlines
+    xstr.reserve(mstr);
+    ystr.reserve(mstr);
     for (size_t i = 0; i < n_streamlines; ++i) {
         FLOATING_TYPE x00s = run_params.x00[i], y00s = run_params.y00[i];
         FLOATING_TYPE xcross = x00s;   // to be used for crossing check
 
         //------
-
-        l = 0;     // local counter for inquiry
+        xstr.clear();
+        ystr.clear();
         for (size_t k = 0; k < mstr; ++k) {
-            //k = 0;     // total counter
 
-            xstr(l) = x00s;
-            ystr(l) = y00s;
+            xstr.push_back(x00s);
+            ystr.push_back(y00s);
 
             //---------------
             // integrate ODEs
@@ -466,9 +464,6 @@ int main(int argc, char **argv)
             }
             //-----------
 
-            //k = k+1;
-            l = l+1;
-
             //---------------------------
             // test for x=0 plane crossing
             //---------------------------
@@ -487,8 +482,8 @@ int main(int argc, char **argv)
             if (icross) {
                 FLOATING_TYPE crosss = std::hypot(x00s-run_params.xcntr[0], y00s-run_params.ycntr[0]);
                 if (crosss < run_params.actis[0]) {
-                    l = l - 1;
-                    //break;
+                    xstr.pop_back();
+                    ystr.pop_back();
                     goto finish_streamline;
                 }
             }
@@ -505,13 +500,13 @@ int main(int argc, char **argv)
 
         } // k loop
 
-        xstr(l) = x00s;
-        ystr(l) = y00s;
+        xstr.push_back(x00s);
+        ystr.push_back(y00s);
 
 finish_streamline:;
-        std::cout << " One streamline with " << l+1 << " points completed\n";
-        for (size_t i = 0; i <= l; ++i) {
-            std::cout << '(' << xstr(i) << ',' << ystr(i) << "),\n";
+        std::cout << " One streamline with " << xstr.size() << " points completed\n";
+        for (size_t i = 0; i < xstr.size(); ++i) {
+            std::cout << '(' << xstr[i] << ',' << ystr[i] << "),\n";
         }
     }
 
