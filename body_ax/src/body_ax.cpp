@@ -509,8 +509,8 @@ int main(int argc, char **argv)
         ystr(l) = y00s;
 
 finish_streamline:;
-        std::cout << " One streamline with " << l << " points completed\n";
-        for (size_t i = 0; i < l; ++i) {
+        std::cout << " One streamline with " << l+1 << " points completed\n";
+        for (size_t i = 0; i <= l; ++i) {
             std::cout << '(' << xstr(i) << ',' << ystr(i) << "),\n";
         }
     }

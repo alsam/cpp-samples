@@ -77,12 +77,12 @@ velocity(parameters<T> const& params,
 // ---------------------------------
 // Boundary integral representation
 // ---------------------------------
-    int j = 0; // collocation point counter
+    int j = -1; // collocation point counter
     for (int k = 0; k < params.nsg; ++k) {
         T rad  = params.actis[k];
         T xcnt = params.xcntr[k];
         T ycnt = params.ycntr[k];
-        for (int l = 1; l < params.ne[k]; ++l) {
+        for (int l = 0; l < params.ne[k]; ++l) {
             T x1 = params.xw(k, l);
             T y1 = params.yw(k, l);
             T t1 = params.tw(k, l);
