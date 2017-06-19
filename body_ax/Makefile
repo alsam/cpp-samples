@@ -30,7 +30,7 @@ LDLIBS = -lboost_program_options
 CXX=g++
 CXX11_FLAGS = -std=c++1z
 DEBUG_CXXFLAGS = $(CXX11_FLAGS) -g -O0 $(INCLUDES)
-RELEASE_CXXFLAGS = $(CXX11_FLAGS) -O2 -DNDEBUG=1 $(INCLUDES)
+RELEASE_CXXFLAGS = $(CXX11_FLAGS) -g -O2 -DNDEBUG=1 $(INCLUDES)
 
 
 ifeq ($(DBG), 1)
@@ -88,6 +88,9 @@ sample_run:
 nice_pic:
 	obj.release/body_ax --flow_type 51 --input_data data/torus_trgl.dat.BIG
 	asy -f pdf body_ax.asy
+
+profile:
+	valgrind --tool=callgrind obj.release/body_ax --flow_type 51 --input_data data/torus_trgl.dat.BIG
 
 docs:
 	#doxygen Doxyfile
