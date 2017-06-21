@@ -41,10 +41,10 @@
 template <typename T>
 void elliptic_integral (T const& rk2, T& f, T& e)
 {
-    constexpr T ACCURACY = T(1.0e-10);
+    constexpr T ACCURACY = T(1.0e-6);
     T rk = sqrt(rk2), g = ONE<T>, b = rk, c, d;
 
-    f = T(0.5) * PI<T>;
+    f = HALF<T> * PI<T>;
     e = ONE<T>;
     do {
         c = sqrt(ONE<T> - b*b);
