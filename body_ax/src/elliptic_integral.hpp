@@ -25,6 +25,8 @@
 // SOFTWARE.
 
 #include <cmath>
+#include <boost/math/special_functions/ellint_1.hpp>
+#include <boost/math/special_functions/ellint_2.hpp>
 #include "math_consts.hpp"
 
 /*! \file elliptic_integral.h
@@ -39,7 +41,7 @@
 template <typename T>
 void elliptic_integral (T const& rk2, T& f, T& e)
 {
-    constexpr T ACCURACY = T(1.0e-12);
+    constexpr T ACCURACY = T(1.0e-10);
     T rk = sqrt(rk2), g = ONE<T>, b = rk, c, d;
 
     f = T(0.5) * PI<T>;
@@ -55,3 +57,13 @@ void elliptic_integral (T const& rk2, T& f, T& e)
     e = f * (ONE<T> - HALF<T>*rk2*e);
 }
 
+template <typename T>
+void elliptic_integral_new (T const& rk2, T& f, T& e)
+{
+    T srk = std::sqrt(rk2);
+    f = boost::math::ellint_1(srk);
+    e = boost::math::ellint_2(srk);
+    // `std::comp_ellint_1` and `std::comp_ellint_2` are too slow
+    // f = std::comp_ellint_1(srk);
+    // e = std::comp_ellint_2(srk);
+}
