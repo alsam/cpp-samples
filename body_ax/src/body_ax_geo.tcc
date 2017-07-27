@@ -458,6 +458,8 @@ body_ax_geo(program_options const& popt)
     // Done
     //-----
 
-    return std::move(params);
+    // return std::move(params);
+    // don't use `std::move` for local objects Effective Modern C++ Item 25
+    return params;
 } // body_ax_geo
 
