@@ -1,4 +1,5 @@
-CPPFLAGS += -std=c++14
+CXX = g++-7
+CPPFLAGS += -std=c++17
 LDFLAGS += -pthread
 
 all: move_semantics strategy_pattern producer_consumer check_atomic_shared_ptr sleep_for spinlock timer_events
@@ -16,6 +17,8 @@ sleep_for: sleep_for.cpp
 spinlock: spinlock.cpp
 
 timer_events: timer_events.cpp
+
+shared_mutex: shared_mutex.cpp
 
 thr_sanitize:
 	g++ -pthread -fsanitize=thread  producer_consumer.cpp
