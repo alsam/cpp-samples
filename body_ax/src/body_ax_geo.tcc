@@ -39,28 +39,17 @@
 
 namespace {
 
-size_t read(std::istream&)
-{
-    return 0;
-}
-
-template <typename T, typename... Ts>
-size_t read(std::istream& is, T& var, Ts&... ts) {
-    is >> var;
-    return read(is, ts...) + 1;
-}
-
 template <typename... Ts>
-size_t readln(std::istream& is, Ts&... ts)
+size_t readln(std::istream& is, Ts& ...ts)
 {
     std::string line;
     std::getline(is, line);
-    if (sizeof...(ts) == 0) {
-        return 0;
-    } else {
+    size_t nargs = sizeof...(ts);
+    if (nargs > 0) {
         std::istringstream iss(line);
-        return read(iss, ts...);
+        (iss >> ... >> ts);
     }
+    return nargs;
 }
 
 }
