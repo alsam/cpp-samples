@@ -11,39 +11,64 @@
 #include <deque>
 #include <random>
 
+template<class T>
+auto operator<<(std::ostream& os, const T& t) -> decltype(t.print(os), os)
+{
+  t.print(os);
+  return os;
+}
+
+// to store robot commands
+template <typename T>
 class Buffer
 {
 public:
-    void add(int num) {
-        while (true) {
-            std::unique_lock<std::mutex> locker(mu);
-            cond.wait(locker, [this](){return buffer_.size() < size_;});
-            std::cout << "add(): pushed " << num << "\n";
-            buffer_.push_back(num);
-            //locker.unlock();
-            cond.notify_all();
-            return;
-        }
+    void add(T&& item)
+    {
+      std::unique_lock<std::mutex> locker(mu_);
+      cond_.wait(locker, [this] { return buffer_.size() < size_; } );
+      std::cout << "add(): pushed " << item << "\n";
+      buffer_.push_back(item);
+      cond_.notify_all();
+      return;
     }
-    int remove() {
-        while (true) {
-            std::unique_lock<std::mutex> locker(mu);
-            cond.wait(locker, [this](){return buffer_.size() > 0;});
-            int back = buffer_.back();
-            buffer_.pop_back();
-            std::cout << "remove(): popped " << back << "\n";
-            //locker.unlock();
-            cond.notify_all();
-            return back;
-        }
-    }
-    Buffer() {}
-private:
-    std::mutex mu;
-    std::condition_variable cond;
 
-    std::deque<int> buffer_;
-    const unsigned int size_ = 10;
+    T remove()
+    {
+      std::unique_lock<std::mutex> locker(mu_);
+      cond_.wait(locker, [this] { return !buffer_.empty(); } );
+      auto back = buffer_.back();
+      buffer_.pop_back();
+      std::cout << "remove(): popped " << back << "\n";
+      cond_.notify_all();
+      return back;
+    }
+
+    bool empty() const
+    {
+      return buffer_.empty();
+    }
+
+    Buffer() {}
+
+private:
+    std::mutex mu_;
+    std::condition_variable cond_;
+
+    std::deque<T> buffer_;
+    const unsigned size_ = 128;
+};
+
+struct RobotCommand
+{
+  int task_id, sequence_id, command_type;
+
+  void print(std::ostream& strm) const
+  {
+    strm << "task_id: " << task_id
+         << " sequence_id: " << sequence_id
+         << " command_type: " << command_type;
+  }
 };
 
 void join_all(std::vector<std::thread>& grp) {
@@ -65,13 +90,13 @@ main()
 
     const int producer_thread_count = 12;
     const int consumer_thread_count = 12;
-    Buffer buffer;
+    Buffer<int> buffer;
     for (int i = 0; i < producer_thread_count; i++) {
         int num = dist(engine);
-        producer_grp.emplace_back(&Buffer::add, &buffer, num);
+        producer_grp.emplace_back(&Buffer<int>::add, &buffer, num);
     }
     for (int i = 0; i < consumer_thread_count; i++) {
-        consumer_grp.emplace_back(&Buffer::remove, &buffer);
+        consumer_grp.emplace_back(&Buffer<int>::remove, &buffer);
     }
 
     join_all(producer_grp);
