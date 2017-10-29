@@ -42,6 +42,9 @@ public:
 
   Message();
 
+  // constructor for more convenience
+  template <typename T> Message(T msg);
+
   Message(Message&&);
 
   // to avoid problems with std::unique_ptr
@@ -94,6 +97,12 @@ friend class Message;
 Message::Message()
 : pImpl_(new Impl)
 {
+}
+
+template <typename T> Message::Message(T msg)
+: pImpl_(new Impl)
+{
+  this->from(std::move(msg));
 }
 
 Message::Message(Message&& m)
