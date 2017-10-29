@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <vector>
 
 template <template<typename,typename> class Cont, typename Elem, typename Alloc>
@@ -25,6 +26,96 @@ void sub(std::vector<int> && vec)
     std::cout << "vec: " << vec << std::endl;
 }
 
+
+template<class T>
+auto operator<<(std::ostream& os, const T& t) -> decltype(t.print(os), os)
+{
+  t.print(os);
+  return os;
+}
+
+// base class for all messages
+class Message
+{
+
+public:
+
+  Message();
+
+  Message(Message&&);
+
+  // to avoid problems with std::unique_ptr
+  // while using pImpl
+  ~Message();
+
+  template <typename T> bool from(T msg);
+
+  template <typename T> bool to(T&& msg);
+
+  void print(std::ostream& strm) const
+  {
+    strm << "Message\n";
+  }
+
+// pImpl idiom in action
+private:
+  class Impl;
+  std::unique_ptr<Impl> pImpl_;
+};
+
+class Message::Impl
+{
+public:
+
+  using InternalMessageType = int;
+
+public:
+
+  Impl()
+  {
+  }
+
+  ~Impl()
+  {
+  }
+
+  template <typename T> bool serialize(T&& msg)
+  {
+    bool status = msg.toRequest(sm_);
+    return status;
+  }
+
+private:
+  InternalMessageType sm_;
+
+friend class Message;
+};
+
+Message::Message()
+: pImpl_(new Impl)
+{
+}
+
+Message::Message(Message&& m)
+: pImpl_(std::move(m.pImpl_))
+{
+}
+
+Message::~Message()
+{
+}
+
+template <typename T>
+bool Message::to(T&& msg)
+{
+  msg = std::move(pImpl_->sm_);
+}
+
+template <typename T>
+bool Message::from(T msg)
+{
+  return pImpl_->serialize(std::move(msg));
+}
 
 int main()
 {
