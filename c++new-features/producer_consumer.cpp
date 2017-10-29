@@ -28,16 +28,15 @@ public:
       std::unique_lock<std::mutex> locker(mu_);
       cond_.wait(locker, [this] { return buffer_.size() < size_; } );
       std::cout << "add(): pushed " << item << "\n";
-      buffer_.push_back(item);
+      buffer_.emplace_back(std::move(item));
       cond_.notify_all();
-      return;
     }
 
     T remove()
     {
       std::unique_lock<std::mutex> locker(mu_);
       cond_.wait(locker, [this] { return !buffer_.empty(); } );
-      auto back = buffer_.back();
+      auto back = std::move(buffer_.back());
       buffer_.pop_back();
       std::cout << "remove(): popped " << back << "\n";
       cond_.notify_all();
