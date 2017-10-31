@@ -36,11 +36,11 @@ public:
     {
       std::unique_lock<std::mutex> locker(mu_);
       cond_.wait(locker, [this] { return !buffer_.empty(); } );
-      auto back = std::move(buffer_.back());
-      buffer_.pop_back();
-      std::cout << "remove(): popped " << back << "\n";
+      auto front = std::move(buffer_.front());
+      buffer_.pop_front();
+      std::cout << "remove(): popped " << front << "\n";
       cond_.notify_all();
-      return back;
+      return front;
     }
 
     bool empty() const

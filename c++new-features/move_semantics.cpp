@@ -51,9 +51,9 @@ public:
   // while using pImpl
   ~Message();
 
-  template <typename T> bool from(T msg);
+  template <typename T> bool from(T&& msg);
 
-  template <typename T> bool to(T&& msg);
+  template <typename T> bool to(T& msg);
 
   void print(std::ostream& strm) const
   {
@@ -115,13 +115,13 @@ Message::~Message()
 }
 
 template <typename T>
-bool Message::to(T&& msg)
+bool Message::to(T& msg)
 {
   msg = std::move(pImpl_->sm_);
 }
 
 template <typename T>
-bool Message::from(T msg)
+bool Message::from(T&& msg)
 {
   return pImpl_->serialize(std::move(msg));
 }
