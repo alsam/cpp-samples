@@ -125,31 +125,35 @@ Message::Message()
 }
 
 // a helper class for setting Message::id_
-template <typename M, typename T, bool = std::is_base_of<OperationMessage, T>::value>
-struct SetId
+
+template <typename M>
+struct SetTarget
 {
-  SetId(M* t) : target_(t) {}
+  SetTarget(M* t): target(t) {}
+  M* target;
+};
+
+template <typename M, typename T, bool = std::is_base_of<OperationMessage, T>::value>
+struct SetId : public SetTarget<M>
+{
+  SetId(M* t) : SetTarget<M>(t) {}
   void operator()(T)
   {
     std::cout << "SetId with -1\n";
-    target_->setId(-1);
+    SetTarget<M>::target->setId(-1);
   }
-private:
-  M* target_;
 };
 
 // partial specialization
 template <typename M, typename T>
-struct SetId<M, T, true>
+struct SetId<M, T, true> : SetTarget<M>
 {
-  SetId(M* t) : target_(t) {}
+  SetId(M* t) : SetTarget<M>(t) {}
   void operator()(T msg)
   {
     std::cout << "SetId with msg.getSequence()\n";
-    target_->setId(msg.getSequence());
+    SetTarget<M>::target->setId(msg.getSequence());
   }
-private:
-  M* target_;
 };
 
 template <typename T> Message::Message(T msg)
