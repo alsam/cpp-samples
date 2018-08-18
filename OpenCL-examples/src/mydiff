@@ -1,0 +1,62 @@
+diff --git a/experimental/alsam/OpenCL-examples/src/cl-util/get_gpu_context.cc b/experimental/alsam/OpenCL-examples/src/cl-util/get_gpu_context.cc
+index 6d0cf7e5..32ea67fb 100644
+--- a/experimental/alsam/OpenCL-examples/src/cl-util/get_gpu_context.cc
++++ b/experimental/alsam/OpenCL-examples/src/cl-util/get_gpu_context.cc
+@@ -23,20 +23,23 @@ std::tuple<std::vector<cl::Device>, cl::Context>
+         default_platform.getInfo<CL_PLATFORM_NAME>());
+ 
+     std::vector<cl::Device> device_list;
+-    default_platform.getDevices(CL_DEVICE_TYPE_GPU, &device_list);
++    //default_platform.getDevices(CL_DEVICE_TYPE_GPU, &device_list);
++    default_platform.getDevices(CL_DEVICE_TYPE_ALL, &device_list);
+     checkErr(device_list.size() != 0 ? CL_SUCCESS : -1,
+         " cl::Platform::getDevices failed to find a GPU device;\n"
+         "  do you have the correct device loader installed?"
+         "\n(fail)\n");
+ 
+-    cl::Device default_device = device_list[0];
++    std::cout << "found devices: " << device_list.size() << std::endl;
++    cl::Device default_device = device_list[2];
+     console.msg(
+         "Using device:   ",
+         default_device.getInfo<CL_DEVICE_NAME>());
+ 
+     console
+         .pop("\033[32m┕\033[m (ok)");
+-    cl::Context context({default_device});
++    //cl::Context context({default_device});
++    cl::Context context(device_list);
+     return std::make_tuple(device_list, context);
+ }
+ 
+diff --git a/experimental/alsam/OpenCL-examples/src/mandelbrot/main.cc b/experimental/alsam/OpenCL-examples/src/mandelbrot/main.cc
+index 2a53c345..edff8217 100644
+--- a/experimental/alsam/OpenCL-examples/src/mandelbrot/main.cc
++++ b/experimental/alsam/OpenCL-examples/src/mandelbrot/main.cc
+@@ -25,7 +25,7 @@ class OpenCL
+             std::tie(devices, context) = get_default_gpu_context();
+             queue =
+                 cl::CommandQueue(
+-                context, devices[0], CL_QUEUE_PROFILING_ENABLE);
++                context, devices[2], CL_QUEUE_PROFILING_ENABLE);
+             return *this;
+         }
+ 
+@@ -43,7 +43,7 @@ class OpenCL
+             auto err_code = program.build(devices, options.c_str());
+             checkErr(
+                 err_code,
+-                program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]));
++                program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[2]));
+ 
+             return *this;
+         }
+diff --git a/experimental/alsam/OpenCL-examples/src/optional.hh b/experimental/alsam/OpenCL-examples/src/optional.hh
+index 95eea05f..70fe178a 100644
+--- a/experimental/alsam/OpenCL-examples/src/optional.hh
++++ b/experimental/alsam/OpenCL-examples/src/optional.hh
+@@ -12,3 +12,4 @@ namespace std {
+     using std::experimental::optional;
+     using std::experimental::nullopt;
+ }
++#endif

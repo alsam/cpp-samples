@@ -1,0 +1,14 @@
+*~
+.*.swp
+.*.swo
+obj
+
+build
+
+# tex
+doc/**/*.aux
+doc/**/*.pdf
+doc/**/*.log
+doc/**/*.out
+doc/**/_*
+
