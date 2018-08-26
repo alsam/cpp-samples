@@ -98,7 +98,7 @@ void render_julia_set(
         data, &wait_list, NULL);
     clcx.queue.finish();
 
-    print_runtime_msg(get_runtime(julia_event), "render time without overhead");
+    //print_runtime_msg(get_runtime(julia_event), "render time without overhead");
 }
 
 int main(int argc, char **argv)

@@ -31,7 +31,7 @@ std::tuple<std::vector<cl::Device>, cl::Context>
         "\n(fail)\n");
 
     std::cout << "found devices: " << device_list.size() << std::endl;
-    cl::Device default_device = device_list[2];
+    cl::Device default_device = device_list[0];
     console.msg(
         "Using device:   ",
         default_device.getInfo<CL_DEVICE_NAME>());
