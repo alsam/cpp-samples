@@ -19,7 +19,8 @@ protected:
     TriMesh getFourFaces()
     {
         TriMesh mesh;
-        std::vector<Point3> vertices{ {0., 0., 0.}, {0.5, 0., 0.}, {1., 0., 0.}, {0.75, 0.5, 0.}, {0.25, 0.5, 0.0}, {0.5, 1., 0.}};
+        std::vector<Point3> vertices{ {0., 0., 0.}, {0.5, 0., 0.}, {1., 0., 0.},
+            {0.75, 0.5, 0.}, {0.25, 0.5, 0.0}, {0.5, 1., 0.}};
         std::vector<Face> faces{ Face({0,1,4}), Face({1,2,3}), Face({1,3,4}), Face({3,5,4}), };
         mesh.addVertices(std::move(vertices));
         mesh.addFaces(std::move(faces));
@@ -53,6 +54,16 @@ TEST_F(TinyTriMeshTest, FindOppositeVertexFourFaces)
     ASSERT_EQ(mesh.n_Faces(), 4);
     int opp_index = mesh.findOppositeVertexIndex(0, 1);
     ASSERT_EQ(opp_index, -1);
+    opp_index = mesh.findOppositeVertexIndex(0, 2);
+    ASSERT_EQ(opp_index, 0);
+    opp_index = mesh.findOppositeVertexIndex(2, 0);
+    ASSERT_EQ(opp_index, 3);
+    opp_index = mesh.findOppositeVertexIndex(2, 3);
+    ASSERT_EQ(opp_index, 1);
+    opp_index = mesh.findOppositeVertexIndex(3, 2);
+    ASSERT_EQ(opp_index, 5);
+    opp_index = mesh.findOppositeVertexIndex(2, 1);
+    ASSERT_EQ(opp_index, 4);
 }
 
 int main(int argc, char **argv) {
