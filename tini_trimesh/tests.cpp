@@ -28,6 +28,18 @@ protected:
 
     TriMesh getTrivial()
     {
+        /**
+         *  3       2
+         *   x-----x
+         *   |\    |
+         *   | \ 1 |
+         *   |  \  |
+         *   | 0 \ |
+         *   |    \|
+         *   x-----x
+         *  0       1
+         **/
+
         TriMesh mesh;
         std::vector<Point3> vertices{ {0., 0., 0.}, {1., 0., 0.}, {1., 1., 0.}, {0., 1., 0.}, };
         std::vector<Face> faces{ Face({0,1,3}), Face({1,2,3}), };
@@ -39,6 +51,23 @@ protected:
 
     TriMesh getFourFaces()
     {
+        /**
+         *              5
+         *              x
+         *             / \
+         *            /   \
+         *           /  3  \
+         *          /       \
+         *      4  x---------x 3
+         *        / \       / \
+         *       /   \  2  /   \
+         *      /  0  \   /  1  \
+         *     /       \ /       \
+         *    x---------x---------x
+         * 0            1          2
+         *
+         **/
+
         TriMesh mesh;
         std::vector<Point3> vertices{ {0., 0., 0.}, {0.5, 0., 0.}, {1., 0., 0.},
             {0.75, 0.5, 0.}, {0.25, 0.5, 0.0}, {0.5, 1., 0.}};
