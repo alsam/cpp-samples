@@ -70,8 +70,33 @@ protected:
 
         TriMesh mesh;
         std::vector<Point3> vertices{ {0., 0., 0.}, {0.5, 0., 0.}, {1., 0., 0.},
-            {0.75, 0.5, 0.}, {0.25, 0.5, 0.0}, {0.5, 1., 0.}};
+            {0.75, 0.5, 0.}, {0.25, 0.5, 0.}, {0.5, 1., 0.}};
         std::vector<Face> faces{ Face({0,1,4}), Face({1,2,3}), Face({1,3,4}), Face({3,5,4}), };
+        mesh.addVertices(std::move(vertices));
+        mesh.addFaces(std::move(faces));
+
+        return mesh;
+    }
+
+    TriMesh getFlatCover()
+    {
+        /**
+         *
+         *   5     4     3
+         *    x----x----x 
+         *    |\ 1 |\ 3 |
+         *    | \  | \  |
+         *    |  \ |  \ |
+         *    | 0 \| 2 \|
+         *    x----x----x
+         *   0     1     2
+         *
+         **/
+
+        TriMesh mesh;
+        std::vector<Point3> vertices{ {0., 0., 0.}, {1., 0., 0.}, {2., 0., 0.},
+            {2., 2., 0.}, {1., 2., 0.}, {0., 2., 0.}};
+        std::vector<Face> faces{ Face({0,1,5}), Face({1,4,5}), Face({1,2,4}), Face({2,3,4}) };
         mesh.addVertices(std::move(vertices));
         mesh.addFaces(std::move(faces));
 
@@ -114,6 +139,20 @@ TEST_F(TinyTriMeshTest, FindOppositeVertexFourFaces)
     ASSERT_EQ(opp_index, 5);
     opp_index = mesh.findOppositeVertexIndex(2, 1);
     ASSERT_EQ(opp_index, 4);
+}
+
+TEST_F(TinyTriMeshTest, FindOppositeVertexFlatCover)
+{
+    TriMesh mesh = getFlatCover();
+
+    ASSERT_EQ(mesh.n_Vertices(), 6);
+    ASSERT_EQ(mesh.n_Faces(), 4);
+    int opp_index = mesh.findOppositeVertexIndex(0, 1);
+    ASSERT_EQ(opp_index, 0);
+    opp_index = mesh.findOppositeVertexIndex(1, 0);
+    ASSERT_EQ(opp_index, 4);
+    opp_index = mesh.findOppositeVertexIndex(0, 3);
+    ASSERT_EQ(opp_index, -1);
 }
 
 int main(int argc, char **argv) {
