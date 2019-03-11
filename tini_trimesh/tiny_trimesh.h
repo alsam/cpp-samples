@@ -112,6 +112,19 @@ public:
 
     const Face& getFace(size_t idx) const { return faces_.at(idx); }
 
+    std::pair<Point3,Point3> getXYplaneBB(const TriMesh& mesh)
+    {
+        using boost::transform;
+        const auto& vertexList = mesh.getVertices();
+        std::vector<double> x_coord, y_coord;
+        transform(vertexList, std::back_inserter(x_coord), [](const Point3& p) -> double { return p.x; });
+        transform(vertexList, std::back_inserter(y_coord), [](const Point3& p) -> double { return p.y; });
+        auto x_minmax = std::minmax_element(x_coord.begin(), x_coord.end());
+        auto y_minmax = std::minmax_element(y_coord.begin(), y_coord.end());
+        return std::pair<Point3,Point3>({*x_minmax.first,  *y_minmax.first,  0.0},
+                                        {*x_minmax.second, *y_minmax.second, 0.0});
+    }
+
     int findOppositeVertexIndex(size_t face_idx, size_t adj_face_idx)
     {
         using boost::range::copy;
