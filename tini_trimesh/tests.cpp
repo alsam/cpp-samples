@@ -155,6 +155,18 @@ TEST_F(TinyTriMeshTest, FindOppositeVertexFlatCover)
     ASSERT_EQ(opp_index, -1);
 }
 
+TEST_F(TinyTriMeshTest, GetXYplaneBBFourFaces)
+{
+    TriMesh mesh = getFourFaces();
+
+    auto bb = mesh.getXYplaneBB(mesh);
+    Point3 ld{bb.first}, ru{bb.second};
+    ASSERT_DOUBLE_EQ(ld.x, 0.0);
+    ASSERT_DOUBLE_EQ(ld.y, 0.0);
+    ASSERT_DOUBLE_EQ(ru.x, 1.0);
+    ASSERT_DOUBLE_EQ(ru.y, 1.0);
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
