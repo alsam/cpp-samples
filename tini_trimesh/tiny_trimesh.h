@@ -146,9 +146,8 @@ public:
         if (face_idx > n_Faces() || adj_face_idx > n_Faces())
             return -1;
 
-        const Face& face = getFace(face_idx);
-        const Face& adj_face = getFace(adj_face_idx);
-        auto [diff,dist] = diffIndices(face.getVertices(), adj_face.getVertices());
+        auto [diff,dist] = diffIndices(getFace(face_idx).getVertices(),
+                                       getFace(adj_face_idx).getVertices());
         if (dist > 1) { // more than just one index
             return -1;
         }
