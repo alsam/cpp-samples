@@ -75,13 +75,14 @@ private:
     std::map<Point3, size_t> vertexIndicesMap_;
     size_t vertexCounter_;
 
-    template <typename ContA, typename ContB>
-    std::pair<FaceIndexList,size_t> diffIndices(const ContA& contA, const ContB& contB)
+    template <typename AIterator, typename BIterator>
+    std::pair<FaceIndexList,size_t> diffIndices(AIterator contAbegin, AIterator contAend,
+                                                BIterator contBbegin, BIterator contBend)
     {
-        using boost::copy, boost::sort, boost::range::set_difference;
+        using boost::sort, boost::range::set_difference;
         FaceIndexList contAcopy, contBcopy, result{-1};
-        copy(contA, contAcopy.begin());
-        copy(contB, contBcopy.begin());
+        std::copy(contAbegin, contAend, contAcopy.begin());
+        std::copy(contBbegin, contBend, contBcopy.begin());
         sort(contAcopy);
         sort(contBcopy);
         auto pos = set_difference(contAcopy, contBcopy, result.begin());
@@ -146,8 +147,10 @@ public:
         if (face_idx > n_Faces() || adj_face_idx > n_Faces())
             return -1;
 
-        auto [diff,dist] = diffIndices(getFace(face_idx).getVertices(),
-                                       getFace(adj_face_idx).getVertices());
+        auto faceVerts = getFace(face_idx).getVertices();
+        auto adjFaceVerts = getFace(adj_face_idx).getVertices();
+        auto [diff,dist] = diffIndices(faceVerts.begin(), faceVerts.end(),
+                                       adjFaceVerts.begin(), adjFaceVerts.end());
         if (dist > 1) { // more than just one index
             return -1;
         }
