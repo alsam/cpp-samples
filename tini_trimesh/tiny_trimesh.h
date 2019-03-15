@@ -63,6 +63,9 @@ private:
 class TriMesh
 {
 public:
+    static constexpr size_t NUMBER_OF_SIDES = 3;
+
+    using FaceIndexList = std::array<int, NUMBER_OF_SIDES>;
     using VertexList = std::vector<Point3>;
     using FaceList = std::vector<Face>;
 
@@ -72,9 +75,21 @@ private:
     std::map<Point3, size_t> vertexIndicesMap_;
     size_t vertexCounter_;
 
-public:
+    template <typename ContA, typename ContB>
+    std::pair<FaceIndexList,size_t> diffIndices(const ContA& contA, const ContB& contB)
+    {
+        using boost::copy, boost::sort, boost::range::set_difference;
+        FaceIndexList contAcopy, contBcopy, result{-1};
+        copy(contA, contAcopy.begin());
+        copy(contB, contBcopy.begin());
+        sort(contAcopy);
+        sort(contBcopy);
+        auto pos = set_difference(contAcopy, contBcopy, result.begin());
+        size_t dist = std::distance(result.begin(), pos);
+        return std::make_pair(std::move(result), dist);
+    }
 
-    static constexpr size_t NUMBER_OF_SIDES = 3;
+public:
 
     TriMesh() : vertexCounter_(0) {}
  
@@ -82,7 +97,8 @@ public:
 
     size_t n_Vertices() const { return vertices_.size(); }
 
-    size_t addVertex(const Point3& p) {
+    size_t addVertex(const Point3& p)
+    {
         auto it = vertexIndicesMap_.find(p);
         if (it == vertexIndicesMap_.end()) // not found
         {
@@ -127,22 +143,13 @@ public:
 
     int findOppositeVertexIndex(size_t face_idx, size_t adj_face_idx)
     {
-        using boost::range::copy;
-        using boost::sort;
-        using boost::range::set_difference;
         if (face_idx > n_Faces() || adj_face_idx > n_Faces())
             return -1;
 
         const Face& face = getFace(face_idx);
         const Face& adj_face = getFace(adj_face_idx);
-        std::array<size_t, NUMBER_OF_SIDES> face_vts, adj_face_vts;
-        std::array<int, NUMBER_OF_SIDES> diff{-1,};
-        copy(face.getVertices(), face_vts.begin());
-        copy(adj_face.getVertices(), adj_face_vts.begin());
-        sort(face_vts);
-        sort(adj_face_vts);
-        auto end = set_difference(face_vts, adj_face_vts, diff.begin());
-        if (std::distance(diff.begin(), end) > 1) { // more than just one index
+        auto [diff,dist] = diffIndices(face.getVertices(), adj_face.getVertices());
+        if (dist > 1) { // more than just one index
             return -1;
         }
 
