@@ -76,7 +76,6 @@ int setOpIndices(RetCont& result,
     std::copy(contBbegin, contBend, append(contBcopy));
     boost::sort(contAcopy);
     boost::sort(contBcopy);
-    auto initialPosition = append(result);
     auto pos = setOp(contAcopy, contBcopy, append(result));
     return dist(result, pos);
 }
