@@ -46,10 +46,7 @@ struct Inserter<std::vector<T, Rest...>>
     using Type = std::vector<T, Rest...>;
     using OutputIterator = std::back_insert_iterator<Type>;
     OutputIterator operator()(Type& cont) { return std::back_inserter(cont); }
-    size_t dist(const Type& cont, OutputIterator)
-    {
-        return cont.size();
-    }
+    size_t dist(const Type& cont, OutputIterator) { return cont.size(); }
 };
 
 template <typename T>
