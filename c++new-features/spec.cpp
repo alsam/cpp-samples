@@ -102,7 +102,9 @@ template <typename RetCont, typename ARange, typename BRange>
 int diffIndicesRange(RetCont& result, const ARange& acont, const BRange& bcont)
 {
     result.clear();
-    return diffIndices<RetCont, typename ARange::const_iterator, typename BRange::const_iterator,
+    return diffIndices<RetCont,
+                       typename ARange::const_iterator,
+                       typename BRange::const_iterator,
                        std::back_insert_iterator<RetCont>>
       (result, begin(acont), end(acont), begin(bcont), end(bcont));
 }
@@ -111,7 +113,9 @@ template <typename RetCont, typename ARange, typename BRange>
 int intersectIndicesRange(RetCont& result, const ARange& acont, const BRange& bcont)
 {
     result.clear();
-    return intersectIndices<RetCont, typename ARange::const_iterator, typename BRange::const_iterator,
+    return intersectIndices<RetCont,
+                            typename ARange::const_iterator,
+                            typename BRange::const_iterator,
                             std::back_insert_iterator<RetCont>>
       (result, begin(acont), end(acont), begin(bcont), end(bcont));
 }
