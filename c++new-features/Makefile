@@ -22,6 +22,9 @@ shared_mutex: shared_mutex.cpp
 
 partial_specialization: partial_specialization.cpp
 
+spec: spec.cpp
+	g++ -pthread spec.cpp -o spec -lgtest
+
 thr_sanitize:
 	g++ -pthread -fsanitize=thread  producer_consumer.cpp
 	./a.out

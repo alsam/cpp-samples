@@ -81,7 +81,7 @@ body_ax_sdlp(T x0, T y0, T t0, T x1, T y1, T t1,
         xd = HALF<T> * (x2 - x1);
         ym = HALF<T> * (y2 + y1);
         yd = HALF<T> * (y2 - y1);
-        dr = sqrt(xd * xd + yd * yd);
+        dr = std::sqrt(xd * xd + yd * yd);
         vnx =  yd / dr; // unit normal vector
         vny = -xd / dr;
     } else {          // circular arcs
