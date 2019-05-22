@@ -9,7 +9,12 @@ int zero_gap(int val)
     std::cout << bit_repr << std::endl;
     size_t max_gap = 0, cur_gap = 0;
     bool gap = false;
-    for (size_t i = 0; i < bit_repr.size(); ++i) {
+    // skip leading zeros
+    size_t start = 0;
+    while (bit_repr[start++] == '0')
+        ;
+
+    for (size_t i = start; i < bit_repr.size(); ++i) {
         if (bit_repr[i] == '0') {
             if (!gap) {
                 gap = true;
@@ -23,8 +28,8 @@ int zero_gap(int val)
                 max_gap = cur_gap;
         }
     }
-    if (cur_gap > max_gap)
-        max_gap = cur_gap;
+    //if (cur_gap > max_gap)
+    //    max_gap = cur_gap;
 
     return max_gap;
 }
