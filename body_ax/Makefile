@@ -27,7 +27,7 @@ EIGEN_INCL = /usr/include/eigen3
 INCLUDES := -I$(SDIR)/ -I$(EIGEN_INCL)
 LDLIBS = -lboost_program_options
 
-CXX=g++-8
+CXX=g++
 CXX11_FLAGS = -std=c++17
 DEBUG_CXXFLAGS = $(CXX11_FLAGS) -g -O0 $(INCLUDES)
 RELEASE_CXXFLAGS = $(CXX11_FLAGS) -g -O2 -DNDEBUG=1 $(INCLUDES)
