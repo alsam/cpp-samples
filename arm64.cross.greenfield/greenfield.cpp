@@ -1,4 +1,3 @@
-#include <cxxopts.hpp>
 // The MIT License (MIT)
 //
 // Copyright (c) 2020 Alexander Samoilov
@@ -21,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 
 
+#include <cxxopts.hpp>
 #include <thread>
 #include <mutex>
 #include <inttypes.h>
