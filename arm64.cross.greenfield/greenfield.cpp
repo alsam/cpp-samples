@@ -163,6 +163,7 @@ int main(int argc, char** argv)
         ("d,display", "display current frequencies")
         ("a,available", "display available frequencies")
         ("g,gpu", "set GPU frequency", cxxopts::value<uint64_t>())
+        ("l,lock", "lock GPU/DDR/CPU frequencies", cxxopts::value<std::vector<uint64_t>>())
         ("h,help", "Print help")
         ;
     auto opts = options.parse(argc, argv);
@@ -187,6 +188,12 @@ int main(int argc, char** argv)
       bool status = lockGpuFrequency(gpu_freq);
       std::cout << std::boolalpha << "op status: " << status
                 << "\ncur GPU frequency: " << getGpuFrequency() << std::endl;
+    }
+
+    if (opts.count("lock"))
+    {
+        std::cout << "lock GPU/DDR/CPU frequencies" << std::endl;
+        const auto freqsVec = opts["lock"].as<std::vector<uint64_t>>();
     }
 
 }
