@@ -8,4 +8,5 @@ ninja
 qemu-aarch64 ./greenfield
 qemu-aarch64 ./greenfield -d
 qemu-aarch64 ./greenfield --gpu 900
+g++ -pthread -DCXXOPTS_NO_EXCEPTIONS=1 -I. -g greenfield.cpp -o greenfield
 ```
