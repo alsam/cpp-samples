@@ -2,6 +2,10 @@
 #include <functional>
 #include <vector>
 
+
+namespace abc {
+
+
 struct State {};
 
 class FrameReplay {
@@ -21,16 +25,20 @@ public:
     uint32_t getFrameId() const { return frameId_; }
     void setInitFunc(init_function_t initFunc) { initFunc_ = initFunc; }
     void setDrawFunc(draw_function_t drawFunc) { drawFunc_ = drawFunc; }
-    void init(const std::vector<uint8_t*> &buffer) { initFunc_(buffer); }
-    void draw(const State &engine, const std::vector<uint8_t*> &buffer) { drawFunc_(engine, buffer); }
+    void setHeight(int h) { height_ = h; }
+    void setWidth(int w) { width_ = w; }
+    void init(const std::vector<uint8_t*> &buffer) const { initFunc_(buffer); }
+    void draw(const State &engine, const std::vector<uint8_t*> &buffer) const { drawFunc_(engine, buffer); }
 
 private:
     uint32_t frameId_;
     init_function_t initFunc_;
     draw_function_t drawFunc_;
+    int height_;
+    int width_;
 };
 
-int main()
+std::vector<FrameReplay*> init()
 {
     std::vector<FrameReplay*> frames;
     {
@@ -61,10 +69,19 @@ int main()
         frames.push_back(frame);
     }
 
+    // NVRO
+    return frames;
+}
+
+}
+
+int main()
+{
+    auto frames = abc::init();
     for (const auto& f : frames) {
         std::cout << "frame #" << f->getFrameId() << std::endl;
         f->init({});
         f->draw({},{});
     }
-}
 
+}
