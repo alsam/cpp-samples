@@ -1,3 +1,5 @@
+/// https://habr.com/ru/post/516630/
+
 #include <vector>
 #include <iostream>
 #include "range.h"
