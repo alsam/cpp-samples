@@ -26,8 +26,10 @@
 
 PoissonProblem::PoissonProblem(unsigned M,   unsigned N,
                                double x_min, double x_max,
-                               double y_min, double y_max)
-: M_(M), N_(N),
+                               double y_min, double y_max,
+                               bool verbose)
+: verbose_(verbose),
+  M_(M), N_(N),
   x_grid_(M + 1), y_grid_(N + 1),
   ome_(M + 1, N + 1), psi_(M + 1, N + 1)
 {
@@ -41,7 +43,11 @@ PoissonProblem::PoissonProblem(unsigned M,   unsigned N,
     }
 
     for (unsigned i = 0; i <= N_; i++) {
-        x_grid_[i] = ya*std::cos(M_PI*i/(double)N_)+yb;
+        y_grid_[i] = ya*std::cos(M_PI*i/(double)N_)+yb;
     }
 
+    if (verbose_) {
+        std::cout << "x_grid: [" << x_grid_ << "]\n";
+        std::cout << "y_grid: [" << y_grid_ << "]\n";
+    }
 }

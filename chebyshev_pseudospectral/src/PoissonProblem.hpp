@@ -53,7 +53,8 @@ public:
     /// @param y_max  maximum `y` value, typically it is +1
     PoissonProblem(unsigned M,   unsigned N,
                    double x_min, double x_max,
-                   double y_min, double y_max);
+                   double y_min, double y_max,
+                   bool verbose = false);
 
 private:
 

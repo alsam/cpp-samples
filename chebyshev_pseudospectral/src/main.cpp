@@ -27,7 +27,7 @@
 
 struct program_options
 {
-    bool verbose                    = {false};
+    bool verbose                    = {true};
     unsigned M                      = {32};    // grid size along `x` direction
     unsigned N                      = {32};    // grid size along `y` direction
     double x_min                    = {-1.0};  // minimum `x` value
@@ -40,7 +40,7 @@ struct program_options
 int main(int argc, char **argv)
 {
     program_options po;
-    PoissonProblem problem(po.M, po.N, po.x_min, po.x_max, po.y_min, po.y_max);
+    PoissonProblem problem(po.M, po.N, po.x_min, po.x_max, po.y_min, po.y_max, po.verbose);
 
     return EXIT_SUCCESS;
 }
