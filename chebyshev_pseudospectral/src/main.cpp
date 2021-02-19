@@ -22,11 +22,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <boost/program_options.hpp>
 #include "PoissonProblem.hpp"
+
+struct program_options
+{
+    bool verbose                    = {false};
+    unsigned M                      = {32};    // grid size along `x` direction
+    unsigned N                      = {32};    // grid size along `y` direction
+    double x_min                    = {-1.0};  // minimum `x` value
+    double x_max                    = { 1.0};  // maximum `x` value
+    double y_min                    = {-1.0};  // minimum `y` value
+    double y_max                    = { 1.0};  // maximum `y` value
+    std::string asy_name            = {""};    // dump streamlines to vector `.asy` file if name is given
+};
 
 int main(int argc, char **argv)
 {
-    PoissonProblem problem;
+    program_options po;
+    PoissonProblem problem(po.M, po.N, po.x_min, po.x_max, po.y_min, po.y_max);
 
     return EXIT_SUCCESS;
 }

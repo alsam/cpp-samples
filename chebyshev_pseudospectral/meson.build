@@ -3,7 +3,7 @@ project('poisson_solver', ['c', 'cpp'],
 
 src = [
   'src/cft.cpp',
-  'src/poisson_solver.cpp',
+  'src/PoissonProblem.cpp',
 ]
 
 pymod = import('python')

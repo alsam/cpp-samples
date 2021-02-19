@@ -24,9 +24,24 @@
 
 #include "PoissonProblem.hpp"
 
-int main(int argc, char **argv)
+PoissonProblem::PoissonProblem(unsigned M,   unsigned N,
+                               double x_min, double x_max,
+                               double y_min, double y_max)
+: M_(M), N_(N),
+  x_grid_(M + 1), y_grid_(N + 1),
+  ome_(M + 1, N + 1), psi_(M + 1, N + 1)
 {
-    PoissonProblem problem;
+    double xa = 0.5*(x_min-x_max);
+    double xb = 0.5*(x_min+x_max);
+    double ya = 0.5*(y_min-y_max);
+    double yb = 0.5*(y_min+y_max);
 
-    return EXIT_SUCCESS;
+    for (unsigned i = 0; i <= M_; i++) {
+        x_grid_[i] = xa*std::cos(M_PI*i/(double)M_)+xb;
+    }
+
+    for (unsigned i = 0; i <= N_; i++) {
+        x_grid_[i] = ya*std::cos(M_PI*i/(double)N_)+yb;
+    }
+
 }
