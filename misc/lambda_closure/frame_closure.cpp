@@ -78,10 +78,18 @@ std::vector<FrameReplay*> init()
 int main()
 {
     auto frames = abc::init();
+
     for (const auto& f : frames) {
-        std::cout << "frame #" << f->getFrameId() << std::endl;
+        std::cout << "init frame #" << f->getFrameId() << std::endl;
         f->init({});
-        f->draw({},{});
+    }
+
+    for (size_t i = 0; i < 10; ++i) {
+        for (const auto& f : frames) {
+            std::cout << "frame #" << f->getFrameId() << std::endl;
+            //f->init({});
+            f->draw({},{});
+        }
     }
 
 }
