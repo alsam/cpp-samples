@@ -26,9 +26,9 @@
 
 #include "math.hpp"
 
-/**  
- *  @brief Bartels-Stewart algorithm for solving matrix equations of the form \f$A X + X B = C\f$ where \f$A,B,C,X\f$ are all matrices. 
- *  
+/**
+ *  @brief Bartels-Stewart algorithm for solving matrix equations of the form \f$A X + X B = C\f$ where \f$A,B,C,X\f$ are all matrices.
+ *
  */
 
 /* Legacy interface
@@ -43,14 +43,20 @@ void bs_solve(int m, int n, double **a, double **b,
     double **u, double **v, double **c, double **res);
 */
 
-/// stands for **B**artels-**S**tewart
-class BS
+class BS /// stands for **B**artels-**S**tewart
 {
 
 private:
 
     void hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n);
 
+    void bckmlt(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> u, unsigned n);
 
+    bool schur(Eigen::Ref<RowMatrixXd> h, Eigen::Ref<RowMatrixXd> u, unsigned n, double eps = 1.0e-30);
+
+    void initau(unsigned m, unsigned n,
+                Eigen::Ref<RowMatrixXd> a,
+                Eigen::Ref<RowMatrixXd> b,
+                Eigen::Ref<RowMatrixXd> u,
+                Eigen::Ref<RowMatrixXd> v);
 };
-
