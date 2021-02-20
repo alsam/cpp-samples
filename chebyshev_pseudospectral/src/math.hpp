@@ -30,6 +30,11 @@
 #include <pybind11/stl_bind.h>
 #include <pybind11/numpy.h>
 
+/**  
+ *  @brief Contains fundamental type defintions used by the project. 
+ *  
+ */
+
 namespace py = pybind11;
 
 using RowVectorXd = Eigen::RowVectorXd;

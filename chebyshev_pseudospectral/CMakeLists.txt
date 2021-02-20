@@ -31,6 +31,7 @@ include_directories(
 add_executable(${project_name}
     src/cft.cpp
     src/PoissonProblem.cpp
+    src/bs2.cpp
     src/main.cpp)
 
 # Include directories list.
