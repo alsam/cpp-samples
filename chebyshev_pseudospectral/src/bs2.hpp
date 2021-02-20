@@ -31,6 +31,41 @@
  *
  */
 
+///  @details This algorithm consists of 4 parts:
+///
+/// \f{enumerate}{
+///   \item Similarity transformation of the matrices $A$ and $B$ to the real Schur form with
+/// 	orthogonal matrices $U$ and $Q$. Let us determine the order that
+/// 	matrix $A$ transforms to low Schur form, $B$ --
+/// 	to the upper one.
+///   \begin{equation}
+///         \tilde{A} = U^{-1} A U, \qquad \tilde{B} = Q^{-1} B Q
+///   \end{equation}
+///
+///   \item RHS transformation
+///
+///   \begin{equation}
+///         \tilde{b} = U^{-1} b Q
+///   \end{equation}
+///
+///   \item Solution of the transformed system by matrix $Y$
+///
+///   \begin{equation}
+///         \tilde{A} Y + Y \tilde{B} = \tilde{b}
+///   \end{equation}
+///
+///     This is a linear system with block triangular form, diagonal blocks have order $1$, $2$ and $4$.
+///     Thus we are to solve series af linear systems of orders $1$ (trivial case), $2$ and $4$.
+///     All of these systems can be solved independently in parallel.
+///
+///   \item Back substitution
+///
+///   \begin{equation}
+/// 	X = U Y Q^{-1}
+///   \end{equation}
+///
+/// \f}
+
 /* Legacy interface
 
 void hshldr(double **a, int n);
@@ -43,7 +78,7 @@ void bs_solve(int m, int n, double **a, double **b,
     double **u, double **v, double **c, double **res);
 */
 
-namespace BS /// stands for **B**artels-**S**tewart
+namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$tewart
 {
     void hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n);
 
