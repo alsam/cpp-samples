@@ -9,5 +9,8 @@ ninja_build_debug:
 dox:
 	doxygen Doxyfile && cd docs/latex && make
 
+tests:
+	build/poisson_solver_tests
+
 clean:
 	rm -rf build* docs/
