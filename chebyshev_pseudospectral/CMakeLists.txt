@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
-project(poisson_solver)
+set(project_name poisson_solver)
+project(${project_name})
 
 #========== Global Configurations =============#
 #----------------------------------------------#
@@ -10,17 +11,26 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(Eigen3 REQUIRED)
 find_package(PythonLibs 3 REQUIRED)
 find_package(pybind11 REQUIRED)
-
+find_package(Boost REQUIRED COMPONENTS
+  program_options
+  #  thread
+  #  system
+  #  regex
+)
 #========== Targets Configurations ============#
 
-add_executable(poisolve
+add_executable(${project_name}
     src/cft.cpp
     src/PoissonProblem.cpp
-    src/main.cpp
-)
+    src/main.cpp)
 
 # Include directories list.
-target_include_directories(poisolve PRIVATE 
+target_include_directories(${project_name} PRIVATE
     ${PYTHON_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+)
+
+target_link_libraries(${project_name}
+    Boost::program_options
 )
