@@ -290,6 +290,8 @@ void BS::shrslv(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> b, Eigen::Ref
             }
             if (dk==2) {
                 if (dl==2) {
+                    Eigen::Matrix4d tt;
+                    Eigen::Vector4d pp;
                     t[0][0]=a(k, k)+b(l, l);
                     t[0][1]=a(k, kk);
                     t[0][2]=b(ll, l);
@@ -320,6 +322,8 @@ void BS::shrslv(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> b, Eigen::Ref
                     c(kk, ll) = p[3];
 
                 } else {
+                    Eigen::Matrix2d tt;
+                    Eigen::Vector2d pp;
                     t[0][0]=a(k, k)+b(l, l);
                     t[0][1]=a(k, kk);
                     t[1][0]=a(kk, k);
