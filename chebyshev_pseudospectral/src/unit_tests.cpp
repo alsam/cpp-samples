@@ -91,6 +91,8 @@ TEST(cftSuite, test_cf2)
 
 TEST(bsSuite, test_gauss_elim)
 {
+    constexpr double EPS = 1e-12;
+
     // https://mxncalc.com/gaussian-elimination-calculator
     double A[4][4] = {{1.,  2., 3.,  4.},
                       {5.,  6., 8.,  5.},
@@ -115,10 +117,10 @@ TEST(bsSuite, test_gauss_elim)
     //     Which is: 5.3413613165043815e-14
     //   0.0
     //     Which is: 0
-    EXPECT_NEAR((b2 - xx).norm(), 0.0, 1e-12);
+    EXPECT_NEAR((b2 - xx).norm(), 0.0, EPS);
 
     Eigen::Vector4d x2 = AA.lu().solve(bb);
     // std::cout << "x2: " << x2 << std::endl;
     // std::cout << "xx: " << xx << std::endl;
-    EXPECT_NEAR((x2 - xx).norm(), 0.0, 1e-12);
+    EXPECT_NEAR((x2 - xx).norm(), 0.0, EPS);
 }
