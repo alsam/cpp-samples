@@ -105,11 +105,11 @@ TEST(bsSuite, test_gauss_elim)
     sysslv(A, b);
     Eigen::Vector4d bb(b), xx(x);
 
-    EXPECT_DOUBLE_EQ((bb - xx).norm(), 0.0);
+    //EXPECT_DOUBLE_EQ((bb - xx).norm(), 0.0);
     // Expected equality of these values:
     //   (bb - xx).norm()
     //     Which is: 5.3413613165043815e-14
     //   0.0
     //     Which is: 0
- 
+    EXPECT_NEAR((bb - xx).norm(), 0.0, 1e-12);
 }
