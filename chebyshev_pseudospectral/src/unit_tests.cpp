@@ -28,7 +28,7 @@
 template<unsigned N>
 void sysslv(double a[N][N], double b[N])
 {
-    unsigned n = N;
+    constexpr unsigned n = N;
     double biga,save;
     int i,j,k,imax;
 
@@ -102,14 +102,23 @@ TEST(bsSuite, test_gauss_elim)
                      4.858'447'488'584'5,
                      0.269'406'392'694'06,
                   };
-    sysslv(A, b);
     Eigen::Vector4d bb(b), xx(x);
+    Eigen::Matrix4d AA(reinterpret_cast<double*>(A));
+    AA.transposeInPlace();
+    // std::cout << "AA: " << AA << std::endl;
+    sysslv(A, b);
+    Eigen::Vector4d b2(b);
 
-    //EXPECT_DOUBLE_EQ((bb - xx).norm(), 0.0);
+    //EXPECT_DOUBLE_EQ((b2 - xx).norm(), 0.0);
     // Expected equality of these values:
-    //   (bb - xx).norm()
+    //   (b2 - xx).norm()
     //     Which is: 5.3413613165043815e-14
     //   0.0
     //     Which is: 0
-    EXPECT_NEAR((bb - xx).norm(), 0.0, 1e-12);
+    EXPECT_NEAR((b2 - xx).norm(), 0.0, 1e-12);
+
+    Eigen::Vector4d x2 = AA.lu().solve(bb);
+    // std::cout << "x2: " << x2 << std::endl;
+    // std::cout << "xx: " << xx << std::endl;
+    EXPECT_NEAR((x2 - xx).norm(), 0.0, 1e-12);
 }
