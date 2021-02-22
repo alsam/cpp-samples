@@ -92,9 +92,10 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
                 Eigen::Ref<RowMatrixXd> u,
                 Eigen::Ref<RowMatrixXd> v);
 
-    void sysslv(double a[5][5], double b[5], unsigned n);
-
-    void shrslv(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> b, Eigen::Ref<RowMatrixXd> c, unsigned m, unsigned n);
+    void shrslv(Eigen::Ref<RowMatrixXd> a,
+                Eigen::Ref<RowMatrixXd> b,
+                Eigen::Ref<RowMatrixXd> c,
+                unsigned m, unsigned n);
 
     void bs_solve(unsigned m, unsigned n,
                   Eigen::Ref<RowMatrixXd> a,

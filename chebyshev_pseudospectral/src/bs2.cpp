@@ -228,43 +228,12 @@ void BS::initau(unsigned m, unsigned n,
     }
 }
 
-void BS::sysslv(double a[5][5], double b[5], unsigned n)
-{
-    double biga,save; int i,j,k,imax;
-
-    for (j=0;j<n;j++) {
-        biga=0.0;
-        for(i=j;i<n;i++)
-        if (std::fabs(biga) < std::fabs(a[i][j])) {
-            biga=a[i][j];
-            imax=i;
-        }
-        if (std::fabs(biga) == 0.0) {
-            throw std::logic_error("Very singular matrix...");
-        }
-        for (k=j;k<n;k++) {
-            save=a[imax][k];
-            a[imax][k]=a[j][k];
-            a[j][k]=save/biga;
-        }
-        save=b[imax];
-        b[imax]=b[j];
-        b[j]=save/biga;
-        for (i=j+1;i<n;i++) {
-            for(k=j+1;k<n;k++)
-                a[i][k] -= a[i][j]*a[j][k];
-            b[i] -= b[j]*a[i][j];
-        }
-    }
-    for (k=n-2;k>=0;k--)
-        for(j=n-1;j>k;j--)
-            b[k] -= a[k][j]*b[j];
-}
-
-void BS::shrslv(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> b, Eigen::Ref<RowMatrixXd> c, unsigned m, unsigned n)
+void BS::shrslv(Eigen::Ref<RowMatrixXd> a,
+                Eigen::Ref<RowMatrixXd> b,
+                Eigen::Ref<RowMatrixXd> c,
+                unsigned m, unsigned n)
 {
     unsigned i,j,ib,ja,k,l,dk,dl,kk,ll;
-    double t[5][5],p[5];
 
     l=0;
     do {
@@ -292,70 +261,75 @@ void BS::shrslv(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> b, Eigen::Ref
                 if (dl==2) {
                     Eigen::Matrix4d tt;
                     Eigen::Vector4d pp;
-                    t[0][0]=a(k, k)+b(l, l);
-                    t[0][1]=a(k, kk);
-                    t[0][2]=b(ll, l);
-                    t[0][3]=0.0;
-                    t[1][0]=a(kk, k);
-                    t[1][1]=a(kk, kk)+b(l, l);
-                    t[1][2]=0.0;
-                    t[1][3]=t[0][2];
-                    t[2][0]=b(l, ll);
-                    t[2][1]=0.0;
-                    t[2][2]=a(k, k)+b(ll, ll);
-                    t[2][3]=t[0][1];
-                    t[3][0]=0.0;
-                    t[3][1]=t[2][0];
-                    t[3][2]=t[1][0];
-                    t[3][3]=a(kk, kk)+b(ll, ll);
+                    tt(0, 0) = a(k, k) + b(l, l);
+                    tt(0, 1) = a(k, kk);
+                    tt(0, 2) = b(ll, l);
+                    tt(0, 3) = 0.0;
+                    tt(1, 0) = a(kk, k);
+                    tt(1, 1) = a(kk, kk) + b(l, l);
+                    tt(1, 2) = 0.0;
+                    tt(1, 3) = tt(0, 2);
+                    tt(2, 0) = b(l, ll);
+                    tt(2, 1) = 0.0;
+                    tt(2, 2) = a(k, k) + b(ll, ll);
+                    tt(2, 3) = tt(0, 1);
+                    tt(3, 0) = 0.0;
+                    tt(3, 1) = tt(2, 0);
+                    tt(3, 2) = tt(1, 0);
+                    tt(3, 3) = a(kk, kk) + b(ll, ll);
 
-                    p[0]=c(k, l);
-                    p[1]=c(kk, l);
-                    p[2]=c(k, ll);
-                    p[3]=c(kk, ll);
+                    pp(0) = c(k, l);
+                    pp(1) = c(kk, l);
+                    pp(2) = c(k, ll);
+                    pp(3) = c(kk, ll);
 
-                    sysslv(t,p,4);
+                    // sysslv(t,p,4);
+                    pp = tt.lu().solve(pp);
 
-                    c(k, l)   = p[0];
-                    c(kk, l)  = p[1];
-                    c(k, ll)  = p[2];
-                    c(kk, ll) = p[3];
+                    c(k, l)   = pp(0);
+                    c(kk, l)  = pp(1);
+                    c(k, ll)  = pp(2);
+                    c(kk, ll) = pp(3);
 
                 } else {
                     Eigen::Matrix2d tt;
                     Eigen::Vector2d pp;
-                    t[0][0]=a(k, k)+b(l, l);
-                    t[0][1]=a(k, kk);
-                    t[1][0]=a(kk, k);
-                    t[1][1]=a(kk, kk)+b(l, l);
+                    tt(0, 0) = a(k, k) + b(l, l);
+                    tt(0, 1) = a(k, kk);
+                    tt(1, 0) = a(kk, k);
+                    tt(1, 1) = a(kk, kk) + b(l, l);
 
-                    p[0]=c(k, l);
-                    p[1]=c(kk, l);
+                    pp(0) = c(k, l);
+                    pp(1) = c(kk, l);
 
-                    sysslv(t,p,2);
+                    // sysslv(t,p,2);
+                    pp = tt.lu().solve(pp);
 
-                    c(k, l)  = p[0];
-                    c(kk, l) = p[1];
+                    c(k, l)  = pp(0);
+                    c(kk, l) = pp(1);
                 }
             } else if (dl==2) {
-                t[0][0]=a(k, k)+b(l, l);
-                t[0][1]=b(ll, l);
-                t[1][0]=b(l, ll);
-                t[1][1]=a(k, k)+b(ll, ll);
+                Eigen::Matrix2d tt;
+                Eigen::Vector2d pp;
+                tt(0, 0) = a(k, k)+b(l, l);
+                tt(0, 1) = b(ll, l);
+                tt(1, 0) = b(l, ll);
+                tt(1, 1) = a(k, k)+b(ll, ll);
 
-                p[0]=c(k, l);
-                p[1]=c(k, ll);
+                pp(0) = c(k, l);
+                pp(1) = c(k, ll);
 
-                sysslv(t,p,2);
+                // sysslv(t,p,2);
+                pp = tt.lu().solve(pp);
 
-                c(k, l)  = p[0];
-                c(k, ll) = p[1];
+                c(k, l)  = pp(0);
+                c(k, ll) = pp(1);
             } else {
-                t[0][0]=a(k, k)+b(l, l);
-                if (t[0][0]==0.0) {
+                double t = a(k, k) + b(l, l);
+                if (t==0.0) {
                     throw std::logic_error("** SHRSLV:unable to solve");
                 }
-                c(k, l) /= t[0][0];
+                c(k, l) /= t;
             }
             k += dk;
         } while (k<=n);
