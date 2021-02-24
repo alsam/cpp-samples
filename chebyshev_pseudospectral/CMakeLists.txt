@@ -20,18 +20,13 @@ find_package(Boost REQUIRED COMPONENTS
   #  regex
 )
 
-include_directories(
-    ${PYTHON_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
-)
-
 #========== Targets Configurations ============#
 
 add_executable(${project_name}
     src/cft.cpp
     src/PoissonProblem.cpp
-    src/bs2.cpp
+    src/BartelsStewart.cpp
+    src/ChebyshevDifferentiate.cpp
     src/main.cpp)
 
 # Include directories list.
@@ -46,5 +41,10 @@ target_link_libraries(${project_name}
 )
 
 add_executable(${project_name_tests} src/unit_tests.cpp src/cft.cpp)
+
+target_include_directories(${project_name_tests} PRIVATE
+    ${PYTHON_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIRS}
+)
 
 target_link_libraries(${project_name_tests} GTest::GTest GTest::Main)
