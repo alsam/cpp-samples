@@ -152,13 +152,13 @@ TEST(bsSuite, test_gauss_elim)
 
 TEST(ChebyshevDifferentiate, test_deriv1)
 {
-    constexpr unsigned M = 32;
-    auto y        = [](double x) {return x*x*x*x;}; /// \f$y = x^4\f$
-    auto y_deriv1 = [](double x) {return 3*x*x*x;}; /// \f$y = 4x^3\f$
-    RowVectorXd x_grid(M + 1), f_vals(M + 1), f_deriv_vals(M + 1);
+    constexpr unsigned M = 4; // 32
+    auto y        = [](double x) {return x*x*x*x + sin(x);}; /// \f$y = x^4 + \sin x\f$
+    auto y_deriv1 = [](double x) {return 4*x*x*x + cos(x);}; /// \f$y = 4x^3 + \cos x\f$
+    RowVectorXd x_grid(M + 1), f_vals(M + 1), f_vals_sp(M + 1), f_deriv_vals(M + 1);
 
     double x_min = -1., x_max = 1.;
-    double xa = 0.5*(x_min-x_max);
+    double xa = 0.5*(x_max-x_min);
     double xb = 0.5*(x_min+x_max);
 
     std::cout << "xa: " << xa << " xb: " << xb << std::endl;
@@ -166,6 +166,8 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     for (unsigned i = 0; i <= M; i++) {
         x_grid[i] = xa*std::cos(M_PI*i/(double)M)+xb;
     }
+
+    std::cout << "x_grid: " << x_grid << std::endl;
 
     for (unsigned i = 0; i <= M; i++) {
         f_vals[i]       = y        (x_grid[i]);
@@ -176,10 +178,10 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
 
     cosfft1(f_vals, M);
-    Differentiate(f_vals, f_vals, 2.0 / (x_max - x_min), M);
-    cosfft1(f_vals, M, true);
+    Differentiate(f_vals, f_vals_sp, 1.0 / (x_max - x_min), M);
+    cosfft1(f_vals_sp, M, true);
 
-    std::cout << "after f_vals: [" << f_vals << "]\n";
+    std::cout << "f_vals_sp: [" << f_vals_sp << "]\n";
 
-    EXPECT_DOUBLE_EQ((f_vals - f_deriv_vals).norm(), 0.0);
+    EXPECT_DOUBLE_EQ((f_vals_sp - f_deriv_vals).norm(), 0.0);
 }

@@ -68,7 +68,7 @@ void Differentiate(Eigen::Ref<RowVectorXd> data,
         rslt[j] = rslt[j+2]+2.0*(j+1)*span*temp2;
         temp2   = temp1;
     }
-    rslt[0] = 0.5*rslt[2]+span*temp2;
+    rslt[0] = 0.5*(rslt[2]+span*temp2);
     rslt[n] = 0.0;
 }
 
