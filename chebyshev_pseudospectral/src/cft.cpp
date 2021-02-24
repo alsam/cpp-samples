@@ -49,7 +49,8 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
     wtemp = std::sin(0.5*(theta=M_PI/n));
     wpr = -2.0*wtemp*wtemp;
     wpi = std::sin(theta); m=n >> 1;
-    wr = wi = 0.0;
+    wr = 1.0;
+    wi = 0.0;
     sum = data[0];
     for (unsigned j=1; j<=m; j++) {
         wr = (wtemp=wr)*wpr-wi*wpi+wr;

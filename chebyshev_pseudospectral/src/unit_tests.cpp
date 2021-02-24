@@ -24,6 +24,7 @@
 
 #include <gtest/gtest.h>
 #include "math.hpp"
+#include "ChebyshevDifferentiate.hpp"
 
 template<unsigned N>
 void sysslv(double a[N][N], double b[N])
@@ -71,6 +72,30 @@ TEST(cftSuite, test_cosfft1)
     cosfft1(x, 2);
 
     EXPECT_DOUBLE_EQ((x - x_inv).norm(), 0.0);
+}
+
+TEST(cftSuite, test_cosfft12)
+{
+    constexpr unsigned M = 32;
+    auto y = [](double x) {return x*x*x*x - 1;}; /// \f$y = x^4 - 1\f$
+    double x_min = -1., x_max = 1.;
+    double xa = 0.5*(x_min-x_max);
+    double xb = 0.5*(x_min+x_max);
+    RowVectorXd x_grid(M + 1), f_vals1(M + 1), f_vals2(M + 1);
+    for (unsigned i = 0; i <= M; i++) {
+        x_grid[i] = xa*std::cos(M_PI*i/(double)M)+xb;
+    }
+
+    for (unsigned i = 0; i <= M; i++) {
+        f_vals2[i] = f_vals1[i] = y(x_grid[i]);
+    }
+
+    cosfft1(f_vals1, M);
+    cosfft1(f_vals1, M, true);
+
+    // EXPECT_DOUBLE_EQ((f_vals1 - f_vals2).norm(), 0.0);
+    constexpr double EPS = 1e-14;
+    EXPECT_NEAR((f_vals1 - f_vals2).norm(), 0.0, EPS);
 }
 
 TEST(cftSuite, test_cf2)
@@ -123,4 +148,38 @@ TEST(bsSuite, test_gauss_elim)
     // std::cout << "x2: " << x2 << std::endl;
     // std::cout << "xx: " << xx << std::endl;
     EXPECT_NEAR((x2 - xx).norm(), 0.0, EPS);
+}
+
+TEST(ChebyshevDifferentiate, test_deriv1)
+{
+    constexpr unsigned M = 32;
+    auto y        = [](double x) {return x*x*x*x;}; /// \f$y = x^4\f$
+    auto y_deriv1 = [](double x) {return 3*x*x*x;}; /// \f$y = 4x^3\f$
+    RowVectorXd x_grid(M + 1), f_vals(M + 1), f_deriv_vals(M + 1);
+
+    double x_min = -1., x_max = 1.;
+    double xa = 0.5*(x_min-x_max);
+    double xb = 0.5*(x_min+x_max);
+
+    std::cout << "xa: " << xa << " xb: " << xb << std::endl;
+
+    for (unsigned i = 0; i <= M; i++) {
+        x_grid[i] = xa*std::cos(M_PI*i/(double)M)+xb;
+    }
+
+    for (unsigned i = 0; i <= M; i++) {
+        f_vals[i]       = y        (x_grid[i]);
+        f_deriv_vals[i] = y_deriv1 (x_grid[i]);
+    }
+
+    std::cout << "f_vals: [" << f_vals << "]\n";
+    std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
+
+    cosfft1(f_vals, M);
+    Differentiate(f_vals, f_vals, 2.0 / (x_max - x_min), M);
+    cosfft1(f_vals, M, true);
+
+    std::cout << "after f_vals: [" << f_vals << "]\n";
+
+    EXPECT_DOUBLE_EQ((f_vals - f_deriv_vals).norm(), 0.0);
 }

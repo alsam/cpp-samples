@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 set(project_name poisson_solver)
-set(project_name_tests ${project_name}_tests)
+set(project_lib ${project_name}_lib)
+set(project_tests ${project_name}_tests)
 project(${project_name})
 
 #========== Global Configurations =============#
@@ -22,14 +23,21 @@ find_package(Boost REQUIRED COMPONENTS
 
 #========== Targets Configurations ============#
 
-add_executable(${project_name}
-    src/cft.cpp
-    src/PoissonProblem.cpp
-    src/BartelsStewart.cpp
-    src/ChebyshevDifferentiate.cpp
-    src/main.cpp)
+set (src
+     src/cft.cpp
+     src/PoissonProblem.cpp
+     src/BartelsStewart.cpp
+     src/ChebyshevDifferentiate.cpp)
 
-# Include directories list.
+add_library(${project_lib} STATIC ${src})
+
+target_include_directories(${project_lib} PRIVATE
+    ${PYTHON_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIRS}
+)
+
+add_executable(${project_name} src/main.cpp)
+
 target_include_directories(${project_name} PRIVATE
     ${PYTHON_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIRS}
@@ -38,13 +46,18 @@ target_include_directories(${project_name} PRIVATE
 
 target_link_libraries(${project_name}
     Boost::program_options
+    ${project_lib}
 )
 
-add_executable(${project_name_tests} src/unit_tests.cpp src/cft.cpp)
+add_executable(${project_tests} src/unit_tests.cpp)
 
-target_include_directories(${project_name_tests} PRIVATE
+target_include_directories(${project_tests} PRIVATE
     ${PYTHON_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIRS}
 )
 
-target_link_libraries(${project_name_tests} GTest::GTest GTest::Main)
+target_link_libraries(${project_tests}
+                      GTest::GTest
+                      GTest::Main
+                      ${project_lib}
+)
