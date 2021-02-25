@@ -31,9 +31,9 @@
  *
  */
 
-void Differentiate(Eigen::Ref<RowVectorXd> data,
-                   Eigen::Ref<RowVectorXd> rslt,
-                   double span, unsigned n);
+void SpectralDifferentiate(Eigen::Ref<RowVectorXd> data,
+                           Eigen::Ref<RowVectorXd> rslt,
+                           double span, unsigned n);
 
 void BoundaryConditions(Eigen::Ref<RowVectorXd> data,
                         Eigen::Ref<RowVectorXd> rslt,

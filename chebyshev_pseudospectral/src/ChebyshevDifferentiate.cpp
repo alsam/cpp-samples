@@ -54,9 +54,9 @@
 /// 			b_n	&=0		&&\quad(n\ge N)
 /// \f}
 
-void Differentiate(Eigen::Ref<RowVectorXd> data,
-                   Eigen::Ref<RowVectorXd> rslt,
-                   double span, unsigned n)
+void SpectralDifferentiate(Eigen::Ref<RowVectorXd> data,
+                           Eigen::Ref<RowVectorXd> rslt,
+                           double span, unsigned n)
 {
     double temp1 = data[n-1],
            temp2 = data[n-2];
@@ -68,7 +68,7 @@ void Differentiate(Eigen::Ref<RowVectorXd> data,
         rslt[j] = rslt[j+2]+2.0*(j+1)*span*temp2;
         temp2   = temp1;
     }
-    rslt[0] = 0.5*(rslt[2]+span*temp2);
+    rslt[0] = 0.5*rslt[2]+span*temp2;
     rslt[n] = 0.0;
 }
 

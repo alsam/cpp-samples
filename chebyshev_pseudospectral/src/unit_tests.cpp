@@ -152,7 +152,7 @@ TEST(bsSuite, test_gauss_elim)
 
 TEST(ChebyshevDifferentiate, test_deriv1)
 {
-    constexpr unsigned M = 4; // 32
+    constexpr unsigned M = 32;
     auto y        = [](double x) {return x*x*x*x + sin(x);}; /// \f$y = x^4 + \sin x\f$
     auto y_deriv1 = [](double x) {return 4*x*x*x + cos(x);}; /// \f$y = 4x^3 + \cos x\f$
     RowVectorXd x_grid(M + 1), f_vals(M + 1), f_vals_sp(M + 1), f_deriv_vals(M + 1);
@@ -161,27 +161,31 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     double xa = 0.5*(x_max-x_min);
     double xb = 0.5*(x_min+x_max);
 
-    std::cout << "xa: " << xa << " xb: " << xb << std::endl;
+    // std::cout << "xa: " << xa << " xb: " << xb << std::endl;
 
     for (unsigned i = 0; i <= M; i++) {
         x_grid[i] = xa*std::cos(M_PI*i/(double)M)+xb;
     }
 
-    std::cout << "x_grid: " << x_grid << std::endl;
+    // std::cout << "x_grid: " << x_grid << std::endl;
 
     for (unsigned i = 0; i <= M; i++) {
         f_vals[i]       = y        (x_grid[i]);
         f_deriv_vals[i] = y_deriv1 (x_grid[i]);
     }
 
-    std::cout << "f_vals: [" << f_vals << "]\n";
-    std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
+    // std::cout << "f_vals: [" << f_vals << "]\n";
+    // std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
 
-    cosfft1(f_vals, M);
-    Differentiate(f_vals, f_vals_sp, 1.0 / (x_max - x_min), M);
-    cosfft1(f_vals_sp, M, true);
+    cosfft1(f_vals, M, true);
+    SpectralDifferentiate(f_vals, f_vals_sp, 2.0 / (x_max - x_min), M);
+    cosfft1(f_vals_sp, M);
 
-    std::cout << "f_vals_sp: [" << f_vals_sp << "]\n";
+    // std::cout << "f_vals_sp: [" << f_vals_sp << "]\n";
+    // std::cout << "f_vals_sp - f_deriv_vals: [" << f_vals_sp - f_deriv_vals << "]\n";
 
-    EXPECT_DOUBLE_EQ((f_vals_sp - f_deriv_vals).norm(), 0.0);
+    //EXPECT_DOUBLE_EQ((f_vals_sp - f_deriv_vals).norm(), 0.0);
+
+    constexpr double EPS = 1e-10;
+    EXPECT_NEAR((f_vals_sp - f_deriv_vals).norm(), 0.0, EPS);
 }
