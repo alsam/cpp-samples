@@ -48,12 +48,51 @@
 /// \f}
 /// 
 /// equating \f$T'_n(x)\f$ for \f$n=1,\dots,N+1\f$
-/// we derive requrrent equations for Chebyshev polynomials derivatives
+/// we derive recurrent equations for Chebyshev polynomials derivatives
 /// 
 /// \f{alignat*}{{2}
-/// 	c_{n-1}b_{n-1}-b_{n+1}	&= 2na_n	&&\quad(1\le n\le N)\\
-/// 			b_n	&=0		&&\quad(n\ge N)
+///        c_{n-1}b_{n-1}-b_{n+1} &= 2na_n &&\quad(1\le n\le N)\\
+///                           b_n &=0      &&\quad(n\ge N)
 /// \f}
+///
+/// if approximate solution is at each collocation point \f$(x_j)\f$
+///
+/// \f[
+///     u(x,t) = \sum_{k=1}^{N+1}a_{k}T_{k-1}(x)
+/// \f]
+///
+/// then, in particular, spatial derivatives can be defined directly in terms
+/// of undifferentiated Chebyshev polynomials, i.e.
+///
+/// \f[
+///     \frac{\partial{u}}{\partial{x}} = \sum_{k=1}^{N}a_{k}^{(1)}T_{k-1}(x)
+/// \f]
+///
+/// and
+///
+/// \f[
+///     \frac{\partial^2{u}}{\partial{x^2}} = \sum_{k=1}^{N-1}a_{k}^{(2)}T_{k-1}(x)
+/// \f]
+///
+/// Specifically, the following recurrence relations permit all
+/// the \f$a_k^{(1)}, a_k^{(2)}\f$ coefficients to be obtained in \f$O(N)\f$ operations
+///
+/// \f{alignat*}{{2}
+///     a_k^{(1)} &= a_{k+2}^{(1)} + 2k a_{k+1}       &&\quad(2\le k\le N)\\
+///     a_k^{(2)} &= a_{k+2}^{(2)} + 2k a_{k+1}^{(1)} &&\quad(2\le k\le N-1)\\
+/// \f}
+///
+/// and
+///
+/// \f[
+///     a_1^{(1)} = 0.5 a_3^{(1)} + 2k a_2, \quad a_1^{(2)} = 0.5 a_3^{(2)} + 2k a_2^{(1)}
+/// \f]
+///
+/// and
+///
+/// \f[
+///     a_{N+1}^{(1)} = a_{N+2}^{(1)} = 0, \quad a_{N}^{(2)} = a_{N+1}^{(2)} = 0
+/// \f]
 
 void SpectralDifferentiate(Eigen::Ref<RowVectorXd> data,
                            Eigen::Ref<RowVectorXd> rslt,
