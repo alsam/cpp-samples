@@ -82,17 +82,9 @@
 ///     a_k^{(2)} &= a_{k+2}^{(2)} + 2k a_{k+1}^{(1)} &&\quad(2\le k\le N-1)\\
 /// \f}
 ///
-/// and
+/// and \f$\qquad a_1^{(1)} = 0.5 a_3^{(1)} + 2k a_2, \quad a_1^{(2)} = 0.5 a_3^{(2)} + 2k a_2^{(1)}\f$
 ///
-/// \f[
-///     a_1^{(1)} = 0.5 a_3^{(1)} + 2k a_2, \quad a_1^{(2)} = 0.5 a_3^{(2)} + 2k a_2^{(1)}
-/// \f]
-///
-/// and
-///
-/// \f[
-///     a_{N+1}^{(1)} = a_{N+2}^{(1)} = 0, \quad a_{N}^{(2)} = a_{N+1}^{(2)} = 0
-/// \f]
+/// and \f$\qquad a_{N+1}^{(1)} = a_{N+2}^{(1)} = 0, \quad a_{N}^{(2)} = a_{N+1}^{(2)} = 0\f$
 
 void SpectralDifferentiate(Eigen::Ref<RowVectorXd> data,
                            Eigen::Ref<RowVectorXd> rslt,
