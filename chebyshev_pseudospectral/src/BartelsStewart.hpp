@@ -80,11 +80,24 @@ void bs_solve(int m, int n, double **a, double **b,
 
 namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$tewart
 {
+    /// @brief reduces the matrix to upper Hessenberg form by Householder similarity transformations
+    /// see [Reducing a Matrix to Hessenberg Form](https://www.ams.org/journals/mcom/1969-23-108/S0025-5718-1969-0258255-3/S0025-5718-1969-0258255-3.pdf)
+    /// \param[in,out] a - the matrix `A`
+    /// \param[in] n - the matrix dimension \f$(N + 1) \star (N + 1)\f$
     void hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n);
 
-    void bckmlt(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> u, unsigned n);
+    /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U` that reduces the matrix `A` to upper Hessenberg form
+    /// the matrices `A` and `U` can be aliased i.e. be the same
+    /// \param[in] a - the matrix `A` from `hshldr`
+    /// \param[in] u - the ortogonal matrix `U` that reduces `A` to upper Hessenberg form
+    /// \param[in] n - the matrices dimension \f$(N + 1) \star (N + 1)\f$
+    void bckmlt(Eigen::Ref<RowMatrixXd> a,
+                Eigen::Ref<RowMatrixXd> u,
+                unsigned n);
 
-    bool schur(Eigen::Ref<RowMatrixXd> h, Eigen::Ref<RowMatrixXd> u, unsigned n, double eps = 1.0e-30);
+    bool schur(Eigen::Ref<RowMatrixXd> h,
+               Eigen::Ref<RowMatrixXd> u,
+               unsigned n, double eps = 1.0e-30);
 
     void initau(unsigned m, unsigned n,
                 Eigen::Ref<RowMatrixXd> a,

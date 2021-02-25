@@ -24,11 +24,9 @@
 
 #include "BartelsStewart.hpp"
 
-/**  
- *  @brief Bartels-Stewart algorithm for solving matrix equations of the form \f$A X + X B = C\f$ where \f$A,B,C,X\f$ are all matrices. 
- *  
- */
-
+/// @brief reduces the matrix to upper Hessenberg form by Householder similarity transformations
+/// on @return the matrix `a` contains: the upper triangle and `(n+1)` column contains Hessenberg form
+/// the low triangle and `(n+1)` row contains the history of transformations.
 void BS::hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n)
 {
     unsigned i,j,l;
@@ -43,8 +41,7 @@ void BS::hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n)
                 s = (a(i, l) /= max);
                 sum += s*s;
             }
-            s = std::sqrt(sum);
-            s = (a(l+1, l) < 0.0) ? -s : s; // ???
+            s = std::copysign(std::sqrt(sum), a(l+1, l));
             a(l, n+1) = -max*s;
             p = (a(l+1, l) += s);
             a(n+1, l) = p*s;
@@ -67,7 +64,9 @@ void BS::hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n)
     a(n-1, n+1) = a(n, n-1);
 }
 
-void BS::bckmlt(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> u, unsigned n)
+void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
+                Eigen::Ref<RowMatrixXd> u,
+                unsigned n)
 {
     unsigned i,j,l;
     double sum,p;
@@ -89,14 +88,16 @@ void BS::bckmlt(Eigen::Ref<RowMatrixXd> a, Eigen::Ref<RowMatrixXd> u, unsigned n
     }
 }
 
-bool BS::schur(Eigen::Ref<RowMatrixXd> h, Eigen::Ref<RowMatrixXd> u, unsigned nn, double eps)
+bool BS::schur(Eigen::Ref<RowMatrixXd> h,
+               Eigen::Ref<RowMatrixXd> u,
+               unsigned nn, double eps)
 {
     constexpr unsigned MAXITER = 150;
     bool notlast,zero;
     unsigned i,j,k,l,n=nn,na,jl,m,its;
     double rsum,test,hn=0.0,p,q,r,s,w,x,y,z;
 
-    for (i=0;i<=n;i++) {
+    for (i=0; i<=n; i++) {
         jl = (i>1) ? (i-1) : 0;
         for (rsum=0.0, j=jl;j<=n;j++)
             rsum += std::fabs(h(i, j));
@@ -145,9 +146,9 @@ nextw:
                    <= std::fabs(p)*test)
                    break;
         }
-        for (i=m+2;i<=n;i++) h(i, i-2)=0.0;
-        for (i=m+3;i<=n;i++) h(i, i-3)=0.0;
-        for (k=m;k<=na;k++) {
+        for (i=m+2; i<=n; i++) h(i, i-2)=0.0;
+        for (i=m+3; i<=n; i++) h(i, i-3)=0.0;
+        for (k=m; k<=na; k++) {
             notlast = (k!=na);
             if (k!=m) {
                 p=h(k, k-1);
