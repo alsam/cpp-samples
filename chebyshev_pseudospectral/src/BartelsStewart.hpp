@@ -86,7 +86,8 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
     /// \param[in] n - the matrix dimension \f$(N + 1) \star (N + 1)\f$
     void hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n);
 
-    /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U` that reduces the matrix `A` to upper Hessenberg form
+    /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U`
+    /// that reduces the matrix `A` to upper Hessenberg form
     /// the matrices `A` and `U` can be aliased i.e. be the same
     /// \param[in] a - the matrix `A` from `hshldr`
     /// \param[in] u - the ortogonal matrix `U` that reduces `A` to upper Hessenberg form

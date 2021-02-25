@@ -64,6 +64,9 @@ void BS::hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n)
     a(n-1, n+1) = a(n, n-1);
 }
 
+/// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U`
+/// that reduces the matrix `A` to upper Hessenberg form
+/// the matrices `A` and `U` can be aliased i.e. be the same
 void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> u,
                 unsigned n)
