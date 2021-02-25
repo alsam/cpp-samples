@@ -89,9 +89,9 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
     /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U`
     /// that reduces the matrix `A` to upper Hessenberg form
     /// the matrices `A` and `U` can be aliased i.e. be the same
-    /// \param[in] a - the matrix `A` from `hshldr`
-    /// \param[in] u - the ortogonal matrix `U` that reduces `A` to upper Hessenberg form
-    /// \param[in] n - the matrices dimension \f$(N + 1) \star (N + 1)\f$
+    /// \param[in]  a - the matrix `A` from `hshldr`
+    /// \param[out] u - the ortogonal matrix `U` that reduces `A` to upper Hessenberg form
+    /// \param[in]  n - the matrices dimension \f$(N + 1) \star (N + 1)\f$
     void bckmlt(Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> u,
                 unsigned n);
