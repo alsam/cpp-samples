@@ -47,10 +47,11 @@
 /// 		&=\sum^{N+1}_{n=0}[c_{n-1}b_{n-1}-b_{n+1}]T'_n(x)/n
 /// \f}
 /// 
-/// equating \f$T'_n(x)\f$ for \f$n=1,\dots,N+1\f$ we derive requrrent equations for Chebyshev polynomials derivatives
+/// equating \f$T'_n(x)\f$ for \f$n=1,\dots,N+1\f$
+/// we derive requrrent equations for Chebyshev polynomials derivatives
 /// 
 /// \f{alignat*}{{2}
-/// 	c_{n-1}b_{n-1}-b_{n+1}	&= 2na_n	&&\quad(1\le n\le N) \\
+/// 	c_{n-1}b_{n-1}-b_{n+1}	&= 2na_n	&&\quad(1\le n\le N)\\
 /// 			b_n	&=0		&&\quad(n\ge N)
 /// \f}
 
