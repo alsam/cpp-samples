@@ -28,8 +28,8 @@
 struct program_options
 {
     bool verbose                    = {false};
-    unsigned M                      = {32};    // grid size along `x` direction
-    unsigned N                      = {32};    // grid size along `y` direction
+    size_t M                        = {32};    // grid size along `x` direction
+    size_t N                        = {32};    // grid size along `y` direction
     double x_min                    = {-1.0};  // minimum `x` value
     double x_max                    = { 1.0};  // maximum `x` value
     double y_min                    = {-1.0};  // minimum `y` value
@@ -44,8 +44,8 @@ program_options parse_command_line(int argc, char** argv)
     desc.add_options()
             ("help",                   "describe arguments")
             ("verbose",                "be verbose")
-            ("M",                      po::value<unsigned>(),    "`M`     -- grid size along `x` direction")
-            ("N",                      po::value<unsigned>(),    "`N`     -- grid size along `y` direction")
+            ("M",                      po::value<size_t>(),      "`M`     -- grid size along `x` direction")
+            ("N",                      po::value<size_t>(),      "`N`     -- grid size along `y` direction")
             ("x_min",                  po::value<double>(),      "`x_min` -- minimum `x` value")
             ("x_max",                  po::value<double>(),      "`x_max` -- maximum `x` value")
             ("y_min",                  po::value<double>(),      "`y_min` -- minimum `y` value")
@@ -67,11 +67,11 @@ program_options parse_command_line(int argc, char** argv)
         popt.verbose = vm.count("verbose");
 
         if (vm.count("M")) {
-            popt.M = vm["M"].as<unsigned>();
+            popt.M = vm["M"].as<size_t>();
         }
 
         if (vm.count("N")) {
-            popt.N = vm["N"].as<unsigned>();
+            popt.N = vm["N"].as<size_t>();
         }
 
         if (vm.count("x_min")) {

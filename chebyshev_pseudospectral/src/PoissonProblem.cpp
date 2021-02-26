@@ -24,7 +24,7 @@
 
 #include "PoissonProblem.hpp"
 
-PoissonProblem::PoissonProblem(unsigned M,   unsigned N,
+PoissonProblem::PoissonProblem(size_t M,     size_t N,
                                double x_min, double x_max,
                                double y_min, double y_max,
                                bool verbose)
@@ -41,11 +41,11 @@ PoissonProblem::PoissonProblem(unsigned M,   unsigned N,
     double ya = 0.5*(y_min-y_max);
     double yb = 0.5*(y_min+y_max);
 
-    for (unsigned i = 0; i <= M_; ++i) {
+    for (size_t i = 0; i <= M_; ++i) {
         x_grid_[i] = xa*std::cos(M_PI*i/(double)M_)+xb;
     }
 
-    for (unsigned i = 0; i <= N_; ++i) {
+    for (size_t i = 0; i <= N_; ++i) {
         y_grid_[i] = ya*std::cos(M_PI*i/(double)N_)+yb;
     }
 
@@ -61,8 +61,8 @@ PoissonProblem::PoissonProblem(unsigned M,   unsigned N,
     border_.up_    = RowVectorXd::Zero(N_ + 1);
 
     // fill right hand function
-    for (unsigned i = 0; i <= M_; ++i) {
-        for (unsigned j = 0; j <= N_; ++j) {
+    for (size_t i = 0; i <= M_; ++i) {
+        for (size_t j = 0; j <= N_; ++j) {
             ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i]) * std::sin(4.*M_PI*y_grid_[j]);
         }
     }

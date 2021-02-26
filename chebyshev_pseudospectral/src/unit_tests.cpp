@@ -26,10 +26,10 @@
 #include "math.hpp"
 #include "ChebyshevDifferentiate.hpp"
 
-template<unsigned N>
+template<size_t N>
 void sysslv(double a[N][N], double b[N])
 {
-    constexpr unsigned n = N;
+    constexpr size_t n = N;
     double biga,save;
     int i,j,k,imax;
 
@@ -76,17 +76,17 @@ TEST(cftSuite, test_cosfft1)
 
 TEST(cftSuite, test_cosfft12)
 {
-    constexpr unsigned M = 32;
+    constexpr size_t M = 32;
     auto y = [](double x) {return x*x*x*x - 1;}; /// \f$y = x^4 - 1\f$
     double x_min = -1., x_max = 1.;
     double xa = 0.5*(x_min-x_max);
     double xb = 0.5*(x_min+x_max);
     RowVectorXd x_grid(M + 1), f_vals1(M + 1), f_vals2(M + 1);
-    for (unsigned i = 0; i <= M; i++) {
+    for (size_t i = 0; i <= M; i++) {
         x_grid[i] = xa*std::cos(M_PI*i/(double)M)+xb;
     }
 
-    for (unsigned i = 0; i <= M; i++) {
+    for (size_t i = 0; i <= M; i++) {
         f_vals2[i] = f_vals1[i] = y(x_grid[i]);
     }
 
@@ -152,7 +152,7 @@ TEST(bsSuite, test_gauss_elim)
 
 TEST(ChebyshevDifferentiate, test_deriv1)
 {
-    constexpr unsigned M = 32;
+    constexpr size_t M = 32;
     auto y        = [](double x) {return x*x*x*x + sin(x);}; /// \f$y = x^4 + \sin x\f$
     auto y_deriv1 = [](double x) {return 4*x*x*x + cos(x);}; /// \f$y = 4x^3 + \cos x\f$
     RowVectorXd x_grid(M + 1), f_vals(M + 1), f_deriv_vals(M + 1);
@@ -163,13 +163,13 @@ TEST(ChebyshevDifferentiate, test_deriv1)
 
     // std::cout << "xa: " << xa << " xb: " << xb << std::endl;
 
-    for (unsigned i = 0; i <= M; i++) {
+    for (size_t i = 0; i <= M; i++) {
         x_grid[i] = xa*std::cos(M_PI*i/(double)M)+xb;
     }
 
     // std::cout << "x_grid: " << x_grid << std::endl;
 
-    for (unsigned i = 0; i <= M; i++) {
+    for (size_t i = 0; i <= M; i++) {
         f_vals[i]       = y        (x_grid[i]);
         f_deriv_vals[i] = y_deriv1 (x_grid[i]);
     }

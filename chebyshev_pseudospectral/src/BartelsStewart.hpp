@@ -84,7 +84,7 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
     /// see [Reducing a Matrix to Hessenberg Form](https://www.ams.org/journals/mcom/1969-23-108/S0025-5718-1969-0258255-3/S0025-5718-1969-0258255-3.pdf)
     /// \param[in,out] a - the matrix `A`
     /// \param[in] n - the matrix dimension \f$(N + 1) \star (N + 1)\f$
-    void hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n);
+    void hshldr(Eigen::Ref<RowMatrixXd> a, size_t n);
 
     /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U`
     /// that reduces the matrix `A` to upper Hessenberg form
@@ -94,13 +94,13 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
     /// \param[in]  n - the matrices dimension \f$(N + 1) \star (N + 1)\f$
     void bckmlt(Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> u,
-                unsigned n);
+                size_t n);
 
     bool schur(Eigen::Ref<RowMatrixXd> h,
                Eigen::Ref<RowMatrixXd> u,
-               unsigned n, double eps = 1.0e-30);
+               size_t n, double eps = 1.0e-30);
 
-    void initau(unsigned m, unsigned n,
+    void initau(size_t m, size_t n,
                 Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> b,
                 Eigen::Ref<RowMatrixXd> u,
@@ -109,9 +109,9 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
     void shrslv(Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> b,
                 Eigen::Ref<RowMatrixXd> c,
-                unsigned m, unsigned n);
+                size_t m, size_t n);
 
-    void bs_solve(unsigned m, unsigned n,
+    void bs_solve(size_t m, size_t n,
                   Eigen::Ref<RowMatrixXd> a,
                   Eigen::Ref<RowMatrixXd> b,
                   Eigen::Ref<RowMatrixXd> u,

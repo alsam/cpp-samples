@@ -28,10 +28,10 @@
 #include "math.hpp"
 
 void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
-             unsigned n, bool inverse)
+             size_t n, bool inverse)
 {
-    unsigned  m;
-    unsigned  mmax, istep, i1, i2, i3, i4;
+    size_t  m;
+    size_t  mmax, istep, i1, i2, i3, i4;
     double  wr, wi, wpr, wpi, wtemp, theta,
             y1, y2, tempr, tempi, h1r, h1i, h2r, h2i,
             temp, sum, first, last;
@@ -42,8 +42,8 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
         last=0.5*temp;
     }
     sum = 0.0;
-    for (unsigned j=0; j<=n; j+=2) sum += data[j];
-    for (unsigned j=1; j<=n; j+=2) sum -= data[j];
+    for (size_t j=0; j<=n; j+=2) sum += data[j];
+    for (size_t j=1; j<=n; j+=2) sum -= data[j];
     data[n] = sum;
 
     wtemp = std::sin(0.5*(theta=M_PI/n));
@@ -52,7 +52,7 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
     wr = 1.0;
     wi = 0.0;
     sum = data[0];
-    for (unsigned j=1; j<=m; j++) {
+    for (size_t j=1; j<=m; j++) {
         wr = (wtemp=wr)*wpr-wi*wpi+wr;
         wi = wi*wpr+wtemp*wpi+wi;
         y1 = 0.5*(data[j]+data[n-j]);
@@ -61,8 +61,8 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
         data[n-j] = y1+wi*y2;
         sum += wr*y2;
     }
-    unsigned j = 1;
-    for (unsigned i=1; i<=n; i+=2) {
+    size_t j = 1;
+    for (size_t i=1; i<=n; i+=2) {
         if (j > i) {
             std::swap(data[j-1],data[i-1]);
             std::swap(data[j],data[i]);
@@ -82,8 +82,8 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
         wpr = -2.0*wtemp*wtemp;
         wpi = std::sin(theta);
         wr = 1.0; wi = 0.0;
-        for (unsigned m=1; m<=mmax; m+=2) {
-            for (unsigned i=m;i<=n;i+=istep) {
+        for (size_t m=1; m<=mmax; m+=2) {
+            for (size_t i=m;i<=n;i+=istep) {
                 j = i+mmax;
                 tempr = wr*data[j-1]-wi*data[j];
                 tempi = wr*data[j]+wi*data[j-1];
@@ -104,7 +104,7 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
     data[0] += data[1];
     m=n >> 2;
 
-    for (unsigned i=1; i<=m; i++) {
+    for (size_t i=1; i<=m; i++) {
         i2=(i1=i << 1)+1; i4=(i3=n-i2+1)+1;
         h1r=0.5*(data[i1]+data[i3]);
         h1i=0.5*(data[i2]-data[i4]);
@@ -118,18 +118,18 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
         wi=wi*wpr+wtemp*wpi+wi;
     }
     data[1] = sum;
-    for (unsigned j=3; j<=n; j+=2) {
+    for (size_t j=3; j<=n; j+=2) {
         sum += data[j];
         data[j] = sum;
     }
 
-    for (unsigned j=0; j<n; j+=2) {
+    for (size_t j=0; j<n; j+=2) {
         data[j    ] += temp;
         data[j + 1] -= temp;
     }
 
     if (inverse) {
-        for (unsigned j=0;j<n;j+=2) {
+        for (size_t j=0;j<n;j+=2) {
             data[j    ] = (data[j    ]-(first+last))*2.0/n;
             data[j + 1] = (data[j + 1]-(first-last))*2.0/n;
         }
@@ -140,10 +140,10 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
 }
 
 void cft2(Eigen::Ref<RowMatrixXd> data, // used to be `double **data`
-          unsigned nn, bool inverse)
+          size_t nn, bool inverse)
 {
-    for (int idim=0; idim<2; ++idim) {
-        for (unsigned i=0; i<=nn; ++i)
+    for (size_t idim=0; idim<2; ++idim) {
+        for (size_t i=0; i<=nn; ++i)
             cosfft1(data.row(i), nn, inverse);
         data.transpose();
     }

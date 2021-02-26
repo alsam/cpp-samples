@@ -44,10 +44,10 @@ using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen:
 // Use RowMatrixXd instead of MatrixXd see https://pybind11.readthedocs.io/en/stable/advanced/cast/eigen.html#storage-orders for more details
 
 // used to be
-// void cosfft1(std::vector<double>& data, unsigned n, bool inverse = false);
+// void cosfft1(std::vector<double>& data, size_t n, bool inverse = false);
 
-void cosfft1(Eigen::Ref<RowVectorXd> data, unsigned n, bool inverse = false);
+void cosfft1(Eigen::Ref<RowVectorXd> data, size_t n, bool inverse = false);
 
 void cft2(Eigen::Ref<RowMatrixXd> data, // used to be double `**data`
-          unsigned nn, bool inverse = false);
+          size_t nn, bool inverse = false);
 

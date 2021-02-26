@@ -51,7 +51,7 @@ public:
     /// @param x_max  maximum `x` value, typically it is +1
     /// @param y_min  minimum `y` value, typically it is -1
     /// @param y_max  maximum `y` value, typically it is +1
-    PoissonProblem(unsigned M,   unsigned N,
+    PoissonProblem(size_t M,     size_t N,
                    double x_min, double x_max,
                    double y_min, double y_max,
                    bool verbose = false);
@@ -60,7 +60,7 @@ public:
     struct Boundary { // SOA - Structure of Arrays
         RowVectorXd left_, down_, right_, up_;
 
-        Boundary(unsigned M, unsigned N)
+        Boundary(size_t M, size_t N)
             : left_  (M + 1),
               down_  (N + 1),
               right_ (M + 1),
@@ -74,10 +74,10 @@ private:
     bool verbose_;
 
     /// grid size along `x` direction
-    unsigned M_;
+    size_t M_;
 
     /// grid size along `x` direction
-    unsigned N_;
+    size_t N_;
 
     /// \f$x\f$ distributed as
     /// \f$x_i=\cos\pi i/M\qquad 0\le i\le M\f$

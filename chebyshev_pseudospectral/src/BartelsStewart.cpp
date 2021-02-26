@@ -27,9 +27,9 @@
 /// @brief reduces the matrix to upper Hessenberg form by Householder similarity transformations
 /// on @return the matrix `a` contains: the upper triangle and `(n+1)` column contains Hessenberg form
 /// the low triangle and `(n+1)` row contains the history of transformations.
-void BS::hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n)
+void BS::hshldr(Eigen::Ref<RowMatrixXd> a, size_t n)
 {
-    unsigned i,j,l;
+    size_t i,j,l;
     double max, sum, s, p;
 
     for (l=0; l<=n-2; l++) {
@@ -69,9 +69,9 @@ void BS::hshldr(Eigen::Ref<RowMatrixXd> a, unsigned n)
 /// the matrices `A` and `U` can be aliased i.e. be the same
 void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> u,
-                unsigned n)
+                size_t n)
 {
-    unsigned i,j,l;
+    size_t i,j,l;
     double sum,p;
 
     u(n,   n) = u(n-1, n-1) = 1.0;
@@ -93,11 +93,11 @@ void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
 
 bool BS::schur(Eigen::Ref<RowMatrixXd> h,
                Eigen::Ref<RowMatrixXd> u,
-               unsigned nn, double eps)
+               size_t nn, double eps)
 {
-    constexpr unsigned MAXITER = 150;
+    constexpr size_t MAXITER = 150;
     bool notlast,zero;
-    unsigned i,j,k,l,n=nn,na,jl,m,its;
+    size_t i,j,k,l,n=nn,na,jl,m,its;
     double rsum,test,hn=0.0,p,q,r,s,w,x,y,z;
 
     for (i=0; i<=n; i++) {
@@ -199,7 +199,7 @@ nextw:
     }
 }
 
-void BS::initau(unsigned m, unsigned n,
+void BS::initau(size_t m, size_t n,
                 Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> b,
                 Eigen::Ref<RowMatrixXd> u,
@@ -207,7 +207,7 @@ void BS::initau(unsigned m, unsigned n,
 {
     hshldr(a, m);
     bckmlt(a, u, m);
-    for (unsigned i=0; i<m; i++) {
+    for (size_t i=0; i<m; i++) {
         a(i+1, i) = a(i, m+1);
     }
 
@@ -215,15 +215,15 @@ void BS::initau(unsigned m, unsigned n,
         throw std::logic_error("** SCHUR FAILED!");
     }
 
-    for (unsigned i=0; i<=m; i++) {
-        for (unsigned j=i+1; j<=m; j++) {
+    for (size_t i=0; i<=m; i++) {
+        for (size_t j=i+1; j<=m; j++) {
             std::swap(a(i, j), a(j, i));
         }
     }
 
     hshldr(b,n);
     bckmlt(b,v,n);
-    for (unsigned i=0; i<n; i++) {
+    for (size_t i=0; i<n; i++) {
         b(i+1, i) = b(i, n+1);
     }
 
@@ -235,9 +235,9 @@ void BS::initau(unsigned m, unsigned n,
 void BS::shrslv(Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> b,
                 Eigen::Ref<RowMatrixXd> c,
-                unsigned m, unsigned n)
+                size_t m, size_t n)
 {
-    unsigned i,j,ib,ja,k,l,dk,dl,kk,ll;
+    size_t i,j,ib,ja,k,l,dk,dl,kk,ll;
 
     l=0;
     do {
@@ -341,7 +341,7 @@ void BS::shrslv(Eigen::Ref<RowMatrixXd> a,
     } while (l<=n);
 }
 
-void BS::bs_solve(unsigned m, unsigned n,
+void BS::bs_solve(size_t m, size_t n,
                   Eigen::Ref<RowMatrixXd> a,
                   Eigen::Ref<RowMatrixXd> b,
                   Eigen::Ref<RowMatrixXd> u,
@@ -349,7 +349,7 @@ void BS::bs_solve(unsigned m, unsigned n,
                   Eigen::Ref<RowMatrixXd> c,
                   Eigen::Ref<RowMatrixXd> rslt)
 {
-    unsigned i,j,k;
+    size_t i,j,k;
 
     for (j=0;j<=n;j++) {
         for (i=0;i<=m;i++) {
