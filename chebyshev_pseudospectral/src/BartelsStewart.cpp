@@ -351,51 +351,51 @@ void BS::bs_solve(size_t m, size_t n,
 {
     size_t i,j,k;
 
-    for (j=0;j<=n;j++) {
-        for (i=0;i<=m;i++) {
-            a(i, m+1)=0.0;
-            for (k=0;k<=m;k++) {
+    for (j=0; j<=n; j++) {
+        for (i=0; i<=m; i++) {
+            a(i, m+1) = 0.0;
+            for (k=0; k<=m; k++) {
                 a(i, m+1) -= u(k, i)*c(k, j);
             }
         }
-        for (i=0;i<=m;i++) {
-            rslt(i, j)=a(i, m+1);
+        for (i=0; i<=m; i++) {
+            rslt(i, j) = a(i, m+1);
         }
     }
-    for (i=0;i<=m;i++) {
-        for (j=0;j<=n;j++) {
-            b(n+1, j)=0.0;
-            for (k=0;k<=n;k++) {
+    for (i=0; i<=m; i++) {
+        for (j=0; j<=n; j++) {
+            b(n+1, j) = 0.0;
+            for (k=0; k<=n; k++) {
                 b(n+1, j) += rslt(i, k)*v(k, j);
             }
         }
-        for (j=0;j<=n;j++) {
-            rslt(i, j)=b(n+1, j);
+        for (j=0; j<=n; j++) {
+            rslt(i, j) = b(n+1, j);
         }
     }
 
     shrslv(a,b,rslt,m,n);
 
-    for (j=0;j<=n;j++) {
-        for (i=0;i<=m;i++) {
-            a(i, m+1)=0.0;
-            for (k=0;k<=m;k++) {
+    for (j=0; j<=n; j++) {
+        for (i=0; i<=m; i++) {
+            a(i, m+1) = 0.0;
+            for (k=0; k<=m; k++) {
                 a(i, m+1) += u(i, k)*rslt(k, j);
             }
         }
-        for (i=0;i<=m;i++) {
-            rslt(i, j)=a(i, m+1);
+        for (i=0; i<=m; i++) {
+            rslt(i, j) = a(i, m+1);
         }
     }
-    for (i=0;i<=m;i++) {
-        for (j=0;j<=n;j++) {
-            b(n+1, j)=0.0;
-            for (k=0;k<=n;k++) {
+    for (i=0; i<=m; i++) {
+        for (j=0; j<=n; j++) {
+            b(n+1, j) = 0.0;
+            for (k=0; k<=n; k++) {
                 b(n+1, j) += rslt(i, k)*v(j, k);
             }
         }
-        for (j=0;j<=n;j++) {
-            rslt(i, j)=b(n+1, j);
+        for (j=0; j<=n; j++) {
+            rslt(i, j) = b(n+1, j);
         }
     }
 }
