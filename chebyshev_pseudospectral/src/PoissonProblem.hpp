@@ -56,6 +56,18 @@ public:
                    double y_min, double y_max,
                    bool verbose = false);
 
+
+    struct Boundary { // SOA - Structure of Arrays
+        RowVectorXd left_, down_, right_, up_;
+
+        Boundary(unsigned M, unsigned N)
+            : left_  (M + 1),
+              down_  (N + 1),
+              right_ (M + 1),
+              up_    (N + 1)
+        {}
+    };
+
 private:
 
     /// be `verbose`
@@ -80,4 +92,6 @@ private:
 
     /// \f$\Psi\f$ is the unknown
     RowMatrixXd psi_;
+
+    Boundary border_;
 };

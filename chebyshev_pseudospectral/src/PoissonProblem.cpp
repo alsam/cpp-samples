@@ -30,24 +30,40 @@ PoissonProblem::PoissonProblem(unsigned M,   unsigned N,
                                bool verbose)
 : verbose_(verbose),
   M_(M), N_(N),
-  x_grid_(M + 1), y_grid_(N + 1),
-  ome_(M + 1, N + 1), psi_(M + 1, N + 1)
+  x_grid_(M + 1),
+  y_grid_(N + 1),
+  ome_   (M + 1, N + 1),
+  psi_   (M + 1, N + 1),
+  border_(M, N)
 {
     double xa = 0.5*(x_min-x_max);
     double xb = 0.5*(x_min+x_max);
     double ya = 0.5*(y_min-y_max);
     double yb = 0.5*(y_min+y_max);
 
-    for (unsigned i = 0; i <= M_; i++) {
+    for (unsigned i = 0; i <= M_; ++i) {
         x_grid_[i] = xa*std::cos(M_PI*i/(double)M_)+xb;
     }
 
-    for (unsigned i = 0; i <= N_; i++) {
+    for (unsigned i = 0; i <= N_; ++i) {
         y_grid_[i] = ya*std::cos(M_PI*i/(double)N_)+yb;
     }
 
     if (verbose_) {
         std::cout << "x_grid: [" << x_grid_ << "]\n";
         std::cout << "y_grid: [" << y_grid_ << "]\n";
+    }
+
+    // zero boundary conditions
+    border_.left_  = RowVectorXd::Zero(M_ + 1);
+    border_.down_  = RowVectorXd::Zero(N_ + 1);
+    border_.right_ = RowVectorXd::Zero(M_ + 1);
+    border_.up_    = RowVectorXd::Zero(N_ + 1);
+
+    // fill right hand function
+    for (unsigned i = 0; i <= M_; ++i) {
+        for (unsigned j = 0; j <= N_; ++j) {
+            ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i]) * std::sin(4.*M_PI*y_grid_[j]);
+        }
     }
 }
