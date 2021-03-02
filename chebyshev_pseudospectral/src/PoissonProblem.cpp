@@ -89,7 +89,7 @@ void PoissonProblem::homogeneous_boundary(size_t n,
             odds  -= in(i, j);
             evens -= in(i, j+1);
         }
-        if (&out != &in) { // FIXME aliasing detection doesn't work
+        if (out != in) {
             for (size_t j=0; j<=n-2; j++) {
                 out(i, j) = in(i, j);
             }
