@@ -63,7 +63,42 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     // fill right hand function
     for (size_t i = 0; i <= M_; ++i) {
         for (size_t j = 0; j <= N_; ++j) {
-            ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i]) * std::sin(4.*M_PI*y_grid_[j]);
+            ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i])
+                                       * std::sin(4.*M_PI*y_grid_[j]);
         }
     }
 }
+
+void PoissonProblem::generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma)
+{
+    // TODO use MatrixXd::Identity(rows,cols)
+    for (size_t i=0; i<=n; ++i) {
+        for (size_t j=0; j<=n; ++j) {
+            ma(i, j) = detail::id(i, j);
+        }
+    }
+}
+
+void PoissonProblem::homogeneous_boundary(size_t n,
+                                          Eigen::Ref<RowMatrixXd> in,
+                                          Eigen::Ref<RowMatrixXd> out)
+{
+    for (size_t i=0; i<=n; i++) {
+        double evens = 0.0, odds = 0.0;
+        for (size_t j=1; j<=n-2; j+=2) {
+            odds  -= in(i, j);
+            evens -= in(i, j+1);
+        }
+        if (&out != &in) { // FIXME aliasing detection doesn't work
+            for (size_t j=0; j<=n-2; j++) {
+                out(i, j) = in(i, j);
+            }
+        }
+        out(i, n-1) = odds;
+        out(i, n)   = evens-in(i, 0);
+/*
+        out(i, 0) = out(i, 1) = 0.0;
+*/
+    }
+}
+

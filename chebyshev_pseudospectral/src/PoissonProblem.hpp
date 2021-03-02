@@ -68,6 +68,16 @@ public:
         {}
     };
 
+//private:
+public: // to check with unit tests
+
+    static void generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma);
+
+    static void homogeneous_boundary(size_t n,
+                                     Eigen::Ref<RowMatrixXd> in,
+                                     Eigen::Ref<RowMatrixXd> out);
+    void laplacian();
+
 private:
 
     /// be `verbose`

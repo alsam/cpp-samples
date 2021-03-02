@@ -38,10 +38,23 @@
 
 namespace py = pybind11;
 
+namespace detail {
+
+template <typename T> inline T sqr(T a) { return a*a; }
+
+inline double id(size_t i, size_t j) { return i==j ? 1.0 : 0.0; }
+
+inline bool is_odd(size_t i) { return i&1; }
+
+inline bool is_even(size_t i) { return !is_odd(i); }
+
+}
+
 using RowVectorXd = Eigen::RowVectorXd;
 
 using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-// Use RowMatrixXd instead of MatrixXd see https://pybind11.readthedocs.io/en/stable/advanced/cast/eigen.html#storage-orders for more details
+// Use RowMatrixXd instead of MatrixXd
+// see https://pybind11.readthedocs.io/en/stable/advanced/cast/eigen.html#storage-orders for more details
 
 // used to be
 // void cosfft1(std::vector<double>& data, size_t n, bool inverse = false);

@@ -25,6 +25,7 @@
 #include <gtest/gtest.h>
 #include "math.hpp"
 #include "ChebyshevDifferentiate.hpp"
+#include "PoissonProblem.hpp"
 
 template<size_t N>
 void sysslv(double a[N][N], double b[N])
@@ -188,4 +189,29 @@ TEST(ChebyshevDifferentiate, test_deriv1)
 
     constexpr double EPS = 1e-10;
     EXPECT_NEAR((f_vals - f_deriv_vals).norm(), 0.0, EPS);
+}
+
+TEST(PoissonProblem, test_homogeneous_boundary)
+{
+    double A[5][5] = {{1.,  2., 3.,  4.,  8.,},
+                      {5.,  6., 8.,  5.,  7.,},
+                      {3.,  5., 7.,  2.,  1.,},
+                      {4., 15., 2., 12., 11.,},
+                      {3.,  2., 5.,  6.,  5.,},};
+
+    RowMatrixXd AA(5, 5), //, reinterpret_cast<double*>(A)),
+                BB = RowMatrixXd::Zero(5, 5);
+
+    for (size_t i = 0; i < 5; ++i) {
+        for (size_t j = 0; j < 5; ++j) {
+            AA(i, j) = A[i][j];
+        }
+    }
+
+    // std::cout << "AA: [" << AA << "]\n";
+    PoissonProblem::homogeneous_boundary(4, AA, BB);
+    // std::cout << "BB: [" << BB << "]\n";
+    PoissonProblem::homogeneous_boundary(4, AA, AA);
+    // std::cout << "AA: [" << AA << "]\n";
+    EXPECT_DOUBLE_EQ((AA - BB).norm(), 0.0);
 }
