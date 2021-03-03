@@ -76,7 +76,9 @@ public: // to check with unit tests
     static void homogeneous_boundary(size_t n,
                                      Eigen::Ref<RowMatrixXd> in,
                                      Eigen::Ref<RowMatrixXd> out);
-    void laplacian();
+    static void laplacian(size_t n,
+                          Eigen::Ref<RowMatrixXd> in,
+                          Eigen::Ref<RowMatrixXd> out);
 
 private:
 

@@ -193,25 +193,26 @@ TEST(ChebyshevDifferentiate, test_deriv1)
 
 TEST(PoissonProblem, test_homogeneous_boundary)
 {
-    double A[5][5] = {{1.,  2., 3.,  4.,  8.,},
-                      {5.,  6., 8.,  5.,  7.,},
-                      {3.,  5., 7.,  2.,  1.,},
-                      {4., 15., 2., 12., 11.,},
-                      {3.,  2., 5.,  6.,  5.,},};
+    const size_t M = 4;
 
-    RowMatrixXd AA(5, 5), //, reinterpret_cast<double*>(A)),
-                BB = RowMatrixXd::Zero(5, 5);
+    double A[M + 1][M + 1] = { {1.,  2., 3.,  4.,  8.,},
+                               {5.,  6., 8.,  5.,  7.,},
+                               {3.,  5., 7.,  2.,  1.,},
+                               {4., 15., 2., 12., 11.,},
+                               {3.,  2., 5.,  6.,  5.,}, };
 
-    for (size_t i = 0; i < 5; ++i) {
-        for (size_t j = 0; j < 5; ++j) {
+    RowMatrixXd AA(M + 1, M + 1), BB = RowMatrixXd::Zero(M + 1, M + 1);
+
+    for (size_t i = 0; i <= M; ++i) {
+        for (size_t j = 0; j <= M; ++j) {
             AA(i, j) = A[i][j];
         }
     }
 
     // std::cout << "AA: [" << AA << "]\n";
-    PoissonProblem::homogeneous_boundary(4, AA, BB);
+    PoissonProblem::homogeneous_boundary(M, AA, BB);
     // std::cout << "BB: [" << BB << "]\n";
-    PoissonProblem::homogeneous_boundary(4, AA, AA);
+    PoissonProblem::homogeneous_boundary(M, AA, AA);
     // std::cout << "AA: [" << AA << "]\n";
     EXPECT_DOUBLE_EQ((AA - BB).norm(), 0.0);
 }

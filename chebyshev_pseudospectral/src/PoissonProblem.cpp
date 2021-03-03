@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include "PoissonProblem.hpp"
+#include "ChebyshevDifferentiate.hpp"
 
 PoissonProblem::PoissonProblem(size_t M,     size_t N,
                                double x_min, double x_max,
@@ -77,6 +78,7 @@ void PoissonProblem::generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma)
             ma(i, j) = detail::id(i, j);
         }
     }
+    laplacian(n, ma, ma);
 }
 
 void PoissonProblem::homogeneous_boundary(size_t n,
@@ -89,11 +91,13 @@ void PoissonProblem::homogeneous_boundary(size_t n,
             odds  -= in(i, j);
             evens -= in(i, j+1);
         }
+
         if (out != in) {
             for (size_t j=0; j<=n-2; j++) {
                 out(i, j) = in(i, j);
             }
         }
+
         out(i, n-1) = odds;
         out(i, n)   = evens-in(i, 0);
 /*
@@ -102,3 +106,11 @@ void PoissonProblem::homogeneous_boundary(size_t n,
     }
 }
 
+void PoissonProblem::laplacian(size_t n,
+                               Eigen::Ref<RowMatrixXd> in,
+                               Eigen::Ref<RowMatrixXd> out)
+{
+    homogeneous_boundary(n, in, out);
+    for (size_t i = 0; i <= n; ++i) {
+    }
+}

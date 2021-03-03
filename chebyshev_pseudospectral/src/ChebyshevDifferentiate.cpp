@@ -104,26 +104,3 @@ void SpectralDifferentiate(Eigen::Ref<RowVectorXd> data,
     rslt[n] = 0.0;
 }
 
-void BoundaryConditions(Eigen::Ref<RowVectorXd> data,
-                        Eigen::Ref<RowVectorXd> rslt,
-                        size_t n)
-{
-    double evens,odds;
-
-    for (size_t i=0; i<=n; i++) {
-        evens = odds = 0.0;
-        for (size_t j=1; j<=n-2; j+=2) {
-            odds  -= data(i, j);
-            evens -= data(i, j+1);
-        }
-        for (size_t j=0; j<=n-2; j++) {
-            rslt(i, j) = data(i, j);
-        }
-        rslt(i, n-1) = odds;
-        rslt(i, n  ) = evens-data(i, 0);
-/*
-        rslt(i, 0) = rslt(i, 1) = 0.0;
-*/
-    }
-}
-
