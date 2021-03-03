@@ -59,8 +59,8 @@ using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen:
 // used to be
 // void cosfft1(std::vector<double>& data, size_t n, bool inverse = false);
 
-void cosfft1(Eigen::Ref<RowVectorXd> data, size_t n, bool inverse = false);
+void cosfft1(size_t n, Eigen::Ref<RowVectorXd> data, bool inverse = false);
 
-void cft2(Eigen::Ref<RowMatrixXd> data, // used to be double `**data`
-          size_t nn, bool inverse = false);
+void cft2(size_t m, Eigen::Ref<RowMatrixXd> data,
+          bool inverse = false);
 

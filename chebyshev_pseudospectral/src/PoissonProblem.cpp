@@ -61,6 +61,11 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     border_.right_ = RowVectorXd::Zero(M_ + 1);
     border_.up_    = RowVectorXd::Zero(N_ + 1);
 
+    cosfft1(M_, border_.left_,  false);
+    cosfft1(N_, border_.down_,  false);
+    cosfft1(M_, border_.right_, false);
+    cosfft1(N_, border_.up_,    false);
+
     // fill right hand function
     for (size_t i = 0; i <= M_; ++i) {
         for (size_t j = 0; j <= N_; ++j) {

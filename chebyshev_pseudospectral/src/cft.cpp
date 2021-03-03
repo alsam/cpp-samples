@@ -27,8 +27,9 @@
 #include <iostream>
 #include "math.hpp"
 
-void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
-             size_t n, bool inverse)
+void cosfft1(size_t n,
+             Eigen::Ref<Eigen::RowVectorXd> data,
+             bool inverse)
 {
     size_t  m;
     size_t  mmax, istep, i1, i2, i3, i4;
@@ -139,12 +140,13 @@ void cosfft1(Eigen::Ref<Eigen::RowVectorXd> data,
     }
 }
 
-void cft2(Eigen::Ref<RowMatrixXd> data, // used to be `double **data`
-          size_t nn, bool inverse)
+void cft2(size_t m,
+          Eigen::Ref<RowMatrixXd> data,
+          bool inverse)
 {
     for (size_t idim=0; idim<2; ++idim) {
-        for (size_t i=0; i<=nn; ++i)
-            cosfft1(data.row(i), nn, inverse);
-        data.transpose();
+        for (size_t i=0; i<=m; ++i)
+            cosfft1(m, data.row(i), inverse);
+        data.transposeInPlace();
     }
 }

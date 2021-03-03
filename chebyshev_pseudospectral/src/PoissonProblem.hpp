@@ -68,8 +68,7 @@ public:
         {}
     };
 
-//private:
-public: // to check with unit tests
+public:
 
     static void generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma);
 
@@ -79,7 +78,6 @@ public: // to check with unit tests
     static void laplacian(size_t n,
                           Eigen::Ref<RowMatrixXd> in,
                           Eigen::Ref<RowMatrixXd> out);
-
 private:
 
     /// be `verbose`
