@@ -31,7 +31,8 @@
  *
  */
 
-void SpectralDifferentiate(Eigen::Ref<RowVectorXd> data,
-                           Eigen::Ref<RowVectorXd> rslt,
-                           double span, size_t n);
+void spectral_differentiate(size_t n,
+                            Eigen::Ref<RowVectorXd> data,
+                            Eigen::Ref<RowVectorXd> rslt,
+                            double span = 1.0);
 

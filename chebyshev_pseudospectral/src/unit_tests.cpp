@@ -179,7 +179,7 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     // std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
 
     cosfft1(f_vals, M, true);
-    SpectralDifferentiate(f_vals, f_vals, 2.0 / (x_max - x_min), M);
+    spectral_differentiate(M, f_vals, f_vals, 2.0 / (x_max - x_min));
     cosfft1(f_vals, M);
 
     // std::cout << "f_vals: [" << f_vals << "]\n";
