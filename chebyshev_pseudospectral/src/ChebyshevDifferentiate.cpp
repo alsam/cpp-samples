@@ -87,21 +87,21 @@
 /// and \f$\qquad a_{N+1}^{(1)} = a_{N+2}^{(1)} = 0, \quad a_{N}^{(2)} = a_{N+1}^{(2)} = 0\f$
 
 void spectral_differentiate(size_t n,
-                            Eigen::Ref<RowVectorXd> data,
-                            Eigen::Ref<RowVectorXd> rslt,
+                            Eigen::Ref<RowVectorXd> in,
+                            Eigen::Ref<RowVectorXd> out,
                             double span)
 {
-    double temp1 = data[n-1],
-           temp2 = data[n-2];
+    double temp1 = in[n-1],
+           temp2 = in[n-2];
     
-    rslt[n-1] = 2.0*n*span*data[n];
-    rslt[n-2] = 2.0*(n-1)*span*temp1;
+    out[n-1] = 2.0 *  n    * in[n] * span;
+    out[n-2] = 2.0 * (n-1) * temp1 * span;
     for (size_t j = n-3; j>0; j--) {
-        temp1   = data[j];
-        rslt[j] = rslt[j+2]+2.0*(j+1)*span*temp2;
-        temp2   = temp1;
+        temp1  = in[j];
+        out[j] = out[j+2] + 2.0 * (j+1) * temp2 * span;
+        temp2  = temp1;
     }
-    rslt[0] = 0.5*rslt[2]+span*temp2;
-    rslt[n] = 0.0;
+    out[0] = 0.5 * out[2] + temp2 * span;
+    out[n] = 0.0;
 }
 
