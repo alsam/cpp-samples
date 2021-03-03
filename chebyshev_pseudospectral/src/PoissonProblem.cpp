@@ -112,5 +112,7 @@ void PoissonProblem::laplacian(size_t n,
 {
     homogeneous_boundary(n, in, out);
     for (size_t i = 0; i <= n; ++i) {
+        spectral_differentiate(n, out.row(i), out.row(i));
+        spectral_differentiate(n, out.row(i), out.row(i));
     }
 }
