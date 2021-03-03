@@ -78,6 +78,11 @@ public:
     static void laplacian(size_t n,
                           Eigen::Ref<RowMatrixXd> in,
                           Eigen::Ref<RowMatrixXd> out);
+
+private:
+
+    void RHS(size_t n, Eigen::Ref<RowMatrixXd> ma, Boundary const& boundary);
+
 private:
 
     /// be `verbose`

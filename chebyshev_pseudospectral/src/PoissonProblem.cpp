@@ -121,3 +121,9 @@ void PoissonProblem::laplacian(size_t n,
         spectral_differentiate(n, out.row(i), out.row(i));
     }
 }
+
+void PoissonProblem::RHS(size_t n,
+                         Eigen::Ref<RowMatrixXd> ma,
+                         Boundary const& boundary)
+{
+}
