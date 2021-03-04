@@ -42,13 +42,8 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     double ya = 0.5*(y_min-y_max);
     double yb = 0.5*(y_min+y_max);
 
-    for (size_t i = 0; i <= M_; ++i) {
-        x_grid_[i] = xa*std::cos(M_PI*i/(double)M_)+xb;
-    }
-
-    for (size_t i = 0; i <= N_; ++i) {
-        y_grid_[i] = ya*std::cos(M_PI*i/(double)N_)+yb;
-    }
+    generate_grid(M_, xa, xb, x_grid_);
+    generate_grid(N_, ya, yb, y_grid_);
 
     if (verbose_) {
         std::cout << "x_grid: [" << x_grid_ << "]\n";
@@ -72,6 +67,14 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
             ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i])
                                        * std::sin(4.*M_PI*y_grid_[j]);
         }
+    }
+}
+
+void PoissonProblem::generate_grid(size_t n, double a, double b,
+                                   Eigen::Ref<RowVectorXd> grid)
+{
+    for (size_t i = 0; i <= n; ++i) {
+        grid[i] = a * std::cos(M_PI * i / (double)n) + b;
     }
 }
 
