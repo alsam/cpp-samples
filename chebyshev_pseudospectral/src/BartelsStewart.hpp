@@ -100,16 +100,26 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
                Eigen::Ref<RowMatrixXd> u,
                size_t n, double eps = 1.0e-30);
 
-    void initau(size_t m, size_t n,
+    void init_au(size_t m,
+                 Eigen::Ref<RowMatrixXd> a,
+                 Eigen::Ref<RowMatrixXd> u);
+
+    void init_abuv(size_t m, size_t n,
+                   Eigen::Ref<RowMatrixXd> a,
+                   Eigen::Ref<RowMatrixXd> b,
+                   Eigen::Ref<RowMatrixXd> u,
+                   Eigen::Ref<RowMatrixXd> v);
+
+    void shrslv(size_t m, size_t n,
                 Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> b,
-                Eigen::Ref<RowMatrixXd> u,
-                Eigen::Ref<RowMatrixXd> v);
+                Eigen::Ref<RowMatrixXd> c);
 
-    void shrslv(Eigen::Ref<RowMatrixXd> a,
-                Eigen::Ref<RowMatrixXd> b,
-                Eigen::Ref<RowMatrixXd> c,
-                size_t m, size_t n);
+    void bs_solve(size_t m,
+                  Eigen::Ref<RowMatrixXd> a,
+                  Eigen::Ref<RowMatrixXd> u,
+                  Eigen::Ref<RowMatrixXd> c,
+                  Eigen::Ref<RowMatrixXd> res);
 
     void bs_solve(size_t m, size_t n,
                   Eigen::Ref<RowMatrixXd> a,

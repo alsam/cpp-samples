@@ -199,11 +199,26 @@ nextw:
     }
 }
 
-void BS::initau(size_t m, size_t n,
-                Eigen::Ref<RowMatrixXd> a,
-                Eigen::Ref<RowMatrixXd> b,
-                Eigen::Ref<RowMatrixXd> u,
-                Eigen::Ref<RowMatrixXd> v)
+void BS::init_au(size_t m,
+                   Eigen::Ref<RowMatrixXd> a,
+                   Eigen::Ref<RowMatrixXd> u)
+{
+    hshldr(a, m);
+    bckmlt(a, u, m);
+    for (size_t i=0; i<m; i++) {
+        a(i+1, i) = a(i, m+1);
+    }
+
+    if (!schur(a,u,m)) {
+        throw std::logic_error("** SCHUR FAILED!");
+    }
+}
+
+void BS::init_abuv(size_t m, size_t n,
+                   Eigen::Ref<RowMatrixXd> a,
+                   Eigen::Ref<RowMatrixXd> b,
+                   Eigen::Ref<RowMatrixXd> u,
+                   Eigen::Ref<RowMatrixXd> v)
 {
     hshldr(a, m);
     bckmlt(a, u, m);
@@ -232,10 +247,10 @@ void BS::initau(size_t m, size_t n,
     }
 }
 
-void BS::shrslv(Eigen::Ref<RowMatrixXd> a,
+void BS::shrslv(size_t m, size_t n,
+                Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> b,
-                Eigen::Ref<RowMatrixXd> c,
-                size_t m, size_t n)
+                Eigen::Ref<RowMatrixXd> c)
 {
     size_t i,j,ib,ja,k,l,dk,dl,kk,ll;
 
@@ -341,6 +356,15 @@ void BS::shrslv(Eigen::Ref<RowMatrixXd> a,
     } while (l<=n);
 }
 
+void BS::bs_solve(size_t m,
+                  Eigen::Ref<RowMatrixXd> a,
+                  Eigen::Ref<RowMatrixXd> u,
+                  Eigen::Ref<RowMatrixXd> c,
+                  Eigen::Ref<RowMatrixXd> rslt)
+{
+    bs_solve(m, m, a, a, u, u, c, rslt);
+}
+
 void BS::bs_solve(size_t m, size_t n,
                   Eigen::Ref<RowMatrixXd> a,
                   Eigen::Ref<RowMatrixXd> b,
@@ -374,7 +398,7 @@ void BS::bs_solve(size_t m, size_t n,
         }
     }
 
-    shrslv(a,b,rslt,m,n);
+    shrslv(m, n, a, b, rslt);
 
     for (j=0; j<=n; j++) {
         for (i=0; i<=m; i++) {
