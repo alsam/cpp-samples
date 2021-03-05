@@ -35,6 +35,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
   y_grid_(N + 1),
   ome_   (M + 1, N + 1),
   psi_   (M + 1, N + 1),
+  second_derivative_operator_(M_ + 1, M_ + 1),
   border_(M, N)
 {
     double xa = 0.5*(x_min-x_max);
@@ -44,6 +45,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     generate_grid(M_, xa, xb, x_grid_);
     generate_grid(N_, ya, yb, y_grid_);
+    generate_matrix(M_, second_derivative_operator_);
 
     if (verbose_) {
         std::cout << "x_grid: [" << x_grid_ << "]\n";
@@ -61,13 +63,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     cosfft1(M_, border_.right_, false);
     cosfft1(N_, border_.up_,    false);
 
-    // fill right hand function
-    for (size_t i = 0; i <= M_; ++i) {
-        for (size_t j = 0; j <= N_; ++j) {
-            ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i])
-                                       * std::sin(4.*M_PI*y_grid_[j]);
-        }
-    }
+    RHS(M_, second_derivative_operator_);
 }
 
 void PoissonProblem::generate_grid(size_t n, double a, double b,
@@ -126,7 +122,37 @@ void PoissonProblem::laplacian(size_t n,
 }
 
 void PoissonProblem::RHS(size_t n,
-                         Eigen::Ref<RowMatrixXd> ma,
-                         Boundary const& boundary)
+                         Eigen::Ref<RowMatrixXd> ma)
 {
+    // fill right hand function
+    for (size_t i = 0; i <= n; ++i) {
+        for (size_t j = 0; j <= n; ++j) {
+            ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i])
+                                       * std::sin(4.*M_PI*y_grid_[j]);
+        }
+    }
+
+    // transform from physical to spectral space
+    cft2(n, ome_);
+
+    for (size_t i=0; i<=n; ++i) {
+        for (size_t j=0; j<=n; j++) {
+            using namespace detail;
+            double delta;
+            if        (is_even(i) && is_even(j)) {
+                delta = ma(0, i) * 0.5 * (border_.up_   [j] + border_.down_  [j])
+                      + ma(0, j) * 0.5 * (border_.left_ [i] + border_.right_ [i]);
+            } else if (is_even(i) && is_odd(j)) {
+                delta = ma(0, i) * 0.5 * (border_.up_   [j] + border_.down_  [j])
+                      + ma(1, j) * 0.5 * (border_.left_ [i] - border_.right_ [i]);
+            } else if (is_odd(i) && is_even(j)) {
+                delta = ma(1, i) * 0.5 * (border_.up_   [j] - border_.down_  [j])
+                      + ma(0, j) * 0.5 * (border_.left_ [i] + border_.right_ [i]);
+            } else {// is_odd(i) && is_odd(j)
+                delta = ma(1, i) * 0.5 * (border_.up_   [j] - border_.down_  [j])
+                      + ma(1, j) * 0.5 * (border_.left_ [i] - border_.right_ [i]);
+            }
+            ome_(i, j) -= delta;
+        }
+    }
 }

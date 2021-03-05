@@ -84,7 +84,7 @@ public:
 
 private:
 
-    void RHS(size_t n, Eigen::Ref<RowMatrixXd> ma, Boundary const& boundary);
+    void RHS(size_t n, Eigen::Ref<RowMatrixXd> ma);
 
 private:
 
@@ -110,6 +110,9 @@ private:
 
     /// \f$\Psi\f$ is the unknown
     RowMatrixXd psi_;
+
+    /// \f$\partial^2/\partial{x}^2\f$ derivative
+    RowMatrixXd second_derivative_operator_;
 
     Boundary border_;
 };
