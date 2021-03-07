@@ -24,6 +24,7 @@
 
 #include "PoissonProblem.hpp"
 #include "ChebyshevDifferentiate.hpp"
+#include "BartelsStewart.hpp"
 
 PoissonProblem::PoissonProblem(size_t M,     size_t N,
                                double x_min, double x_max,
@@ -35,7 +36,8 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
   y_grid_(N + 1),
   ome_   (M + 1, N + 1),
   psi_   (M + 1, N + 1),
-  second_derivative_operator_(M_ + 1, M_ + 1),
+  laplacian_operator_(M + 1, M + 1),
+  u_     (M + 1, M + 1),
   border_(M, N)
 {
     double xa = 0.5*(x_min-x_max);
@@ -45,7 +47,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     generate_grid(M_, xa, xb, x_grid_);
     generate_grid(N_, ya, yb, y_grid_);
-    generate_matrix(M_, second_derivative_operator_);
+    generate_matrix(M_, laplacian_operator_);
 
     if (verbose_) {
         std::cout << "x_grid: [" << x_grid_ << "]\n";
@@ -63,7 +65,9 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     cosfft1(M_, border_.right_, false);
     cosfft1(N_, border_.up_,    false);
 
-    RHS(M_, second_derivative_operator_);
+    RHS(M_, laplacian_operator_);
+
+    BS::init_au(M_ - 2, laplacian_operator_, u_);
 }
 
 void PoissonProblem::generate_grid(size_t n, double a, double b,
