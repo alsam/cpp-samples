@@ -122,10 +122,10 @@ void PoissonProblem::homogeneous_boundary(size_t n,
         evens -= in(n-1, j+1);
     }
     out(n-1, n-1) = odds;
-    out(n-1, n)   = evens-in(n-1, 0);
+    out(n-1, n)   = evens - in(n-1, 0); // FIXME
 
     evens = odds = 0.0;
-    for (size_t j=0; j<n; ++j) {
+    for (size_t j=0; j<n-2; ++j) {
         odds  -= in(j, n-1);
         evens -= in(j, n);
     }
@@ -133,8 +133,8 @@ void PoissonProblem::homogeneous_boundary(size_t n,
     out(n, n)   = evens;
 
     if (out != in) {
-        for (size_t i=0; i<n-2; ++i) {
-            for (size_t j=0; j<n-2; ++j) {
+        for (size_t i=0; i<=n-2; ++i) {
+            for (size_t j=0; j<=n-2; ++j) {
                 out(i, j) = in(i, j);
             }
         }
