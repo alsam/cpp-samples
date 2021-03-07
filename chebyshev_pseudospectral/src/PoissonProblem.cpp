@@ -68,6 +68,8 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     RHS(M_, laplacian_operator_);
 
     BS::init_au(M_ - 2, laplacian_operator_, u_);
+
+    solve();
 }
 
 void PoissonProblem::generate_grid(size_t n, double a, double b,
@@ -93,24 +95,49 @@ void PoissonProblem::homogeneous_boundary(size_t n,
                                           Eigen::Ref<RowMatrixXd> in,
                                           Eigen::Ref<RowMatrixXd> out)
 {
-    for (size_t i=0; i<=n; i++) {
-        double evens = 0.0, odds = 0.0;
-        for (size_t j=1; j<=n-2; j+=2) {
+    double evens, odds;
+    for (size_t i=0; i<=n-2; ++i) {
+        evens = odds = 0.0;
+        for (size_t j=1; j<n-2; j+=2) {
             odds  -= in(i, j);
             evens -= in(i, j+1);
         }
+        out(i, n-1) = odds;
+        out(i, n)   = evens-in(i, 0);
+    }
 
-        if (out != in) {
-            for (size_t j=0; j<=n-2; j++) {
+    for (size_t i=0; i<=n-2; ++i) {
+        evens = odds = 0.0;
+        for (size_t j=1; j<n-2; j+=2) {
+            odds  -= in(j,   i);
+            evens -= in(j+1, i);
+        }
+        out(n-1, i) = odds;
+        out(n,   i) = evens-in(0, i);
+    }
+
+    evens = odds = 0.0;
+    for (size_t j=1; j<n-2; j+=2) {
+        odds  -= in(n-1, j);
+        evens -= in(n-1, j+1);
+    }
+    out(n-1, n-1) = odds;
+    out(n-1, n)   = evens-in(n-1, 0);
+
+    evens = odds = 0.0;
+    for (size_t j=0; j<n; ++j) {
+        odds  -= in(j, n-1);
+        evens -= in(j, n);
+    }
+    out(n, n-1) = odds;
+    out(n, n)   = evens;
+
+    if (out != in) {
+        for (size_t i=0; i<n-2; ++i) {
+            for (size_t j=0; j<n-2; ++j) {
                 out(i, j) = in(i, j);
             }
         }
-
-        out(i, n-1) = odds;
-        out(i, n)   = evens-in(i, 0);
-/*
-        out(i, 0) = out(i, 1) = 0.0;
-*/
     }
 }
 
@@ -159,4 +186,9 @@ void PoissonProblem::RHS(size_t n,
             ome_(i, j) -= delta;
         }
     }
+}
+
+void PoissonProblem::solve()
+{
+    BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
 }

@@ -56,6 +56,7 @@ public:
                    double y_min, double y_max,
                    bool verbose = false);
 
+    void solve();
 
     struct Boundary { // SOA - Structure of Arrays
         RowVectorXd left_, down_, right_, up_;
