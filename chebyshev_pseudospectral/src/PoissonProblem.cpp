@@ -111,6 +111,14 @@ void PoissonProblem::homogeneous_boundary(size_t n,
                                           Eigen::Ref<RowMatrixXd> in,
                                           Eigen::Ref<RowMatrixXd> out)
 {
+    if (out != in) {
+        for (size_t i=0; i<=n-2; ++i) {
+            for (size_t j=0; j<=n-2; ++j) {
+                out(i, j) = in(i, j);
+            }
+        }
+    }
+
     double evens, odds;
     for (size_t i=0; i<=n-2; ++i) {
         evens = odds = 0.0;
@@ -119,7 +127,7 @@ void PoissonProblem::homogeneous_boundary(size_t n,
             evens -= in(i, j+1);
         }
         out(i, n-1) = odds;
-        out(i, n)   = evens-in(i, 0);
+        out(i, n)   = evens - in(i, 0);
     }
 
     for (size_t i=0; i<=n-2; ++i) {
@@ -129,32 +137,25 @@ void PoissonProblem::homogeneous_boundary(size_t n,
             evens -= in(j+1, i);
         }
         out(n-1, i) = odds;
-        out(n,   i) = evens-in(0, i);
+        out(n,   i) = evens - in(0, i);
     }
 
     evens = odds = 0.0;
-    for (size_t j=1; j<n-2; j+=2) {
-        odds  -= in(n-1, j);
-        evens -= in(n-1, j+1);
+    for (size_t j=1; j<=n-2; j+=2) {
+        odds  -= out(n-1, j);
+        evens -= out(n-1, j+1);
     }
     out(n-1, n-1) = odds;
-    out(n-1, n)   = evens - in(n-1, 0); // FIXME
+    out(n-1, n)   = evens - out(n-1, 0);
 
     evens = odds = 0.0;
     for (size_t j=0; j<n-2; ++j) {
-        odds  -= in(j, n-1);
-        evens -= in(j, n);
+        odds  -= out(j, n-1);
+        evens -= out(j, n);
     }
     out(n, n-1) = odds;
     out(n, n)   = evens;
 
-    if (out != in) {
-        for (size_t i=0; i<=n-2; ++i) {
-            for (size_t j=0; j<=n-2; ++j) {
-                out(i, j) = in(i, j);
-            }
-        }
-    }
 }
 
 void PoissonProblem::laplacian(size_t n,
