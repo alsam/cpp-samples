@@ -91,6 +91,22 @@ void PoissonProblem::generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma)
     laplacian(n, ma, ma);
 }
 
+/// as \f$T_n(\cos\theta)=\cos n\theta\f$, then
+///
+/// \f[
+/// 	\frac{T'_{n+1}(x)}{n+1}-\frac{T'_{n-1}(x)}{n-1}=\frac2{c_n}T_n(x)
+/// 	\quad(n>=0)
+/// \f]
+///
+///  From boundary conditions and Chebyshev polynomials traits \f$T_n(\pm1)=(\pm1)^n\f$ we derive
+/// \f{alignat}{{3}
+/// 	\sum^N_{p=0 \quad p\equiv0\pmod2} a_{mp} &=
+/// 	\sum^N_{p=1 \quad p\equiv1\pmod2} a_{mp} &= 0 &&
+/// 	\qquad 0\le m\le M\\
+/// 	\sum^N_{q=0 \quad q\equiv0\pmod2} a_{qn} &=
+/// 	\sum^N_{q=1 \quad q\equiv1\pmod2} a_{qn} &= 0 &&
+/// 	\qquad 0\le n\le N
+/// \f}
 void PoissonProblem::homogeneous_boundary(size_t n,
                                           Eigen::Ref<RowMatrixXd> in,
                                           Eigen::Ref<RowMatrixXd> out)
