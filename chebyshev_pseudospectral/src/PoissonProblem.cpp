@@ -155,7 +155,6 @@ void PoissonProblem::homogeneous_boundary(size_t n,
     }
     out(n, n-1) = odds;
     out(n, n)   = evens;
-
 }
 
 void PoissonProblem::laplacian(size_t n,
@@ -208,4 +207,5 @@ void PoissonProblem::RHS(size_t n,
 void PoissonProblem::solve()
 {
     BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
+    homogeneous_boundary(M_, psi_, psi_);
 }
