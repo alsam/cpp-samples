@@ -211,7 +211,7 @@ void PoissonProblem::solve()
     cft2(M_, psi_, true);
 }
 
-void PoissonProblem::print_residual()
+void PoissonProblem::compute_residual()
 {
     RowMatrixXd exact_sol(M_ + 1, N_ + 1);
     for (size_t i=0; i<=M_; ++i) {
@@ -228,4 +228,6 @@ void PoissonProblem::print_residual()
         }
     }
     std::cout << "l_\u221E error norm: " << l_infty << std::endl;
+    std::cout << "exact_sol: " << exact_sol << std::endl;
+    std::cout << "psi: " << psi_ << std::endl;
 }

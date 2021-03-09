@@ -58,7 +58,7 @@ public:
 
     void solve();
 
-    void print_residual();
+    void compute_residual();
 
     struct Boundary { // SOA - Structure of Arrays
         RowVectorXd left_, down_, right_, up_;
