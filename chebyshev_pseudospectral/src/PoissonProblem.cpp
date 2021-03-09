@@ -68,8 +68,6 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     RHS(M_, laplacian_operator_);
 
     BS::init_au(M_ - 2, laplacian_operator_, u_);
-
-    solve();
 }
 
 void PoissonProblem::generate_grid(size_t n, double a, double b,
@@ -180,7 +178,7 @@ void PoissonProblem::RHS(size_t n,
     }
 
     // transform from physical to spectral space
-    cft2(n, ome_);
+    cft2(n, ome_, true);
 
     for (size_t i=0; i<=n; ++i) {
         for (size_t j=0; j<=n; j++) {
@@ -207,8 +205,14 @@ void PoissonProblem::RHS(size_t n,
 void PoissonProblem::solve()
 {
     BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
+    if (verbose_)
+        std::cout << "psi_ after bs_solve:\n" << psi_ << std::endl;
     homogeneous_boundary(M_, psi_, psi_);
+    if (verbose_)
+        std::cout << "psi_ after homogeneous_boundary:\n" << psi_ << std::endl;
     cft2(M_, psi_, true);
+    if (verbose_)
+        std::cout << "psi_ after cft2:\n" << psi_ << std::endl;
 }
 
 void PoissonProblem::compute_residual()
@@ -231,7 +235,7 @@ void PoissonProblem::compute_residual()
     std::cout << "l_\u221E error norm: " << l_infty << std::endl;
 
     if (verbose_) {
-        std::cout << "exact_sol: " << exact_sol << std::endl;
-        std::cout << "psi: " << psi_ << std::endl;
+        std::cout << "exact_sol:\n" << exact_sol << std::endl;
+        std::cout << "psi:\n" << psi_ << std::endl;
     }
 }
