@@ -58,6 +58,8 @@ public:
 
     void solve();
 
+    void print_residual();
+
     struct Boundary { // SOA - Structure of Arrays
         RowVectorXd left_, down_, right_, up_;
 

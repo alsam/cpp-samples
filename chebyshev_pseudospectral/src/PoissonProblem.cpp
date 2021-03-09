@@ -210,3 +210,22 @@ void PoissonProblem::solve()
     homogeneous_boundary(M_, psi_, psi_);
     cft2(M_, psi_, true);
 }
+
+void PoissonProblem::print_residual()
+{
+    RowMatrixXd exact_sol(M_ + 1, N_ + 1);
+    for (size_t i=0; i<=M_; ++i) {
+        for (size_t j=0; j<=N_; ++j) {
+            exact_sol(i, j) = std::sin(4.*M_PI*x_grid_[i])*std::sin(4.*M_PI*y_grid_[j]);
+        }
+    }
+
+    double l_infty = 0.0;
+    for (size_t i=0; i<=M_; ++i) {
+        for (size_t j=0; j<=N_; ++j) {
+            double dif = std::fabs(exact_sol(i, j) - psi_(i, j));
+            l_infty = (dif > l_infty ? dif : l_infty);
+        }
+    }
+    std::cout << "l_\u221E error norm: " << l_infty << std::endl;
+}

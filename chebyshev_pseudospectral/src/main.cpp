@@ -115,5 +115,7 @@ int main(int argc, char **argv)
 
     problem.solve();
 
+    problem.print_residual();
+
     return EXIT_SUCCESS;
 }
