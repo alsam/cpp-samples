@@ -64,6 +64,53 @@ void BS::hshldr(Eigen::Ref<RowMatrixXd> a, size_t n)
     a(n-1, n+1) = a(n, n-1);
 }
 
+
+// 67│ /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U`
+// 68│ /// that reduces the matrix `A` to upper Hessenberg form
+// 69│ /// the matrices `A` and `U` can be aliased i.e. be the same
+// 70│ void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
+// 71│                 Eigen::Ref<RowMatrixXd> u,
+// 72│                 size_t n)
+// 73│ {
+// 74│     size_t i,j,l;
+// 75│     double sum,p;
+// 76│
+// 77│     u(n,   n) = u(n-1, n-1) = 1.0;
+// 78│     u(n-1, n) = u(n,   n-1) = 0.0;
+// 79│     for (l=n-2; l>=0; l--) {
+// 80├───────> if (a(n+1, l) != 0.0)
+// 81│             for (j=l+1; j<=n; j++) {
+// 82│                 for (sum=0.0, i=l+1; i<=n; i++)
+// 83│                     sum += a(i, l)*u(i, j);
+// 84│                 p = sum / a(n+1, l);
+// 85│                 for (i=l+1; i<=n; i++)
+// 86│                     u(i, j) -= a(i, l)*p;
+// 87│             }
+// 88│         for (i=l+1; i<=n; i++)
+// 89│             u(i, l) = u(l, i) = 0.0;
+// 90│         u(l, l) = 1.0;
+// 91│     }
+// 92│ }
+// [?2004l#1  0x00007ffff7a3b862 in abort () from /usr/lib/libc.so.6
+// [?2004h(gdb) up
+// [?2004l#2  0x00007ffff7a3b747 in __assert_fail_base.cold () from /usr/lib/libc.so.6
+// [?2004h(gdb) up
+// [?2004l#3  0x00007ffff7a4a646 in __assert_fail () from /usr/lib/libc.so.6
+// [?2004h(gdb) up
+// [?2004l#4  0x000055555556f753 in Eigen::DenseCoeffsBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1
+// >, 0, Eigen::OuterStride<-1> >, 1>::operator() (this=0x7fffffffe200, row=31, col=-1) at /usr/include/eigen
+// 3/Eigen/src/Core/DenseCoeffsBase.h:364
+// [?2004h(gdb) up
+// [?2004l#5  0x0000555555573128 in BS::bckmlt (a=..., u=..., n=30) at /home/alsam/work/github/cpp-samples/ch
+// ebyshev_pseudospectral/src/BartelsStewart.cpp:80
+// [?2004h(gdb) p l
+// [?2004l$1 = 18446744073709551615
+// [?2004h(gdb) p n
+// [?2004l$2 = 30
+// [?2004h(gdb) p (signed)l
+// [?2004l$3 = -1
+
+
 /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U`
 /// that reduces the matrix `A` to upper Hessenberg form
 /// the matrices `A` and `U` can be aliased i.e. be the same
@@ -71,12 +118,12 @@ void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
                 Eigen::Ref<RowMatrixXd> u,
                 size_t n)
 {
-    size_t i,j,l;
+    size_t i,j;
     double sum,p;
 
     u(n,   n) = u(n-1, n-1) = 1.0;
     u(n-1, n) = u(n,   n-1) = 0.0;
-    for (l=n-2; l>=0; l--) {
+    for (ssize_t l=n-2; l>=0; l--) {
         if (a(n+1, l) != 0.0)
             for (j=l+1; j<=n; j++) {
                 for (sum=0.0, i=l+1; i<=n; i++)

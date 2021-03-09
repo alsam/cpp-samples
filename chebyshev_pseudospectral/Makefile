@@ -12,5 +12,8 @@ dox:
 tests:
 	build/poisson_solver_tests
 
+run:
+	build/poisson_solver
+
 clean:
 	rm -rf build* docs/
