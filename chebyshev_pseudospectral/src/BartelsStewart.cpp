@@ -101,8 +101,7 @@ void BS::hshldr(Eigen::Ref<RowMatrixXd> a, size_t n)
 // >, 0, Eigen::OuterStride<-1> >, 1>::operator() (this=0x7fffffffe200, row=31, col=-1) at /usr/include/eigen
 // 3/Eigen/src/Core/DenseCoeffsBase.h:364
 // [?2004h(gdb) up
-// [?2004l#5  0x0000555555573128 in BS::bckmlt (a=..., u=..., n=30) at /home/alsam/work/github/cpp-samples/ch
-// ebyshev_pseudospectral/src/BartelsStewart.cpp:80
+// [?2004l#5  0x0000555555573128 in BS::bckmlt (a=..., u=..., n=30) at chebyshev_pseudospectral/src/BartelsStewart.cpp:80
 // [?2004h(gdb) p l
 // [?2004l$1 = 18446744073709551615
 // [?2004h(gdb) p n
