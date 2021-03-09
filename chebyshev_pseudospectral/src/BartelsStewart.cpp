@@ -137,13 +137,51 @@ void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
     }
 }
 
+// 140│ bool BS::schur(Eigen::Ref<RowMatrixXd> h,
+// 141│                Eigen::Ref<RowMatrixXd> u,
+// 142│                size_t nn, double eps)
+// 143│ {
+// 144│     constexpr size_t MAXITER = 150;
+// 145│     bool notlast,zero;
+// 146│     size_t i,j,k,l,n=nn,na,jl,m,its;
+// 147│     double rsum,test,hn=0.0,p,q,r,s,w,x,y,z;
+// 148│
+// 149│     for (i=0; i<=n; i++) {
+// 150│         jl = (i>1) ? (i-1) : 0;
+// 151│         for (rsum=0.0, j=jl;j<=n;j++)
+// 152│             rsum += std::fabs(h(i, j));
+// 153│         if (hn<rsum) hn = rsum;
+// 154│     }
+// 155│     test = eps*hn;
+// 156│     if (hn==0.0) return true;
+// 157│ nextw:
+// 158│     if (n<=0) return true;
+// 159│     its=0;
+// 160│     na=n-1;
+// 161│
+// 162│     for (;;) {
+// 163│         // iterations
+// 164│         l=n+1;
+// 165│         do {
+// 166│             l--;
+// 167├───────────> zero=(std::fabs(h(l, l-1)) <= test);
+// 168│         } while (l!=1 && !zero);
+// 169│         if (!zero) l=0;
+// 170│         else h(l, l-1)=0.0;
+// 
+// [?2004l#5  0x00005555555741a3 in BS::schur (h=..., u=..., nn=2, eps=1.0000000000000001e-30) at chebyshev_pseudospectral/src/BartelsStewart.cpp:167
+// [?2004h(gdb) p l
+// [?2004l$3 = 18446744073709551615
+// [?2004h(gdb) p (signed)l
+// [?2004l$4 = -1
+
 bool BS::schur(Eigen::Ref<RowMatrixXd> h,
                Eigen::Ref<RowMatrixXd> u,
                size_t nn, double eps)
 {
     constexpr size_t MAXITER = 150;
     bool notlast,zero;
-    size_t i,j,k,l,n=nn,na,jl,m,its;
+    ssize_t i,j,k,l,n=nn,na,jl,m,its;
     double rsum,test,hn=0.0,p,q,r,s,w,x,y,z;
 
     for (i=0; i<=n; i++) {

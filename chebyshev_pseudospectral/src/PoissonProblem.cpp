@@ -216,7 +216,8 @@ void PoissonProblem::compute_residual()
     RowMatrixXd exact_sol(M_ + 1, N_ + 1);
     for (size_t i=0; i<=M_; ++i) {
         for (size_t j=0; j<=N_; ++j) {
-            exact_sol(i, j) = std::sin(4.*M_PI*x_grid_[i])*std::sin(4.*M_PI*y_grid_[j]);
+            exact_sol(i, j) = std::sin(4.*M_PI*x_grid_[i])
+                             *std::sin(4.*M_PI*y_grid_[j]);
         }
     }
 
@@ -228,6 +229,9 @@ void PoissonProblem::compute_residual()
         }
     }
     std::cout << "l_\u221E error norm: " << l_infty << std::endl;
-    std::cout << "exact_sol: " << exact_sol << std::endl;
-    std::cout << "psi: " << psi_ << std::endl;
+
+    if (verbose_) {
+        std::cout << "exact_sol: " << exact_sol << std::endl;
+        std::cout << "psi: " << psi_ << std::endl;
+    }
 }
