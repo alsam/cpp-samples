@@ -113,5 +113,7 @@ int main(int argc, char **argv)
 
     PoissonProblem problem(po.M, po.N, po.x_min, po.x_max, po.y_min, po.y_max, po.verbose);
 
+    problem.solve();
+
     return EXIT_SUCCESS;
 }

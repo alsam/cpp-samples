@@ -208,4 +208,5 @@ void PoissonProblem::solve()
 {
     BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
     homogeneous_boundary(M_, psi_, psi_);
+    cft2(M_, psi_, true);
 }
