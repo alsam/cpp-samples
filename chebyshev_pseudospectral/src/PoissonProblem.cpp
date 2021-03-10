@@ -210,7 +210,7 @@ void PoissonProblem::solve()
     homogeneous_boundary(M_, psi_, psi_);
     if (verbose_)
         std::cout << "psi_ after homogeneous_boundary:\n" << psi_ << std::endl;
-    cft2(M_, psi_, true);
+    cft2(M_, psi_);
     if (verbose_)
         std::cout << "psi_ after cft2:\n" << psi_ << std::endl;
 }
