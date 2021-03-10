@@ -15,5 +15,9 @@ tests:
 run:
 	build/poisson_solver
 
+# integration mintest
+minitest:
+	build/poisson_solver --M 4 --N 4 --verbose
+
 clean:
 	rm -rf build* docs/
