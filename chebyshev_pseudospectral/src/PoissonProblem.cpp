@@ -147,7 +147,7 @@ void PoissonProblem::homogeneous_boundary(size_t n,
     out(n-1, n)   = evens - out(n-1, 0);
 
     evens = odds = 0.0;
-    for (size_t j=0; j<n-2; ++j) {
+    for (size_t j=0; j<n; ++j) {
         odds  -= out(j, n-1);
         evens -= out(j, n);
     }
