@@ -80,12 +80,7 @@ void PoissonProblem::generate_grid(size_t n, double a, double b,
 
 void PoissonProblem::generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma)
 {
-    // TODO use MatrixXd::Identity(rows,cols)
-    for (size_t i=0; i<=n; ++i) {
-        for (size_t j=0; j<=n; ++j) {
-            ma(i, j) = detail::id(i, j);
-        }
-    }
+    ma = Eigen::MatrixXd::Identity(n+1, n+1); // unity matrix `E`
     laplacian(n, ma, ma);
 }
 

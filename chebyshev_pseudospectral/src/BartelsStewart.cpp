@@ -446,7 +446,9 @@ void BS::bs_solve(size_t m,
                   Eigen::Ref<RowMatrixXd> c,
                   Eigen::Ref<RowMatrixXd> rslt)
 {
-    RowMatrixXd b = a.transpose();
+    RowMatrixXd b = a.transpose(); /// very \f${\bf{important}}\f$
+                                   /// b is a \f$\frac{\partial^2}{\partial{x^2}}\f$
+                                   /// a is a \f$\frac{\partial^2}{\partial{y^2}}\f$
     bs_solve(m, m, b, a, u, u, c, rslt);
 }
 
