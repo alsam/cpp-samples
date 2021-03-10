@@ -110,36 +110,32 @@ void PoissonProblem::homogeneous_boundary(size_t n,
                                           Eigen::Ref<RowMatrixXd> out)
 {
     if (out != in) {
-        for (size_t i=0; i<=n-2; ++i) {
-            for (size_t j=0; j<=n-2; ++j) {
-                out(i, j) = in(i, j);
-            }
-        }
+        out = in;
     }
 
     double evens, odds;
     for (size_t i=0; i<=n-2; ++i) {
         evens = odds = 0.0;
         for (size_t j=1; j<n-2; j+=2) {
-            odds  -= in(i, j);
-            evens -= in(i, j+1);
+            odds  -= out(i, j);
+            evens -= out(i, j+1);
         }
         out(i, n-1) = odds;
-        out(i, n)   = evens - in(i, 0);
+        out(i, n)   = evens - out(i, 0);
     }
 
     for (size_t i=0; i<=n-2; ++i) {
         evens = odds = 0.0;
         for (size_t j=1; j<n-2; j+=2) {
-            odds  -= in(j,   i);
-            evens -= in(j+1, i);
+            odds  -= out(j,   i);
+            evens -= out(j+1, i);
         }
         out(n-1, i) = odds;
-        out(n,   i) = evens - in(0, i);
+        out(n,   i) = evens - out(0, i);
     }
 
     evens = odds = 0.0;
-    for (size_t j=1; j<=n-2; j+=2) {
+    for (size_t j=1; j<n-2; j+=2) {
         odds  -= out(n-1, j);
         evens -= out(n-1, j+1);
     }
@@ -147,7 +143,7 @@ void PoissonProblem::homogeneous_boundary(size_t n,
     out(n-1, n)   = evens - out(n-1, 0);
 
     evens = odds = 0.0;
-    for (size_t j=0; j<n; ++j) {
+    for (size_t j=0; j<n; j+=2) {
         odds  -= out(j, n-1);
         evens -= out(j, n);
     }
@@ -204,6 +200,13 @@ void PoissonProblem::RHS(size_t n,
 
 void PoissonProblem::solve()
 {
+    if (verbose_) {
+        std::cout << "before bs_solve:\n" << std::endl;
+        std::cout << "laplacian_operator_:\n" << laplacian_operator_ << std::endl;
+        std::cout << "u_:\n" << u_ << std::endl;
+        std::cout << "ome_:\n" << ome_ << std::endl;
+    }
+
     BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
     if (verbose_)
         std::cout << "psi_ after bs_solve:\n" << psi_ << std::endl;
@@ -226,13 +229,20 @@ void PoissonProblem::compute_residual()
     }
 
     double l_infty = 0.0;
+    size_t outliers = 0;
     for (size_t i=0; i<=M_; ++i) {
         for (size_t j=0; j<=N_; ++j) {
             double dif = std::fabs(exact_sol(i, j) - psi_(i, j));
+            if (dif > 0.1) {
+                ++outliers;
+                // std::cout << "alert: dif: " << dif << "\nexact_sol(" << i << ", " << j << "): "
+                //           << exact_sol(i, j)
+                //           << "\npsi(" << i << ", " << j << "): " << psi_(i, j) << std::endl;
+            }
             l_infty = (dif > l_infty ? dif : l_infty);
         }
     }
-    std::cout << "l_\u221E error norm: " << l_infty << std::endl;
+    std::cout << "l_\u221E error norm: " << l_infty << " outliers: " << outliers << std::endl;
 
     if (verbose_) {
         std::cout << "exact_sol:\n" << exact_sol << std::endl;

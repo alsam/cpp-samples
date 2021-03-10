@@ -446,7 +446,8 @@ void BS::bs_solve(size_t m,
                   Eigen::Ref<RowMatrixXd> c,
                   Eigen::Ref<RowMatrixXd> rslt)
 {
-    bs_solve(m, m, a, a, u, u, c, rslt);
+    RowMatrixXd b = a.transpose();
+    bs_solve(m, m, b, a, u, u, c, rslt);
 }
 
 void BS::bs_solve(size_t m, size_t n,

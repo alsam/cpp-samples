@@ -148,5 +148,9 @@ void cft2(size_t m,
         for (size_t i=0; i<=m; ++i)
             cosfft1(m, data.row(i), inverse);
         data.transposeInPlace();
+        // for (size_t i=0; i<=m; i++)
+        //     for (size_t j=i; j<=m; j++)
+        //         std::swap(data(i, j), data(j, i));
+
     }
 }

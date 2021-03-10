@@ -219,11 +219,11 @@ TEST(PoissonProblem, test_homogeneous_boundary)
         }
     }
 
-    std::cout << "AA: [\n" << AA << "]\n";
+    // std::cout << "AA: [\n" << AA << "]\n";
     PoissonProblem::homogeneous_boundary(M, AA, BB);
-    std::cout << "BB: [\n" << BB << "]\n";
-    std::cout << "AA: [\n" << AA << "]\n";
+    // std::cout << "BB: [\n" << BB << "]\n";
+    // std::cout << "AA: [\n" << AA << "]\n";
     PoissonProblem::homogeneous_boundary(M, AA, AA);
-    std::cout << "AA: [\n" << AA << "]\n";
+    // std::cout << "AA: [\n" << AA << "]\n";
     EXPECT_DOUBLE_EQ((AA - BB).norm(), 0.0);
 }
