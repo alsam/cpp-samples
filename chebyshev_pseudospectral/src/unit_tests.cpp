@@ -123,8 +123,8 @@ TEST(eigenSuite, test_transpose)
     EXPECT_EQ(ma.rows(), maT.rows());
     EXPECT_EQ(ma.cols(), maT.cols());
 
-    // assertion failure if we use
-    // `Eigen::Ref<RowVectorXd>` instead of plain `RowMatrixXd&` 
+    // assertion failure if use
+    // `Eigen::Ref<RowMatrixXd>` instead of plain `RowMatrixXd&` 
     auto transpose = [](RowMatrixXd& ma) {
         ma.transposeInPlace();
     };
