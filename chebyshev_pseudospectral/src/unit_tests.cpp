@@ -65,7 +65,7 @@ void sysslv(double a[N][N], double b[N])
 
 TEST(cftSuite, test_cosfft1)
 {
-    const size_t M = 2;
+    constexpr size_t M = 2;
 
     RowVectorXd x(M + 1), x_inv(M + 1);
 
@@ -103,7 +103,7 @@ TEST(cftSuite, test_cosfft12)
 
 TEST(cftSuite, test_cf2)
 {
-    const size_t M = 2;
+    constexpr size_t M = 2;
 
     RowMatrixXd m(M + 1, M + 1), m_inv(M + 1, M + 1);
 
@@ -121,11 +121,34 @@ TEST(cftSuite, test_cf2)
     EXPECT_DOUBLE_EQ((m - m_inv).norm(), 0.0);
 }
 
+/// check that `.transpose()` and `.transposeInPlace()`
+/// surely work with non-square matrices
+TEST(eigenSuite, test_transpose)
+{
+    constexpr size_t M = 2;
+    constexpr size_t N = 3;
+    Eigen::MatrixXd ma(M, N), maT;
+    ma << 1., 2., 3.,
+          4., 5., 6.;
+    maT = ma.transpose();
+
+    // std::cout << ma << std::endl;
+    // std::cout << maT << std::endl;
+
+    EXPECT_EQ(ma.rows(), maT.cols());
+    EXPECT_EQ(maT.rows(), ma.cols());
+
+    ma.transposeInPlace();
+
+    EXPECT_EQ(ma.rows(), maT.rows());
+    EXPECT_EQ(ma.cols(), maT.cols());
+}
+
 TEST(bsSuite, test_gauss_elim)
 {
     constexpr double EPS = 1e-12;
 
-    const size_t M = 4;
+    constexpr size_t M = 4;
 
     // https://mxncalc.com/gaussian-elimination-calculator
     double A[M][M] = {{1.,  2., 3.,  4.},
@@ -161,7 +184,7 @@ TEST(bsSuite, test_gauss_elim)
 
 TEST(ChebyshevDifferentiate, test_deriv1)
 {
-    const size_t M = 32;
+    constexpr size_t M = 32;
 
     auto y        = [](double x) {return x*x*x*x + sin(x);}; /// \f$y = x^4 + \sin x\f$
     auto y_deriv1 = [](double x) {return 4*x*x*x + cos(x);}; /// \f$y = 4x^3 + \cos x\f$
@@ -203,7 +226,7 @@ TEST(ChebyshevDifferentiate, test_deriv1)
 
 TEST(PoissonProblem, test_homogeneous_boundary)
 {
-    const size_t M = 4;
+    constexpr size_t M = 4;
 
     double A[M + 1][M + 1] = { {1.,  2., 3.,  4.,  8.,},
                                {5.,  6., 8.,  5.,  7.,},
