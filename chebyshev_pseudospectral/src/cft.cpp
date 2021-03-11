@@ -140,13 +140,20 @@ void cosfft1(size_t n,
     }
 }
 
-void cft2(size_t m,
+void cft2(size_t m, size_t n,
           Eigen::Ref<RowMatrixXd> data,
           bool inverse)
 {
-    for (size_t idim=0; idim<2; ++idim) {
-        for (size_t i=0; i<=m; ++i)
-            cosfft1(m, data.row(i), inverse);
-        data.transposeInPlace();
+    // data is (M+1)x(N+1) matrix
+    for (size_t i=0; i<=m; ++i) {
+        cosfft1(n, data.row(i), inverse);
+    }
+
+    data.transposeInPlace();
+
+    // data is (N+1)x(M+1) matrix
+    // after `.transposeInPlace()`
+    for (size_t i=0; i<=n; ++i) {
+        cosfft1(m, data.row(i), inverse);
     }
 }

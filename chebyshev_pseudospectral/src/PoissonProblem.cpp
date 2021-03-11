@@ -65,7 +65,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     cosfft1(M_, border_.right_, false);
     cosfft1(N_, border_.up_,    false);
 
-    RHS(M_, laplacian_operator_);
+    RHS(laplacian_operator_);
 
     BS::init_au(M_ - 2, laplacian_operator_, u_);
 }
@@ -157,22 +157,21 @@ void PoissonProblem::laplacian(size_t n,
     }
 }
 
-void PoissonProblem::RHS(size_t n,
-                         Eigen::Ref<RowMatrixXd> ma)
+void PoissonProblem::RHS(Eigen::Ref<RowMatrixXd> ma)
 {
     // fill right hand function
-    for (size_t i = 0; i <= n; ++i) {
-        for (size_t j = 0; j <= n; ++j) {
+    for (size_t i = 0; i <= M_; ++i) {
+        for (size_t j = 0; j <= N_; ++j) {
             ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i])
                                        * std::sin(4.*M_PI*y_grid_[j]);
         }
     }
 
     // transform from physical to spectral space
-    cft2(n, ome_, true);
+    cft2(M_, N_, ome_, true);
 
-    for (size_t i=0; i<=n; ++i) {
-        for (size_t j=0; j<=n; j++) {
+    for (size_t i=0; i<=M_; ++i) {
+        for (size_t j=0; j<=N_; j++) {
             using namespace detail;
             double delta;
             if        (is_even(i) && is_even(j)) {
@@ -208,7 +207,7 @@ void PoissonProblem::solve()
     homogeneous_boundary(M_, psi_, psi_);
     if (verbose_)
         std::cout << "psi_ after homogeneous_boundary:\n" << psi_ << std::endl;
-    cft2(M_, psi_);
+    cft2(M_, N_, psi_);
     if (verbose_)
         std::cout << "psi_ after cft2:\n" << psi_ << std::endl;
 }

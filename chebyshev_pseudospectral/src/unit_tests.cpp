@@ -101,33 +101,14 @@ TEST(cftSuite, test_cosfft12)
     EXPECT_NEAR((f_vals1 - f_vals2).norm(), 0.0, EPS);
 }
 
-TEST(cftSuite, test_cf2)
-{
-    constexpr size_t M = 2;
-
-    RowMatrixXd m(M + 1, M + 1), m_inv(M + 1, M + 1);
-
-    m << 1., 2., 3.,
-         4., 5., 6.,
-         7., 8., 9.;
-    m_inv << 45.,  -6., 15.,
-            -18.,   0., -6.,
-             15.,  -2.,  5.;
-
-    cft2(2, m);
-
-    // std::cout << m << std::endl;
-
-    EXPECT_DOUBLE_EQ((m - m_inv).norm(), 0.0);
-}
-
 /// check that `.transpose()` and `.transposeInPlace()`
 /// surely work with non-square matrices
 TEST(eigenSuite, test_transpose)
 {
     constexpr size_t M = 2;
     constexpr size_t N = 3;
-    Eigen::MatrixXd ma(M, N), maT;
+    //Eigen::MatrixXd ma(M, N), maT;
+    RowMatrixXd ma(M, N), maT;
     ma << 1., 2., 3.,
           4., 5., 6.;
     maT = ma.transpose();
@@ -142,6 +123,39 @@ TEST(eigenSuite, test_transpose)
 
     EXPECT_EQ(ma.rows(), maT.rows());
     EXPECT_EQ(ma.cols(), maT.cols());
+
+    auto transpose = [](Eigen::Ref<RowMatrixXd> ma) {
+        ma.transposeInPlace();
+    };
+
+    // here:
+    // /usr/include/eigen3/Eigen/src/Core/DenseBase.h:256: void Eigen::DenseBase<Derived>::resize(Eigen::Index, Eigen::Index) [with Derived = Eigen::Ref<Eigen::Matrix<double, -1, -1, 1> >; Eigen::Index = long int]: Assertion `rows == this->rows() && cols == this->cols() && "DenseBase::resize() does not actually allow to resize."' failed.
+
+    transpose(ma);
+
+    EXPECT_EQ(ma.rows(), maT.cols());
+    EXPECT_EQ(maT.rows(), ma.cols());
+}
+
+TEST(cftSuite, test_cf2)
+{
+    constexpr size_t M = 2;
+    constexpr size_t N = 4;
+
+    RowMatrixXd m(M + 1, N + 1), m_inv(N + 1, M + 1);
+
+    m << 1., 2., 3., 1., 2.,
+         4., 5., 6., 4., 5.,
+         7., 8., 9., 7., 8.;
+    m_inv << 45.,  -6., 15., 1., 2.,
+            -18.,   0., -6., 4., 5.,
+             15.,  -2.,  5., 7., 8.;
+
+    // cft2(M, N, m);
+
+    std::cout << m << std::endl;
+
+    //EXPECT_DOUBLE_EQ((m - m_inv).norm(), 0.0);
 }
 
 TEST(bsSuite, test_gauss_elim)

@@ -87,7 +87,7 @@ public:
 
 private:
 
-    void RHS(size_t n, Eigen::Ref<RowMatrixXd> ma);
+    void RHS(Eigen::Ref<RowMatrixXd> ma);
 
 private:
 
