@@ -141,7 +141,7 @@ void cosfft1(size_t n,
 }
 
 void cft2(size_t m, size_t n,
-          Eigen::Ref<RowMatrixXd> data,
+          RowMatrixXd &data,
           bool inverse)
 {
     // data is (M+1)x(N+1) matrix

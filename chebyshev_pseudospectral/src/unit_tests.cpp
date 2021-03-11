@@ -107,7 +107,6 @@ TEST(eigenSuite, test_transpose)
 {
     constexpr size_t M = 2;
     constexpr size_t N = 3;
-    //Eigen::MatrixXd ma(M, N), maT;
     RowMatrixXd ma(M, N), maT;
     ma << 1., 2., 3.,
           4., 5., 6.;
@@ -124,12 +123,11 @@ TEST(eigenSuite, test_transpose)
     EXPECT_EQ(ma.rows(), maT.rows());
     EXPECT_EQ(ma.cols(), maT.cols());
 
-    auto transpose = [](Eigen::Ref<RowMatrixXd> ma) {
+    // assertion failure if we use
+    // `Eigen::Ref<RowVectorXd>` instead of plain `RowMatrixXd&` 
+    auto transpose = [](RowMatrixXd& ma) {
         ma.transposeInPlace();
     };
-
-    // here:
-    // /usr/include/eigen3/Eigen/src/Core/DenseBase.h:256: void Eigen::DenseBase<Derived>::resize(Eigen::Index, Eigen::Index) [with Derived = Eigen::Ref<Eigen::Matrix<double, -1, -1, 1> >; Eigen::Index = long int]: Assertion `rows == this->rows() && cols == this->cols() && "DenseBase::resize() does not actually allow to resize."' failed.
 
     transpose(ma);
 
@@ -147,15 +145,18 @@ TEST(cftSuite, test_cf2)
     m << 1., 2., 3., 1., 2.,
          4., 5., 6., 4., 5.,
          7., 8., 9., 7., 8.;
-    m_inv << 45.,  -6., 15., 1., 2.,
-            -18.,   0., -6., 4., 5.,
-             15.,  -2.,  5., 7., 8.;
+    m_inv <<            72.,                     -30.,                  24.,
+       -0.87867965644035673, -4.4408920985006262e-16 , -0.29289321881345254,
+                         9.,                      -6.,                   3.,
+       -5.1213203435596428 ,  4.4408920985006262e-16 , -1.7071067811865479 ,
+                        18.,                      -6.,                   6.;
 
-    // cft2(M, N, m);
+    cft2(M, N, m);
 
-    std::cout << m << std::endl;
+    // std::cout << std::setprecision(17) << m << std::endl;
 
-    //EXPECT_DOUBLE_EQ((m - m_inv).norm(), 0.0);
+    constexpr double EPS = 1e-14;
+    EXPECT_NEAR((m - m_inv).norm(), 0.0, EPS);
 }
 
 TEST(bsSuite, test_gauss_elim)
