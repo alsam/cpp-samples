@@ -28,7 +28,7 @@
 #include "math.hpp"
 
 void cosfft1(size_t n,
-             Eigen::Ref<Eigen::RowVectorXd> data,
+             Eigen::Ref<Eigen::VectorXd> data,
              bool inverse)
 {
     size_t  m;
@@ -141,7 +141,7 @@ void cosfft1(size_t n,
 }
 
 void cft2(size_t m, size_t n,
-          RowMatrixXd &data,
+          Eigen::Ref<RowMatrixXd> data,
           bool inverse)
 {
     // `data` is (M+1)x(N+1) matrix
@@ -149,15 +149,9 @@ void cft2(size_t m, size_t n,
         cosfft1(n, data.row(i), inverse);
     }
 
-    // to view the matrix columns as rows
-    data.transposeInPlace();
-
-    // `data` is (N+1)x(M+1) matrix
-    // after `.transposeInPlace()`
     for (size_t i=0; i<=n; ++i) {
-        cosfft1(m, data.row(i), inverse);
+        Eigen::VectorXd col{data.col(i)};
+        cosfft1(m, col, inverse);
+        data.col(i) = col;
     }
-
-    // restore back
-    data.transposeInPlace();
 }
