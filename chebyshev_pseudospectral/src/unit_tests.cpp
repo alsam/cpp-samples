@@ -135,6 +135,18 @@ TEST(eigenSuite, test_transpose)
     EXPECT_EQ(maT.rows(), ma.cols());
 }
 
+TEST(eigenSuite, test_unity)
+{
+    constexpr size_t M = 2;
+    constexpr size_t N = 3;
+    RowMatrixXd ma;
+
+    ma = Eigen::MatrixXd::Identity(M + 1, N + 1);
+
+    std::cout << "ma:\n" << ma << std::endl;
+
+}
+
 TEST(cftSuite, test_cf2)
 {
     constexpr size_t M = 2;

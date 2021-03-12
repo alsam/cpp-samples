@@ -47,7 +47,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     generate_grid(M_, xa, xb, x_grid_);
     generate_grid(N_, ya, yb, y_grid_);
-    generate_matrix(M_, laplacian_operator_);
+    generate_matrix(laplacian_operator_);
 
     if (verbose_) {
         std::cout << "x_grid: [" << x_grid_ << "]\n";
@@ -78,10 +78,10 @@ void PoissonProblem::generate_grid(size_t n, double a, double b,
     }
 }
 
-void PoissonProblem::generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma)
+void PoissonProblem::generate_matrix(Eigen::Ref<RowMatrixXd> ma)
 {
-    ma = Eigen::MatrixXd::Identity(n+1, n+1); // unity matrix `E`
-    laplacian(n, ma, ma);
+    ma = Eigen::MatrixXd::Identity(M_ + 1, N_ + 1); // unity matrix `E`
+    laplacian(M_, ma, ma); // TODO for non-square matrix
 }
 
 /// as \f$T_n(\cos\theta)=\cos n\theta\f$, then

@@ -76,7 +76,7 @@ public:
     static void generate_grid(size_t n, double a, double b,
                               Eigen::Ref<RowVectorXd> grid);
 
-    static void generate_matrix(size_t n, Eigen::Ref<RowMatrixXd> ma);
+    void generate_matrix(Eigen::Ref<RowMatrixXd> ma);
 
     static void homogeneous_boundary(size_t n,
                                      Eigen::Ref<RowMatrixXd> in,
