@@ -140,7 +140,7 @@ TEST(cftSuite, test_cf2)
     constexpr size_t M = 2;
     constexpr size_t N = 4;
 
-    RowMatrixXd m(M + 1, N + 1), m_inv(M + 1, N + 1);
+    RowMatrixXd m(M + 1, N + 1), m_inv(M + 1, N + 1), m1;
 
     m << 1., 2., 3., 1., 2.,
          4., 5., 6., 4., 5.,
@@ -148,12 +148,17 @@ TEST(cftSuite, test_cf2)
     m_inv <<  72.,    -0.87867965644035673,   9.,     -5.1213203435596428,  18.,
              -30., -4.4408920985006262e-16,  -6.,  4.4408920985006262e-16,  -6.,
               24.,    -0.29289321881345254,   3.,     -1.7071067811865479,   6.;
+
+    m1 = m;
+
     cft2(M, N, m);
+    cft2_with_transpose(M, N, m1);
 
     // std::cout << std::setprecision(17) << m << std::endl;
 
     constexpr double EPS = 1e-14;
     EXPECT_NEAR((m - m_inv).norm(), 0.0, EPS);
+    EXPECT_NEAR((m - m1).norm(), 0.0, EPS);
 }
 
 TEST(bsSuite, test_gauss_elim)

@@ -155,3 +155,28 @@ void cft2(size_t m, size_t n,
         data.col(i) = col;
     }
 }
+
+/// this version of `cft2` might be beneficial for parallel computation
+/// that parallel libraries often include tailored versions of `transpose`
+/// besides row major matrix storage allows to slice vectors from the matrix efficiently
+void cft2_with_transpose(size_t m, size_t n,
+                         RowMatrixXd &data,  /// don't use `Eigen::Ref<RowMatrixXd>`
+                         bool inverse)       /// as you get assertion in `.transposeInPlace()`
+{
+    // `data` is (M+1)x(N+1) matrix
+    for (size_t i=0; i<=m; ++i) {
+        cosfft1(n, data.row(i), inverse);
+    }
+
+    // to view the matrix columns as rows
+    data.transposeInPlace();
+
+    // `data` is (N+1)x(M+1) matrix
+    // after `.transposeInPlace()`
+    for (size_t i=0; i<=n; ++i) {
+        cosfft1(m, data.row(i), inverse);
+    }
+
+    // restore back
+    data.transposeInPlace();
+}

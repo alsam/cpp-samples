@@ -65,3 +65,11 @@ void cft2(size_t m, size_t n,
           Eigen::Ref<RowMatrixXd> data,
           bool inverse = false);
 
+/// this version of `cft2` might be beneficial for parallel computation
+/// using the fact, that parallel libraries often include tailored versions
+/// of `transpose`
+void cft2_with_transpose(size_t m, size_t n,
+                         RowMatrixXd &data,     /// don't use `Eigen::Ref<RowMatrixXd>`
+                         bool inverse = false); /// as you get assertion in `.transposeInPlace()`
+
+
