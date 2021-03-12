@@ -78,9 +78,6 @@ public:
 
     void generate_matrix(Eigen::Ref<RowMatrixXd> ma);
 
-    static void homogeneous_boundary(size_t n,
-                                     Eigen::Ref<RowMatrixXd> in,
-                                     Eigen::Ref<RowMatrixXd> out);
     static void laplacian(size_t n,
                           Eigen::Ref<RowMatrixXd> in,
                           Eigen::Ref<RowMatrixXd> out);

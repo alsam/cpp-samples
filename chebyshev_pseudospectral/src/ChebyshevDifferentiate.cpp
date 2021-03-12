@@ -86,10 +86,10 @@
 ///
 /// and \f$\qquad a_{N+1}^{(1)} = a_{N+2}^{(1)} = 0, \quad a_{N}^{(2)} = a_{N+1}^{(2)} = 0\f$
 
-void spectral_differentiate(size_t n,
-                            Eigen::Ref<RowVectorXd> in,
-                            Eigen::Ref<RowVectorXd> out,
-                            double span)
+void CS::spectral_differentiate(size_t n,
+                                Eigen::Ref<RowVectorXd> in,
+                                Eigen::Ref<RowVectorXd> out,
+                                double span)
 {
     double temp1 = in[n-1],
            temp2 = in[n-2];
@@ -105,3 +105,64 @@ void spectral_differentiate(size_t n,
     out[n] = 0.0;
 }
 
+/// as \f$T_n(\cos\theta)=\cos n\theta\f$, then
+///
+/// \f[
+/// 	\frac{T'_{n+1}(x)}{n+1}-\frac{T'_{n-1}(x)}{n-1}=\frac2{c_n}T_n(x)
+/// 	\quad(n>=0)
+/// \f]
+///
+///  From boundary conditions and Chebyshev polynomials traits \f$T_n(\pm1)=(\pm1)^n\f$ we derive
+/// \f{alignat}{{3}
+/// 	\sum^N_{p=0 \quad p\equiv0\pmod2} a_{mp} &=
+/// 	\sum^N_{p=1 \quad p\equiv1\pmod2} a_{mp} &= 0 &&
+/// 	\qquad 0\le m\le M\\
+/// 	\sum^N_{q=0 \quad q\equiv0\pmod2} a_{qn} &=
+/// 	\sum^N_{q=1 \quad q\equiv1\pmod2} a_{qn} &= 0 &&
+/// 	\qquad 0\le n\le N
+/// \f}
+void CS::homogeneous_boundary(size_t m, size_t n,
+                              Eigen::Ref<RowMatrixXd> in,
+                              Eigen::Ref<RowMatrixXd> out)
+{
+    if (out != in) {
+        out = in;
+    }
+
+    double evens, odds;
+    for (size_t i=0; i<=m-2; ++i) {
+        evens = odds = 0.0;
+        for (size_t j=1; j<n-2; j+=2) {
+            odds  -= out(i, j);
+            evens -= out(i, j+1);
+        }
+        out(i, n-1) = odds;
+        out(i, n)   = evens - out(i, 0);
+    }
+
+    for (size_t i=0; i<=m-2; ++i) {
+        evens = odds = 0.0;
+        for (size_t j=1; j<n-2; j+=2) {
+            odds  -= out(j,   i);
+            evens -= out(j+1, i);
+        }
+        out(n-1, i) = odds;
+        out(n,   i) = evens - out(0, i);
+    }
+
+    evens = odds = 0.0;
+    for (size_t j=1; j<n-2; j+=2) {
+        odds  -= out(n-1, j);
+        evens -= out(n-1, j+1);
+    }
+    out(n-1, n-1) = odds;
+    out(n-1, n)   = evens - out(n-1, 0);
+
+    evens = odds = 0.0;
+    for (size_t i=0; i<m; i+=2) {
+        odds  -= out(i, n-1);
+        evens -= out(i, n);
+    }
+    out(n, n-1) = odds;
+    out(n, n)   = evens;
+}

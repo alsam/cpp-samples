@@ -84,73 +84,12 @@ void PoissonProblem::generate_matrix(Eigen::Ref<RowMatrixXd> ma)
     laplacian(M_, ma, ma); // TODO for non-square matrix
 }
 
-/// as \f$T_n(\cos\theta)=\cos n\theta\f$, then
-///
-/// \f[
-/// 	\frac{T'_{n+1}(x)}{n+1}-\frac{T'_{n-1}(x)}{n-1}=\frac2{c_n}T_n(x)
-/// 	\quad(n>=0)
-/// \f]
-///
-///  From boundary conditions and Chebyshev polynomials traits \f$T_n(\pm1)=(\pm1)^n\f$ we derive
-/// \f{alignat}{{3}
-/// 	\sum^N_{p=0 \quad p\equiv0\pmod2} a_{mp} &=
-/// 	\sum^N_{p=1 \quad p\equiv1\pmod2} a_{mp} &= 0 &&
-/// 	\qquad 0\le m\le M\\
-/// 	\sum^N_{q=0 \quad q\equiv0\pmod2} a_{qn} &=
-/// 	\sum^N_{q=1 \quad q\equiv1\pmod2} a_{qn} &= 0 &&
-/// 	\qquad 0\le n\le N
-/// \f}
-void PoissonProblem::homogeneous_boundary(size_t n,
-                                          Eigen::Ref<RowMatrixXd> in,
-                                          Eigen::Ref<RowMatrixXd> out)
-{
-    if (out != in) {
-        out = in;
-    }
-
-    double evens, odds;
-    for (size_t i=0; i<=n-2; ++i) {
-        evens = odds = 0.0;
-        for (size_t j=1; j<n-2; j+=2) {
-            odds  -= out(i, j);
-            evens -= out(i, j+1);
-        }
-        out(i, n-1) = odds;
-        out(i, n)   = evens - out(i, 0);
-    }
-
-    for (size_t i=0; i<=n-2; ++i) {
-        evens = odds = 0.0;
-        for (size_t j=1; j<n-2; j+=2) {
-            odds  -= out(j,   i);
-            evens -= out(j+1, i);
-        }
-        out(n-1, i) = odds;
-        out(n,   i) = evens - out(0, i);
-    }
-
-    evens = odds = 0.0;
-    for (size_t j=1; j<n-2; j+=2) {
-        odds  -= out(n-1, j);
-        evens -= out(n-1, j+1);
-    }
-    out(n-1, n-1) = odds;
-    out(n-1, n)   = evens - out(n-1, 0);
-
-    evens = odds = 0.0;
-    for (size_t j=0; j<n; j+=2) {
-        odds  -= out(j, n-1);
-        evens -= out(j, n);
-    }
-    out(n, n-1) = odds;
-    out(n, n)   = evens;
-}
-
 void PoissonProblem::laplacian(size_t n,
                                Eigen::Ref<RowMatrixXd> in,
                                Eigen::Ref<RowMatrixXd> out)
 {
-    homogeneous_boundary(n, in, out);
+    using namespace CS;
+    homogeneous_boundary(n, n, in, out);
     for (size_t i = 0; i <= n; ++i) {
         spectral_differentiate(n, out.row(i), out.row(i));
         spectral_differentiate(n, out.row(i), out.row(i));
@@ -201,10 +140,14 @@ void PoissonProblem::solve()
         std::cout << "ome_:\n" << ome_ << std::endl;
     }
 
-    BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
+    if (M_ == N_) {
+        BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
+    } else {
+        throw "not yet implemented!";
+    }
     if (verbose_)
         std::cout << "psi_ after bs_solve:\n" << psi_ << std::endl;
-    homogeneous_boundary(M_, psi_, psi_);
+    CS::homogeneous_boundary(M_, N_, psi_, psi_);
     if (verbose_)
         std::cout << "psi_ after homogeneous_boundary:\n" << psi_ << std::endl;
     cft2(M_, N_, psi_);

@@ -128,4 +128,4 @@ namespace BS /// BS stands for \f$\boldsymbol{B}\f$artels-\f$\boldsymbol{S}\f$te
                   Eigen::Ref<RowMatrixXd> v,
                   Eigen::Ref<RowMatrixXd> c,
                   Eigen::Ref<RowMatrixXd> res);
-};
+}

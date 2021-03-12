@@ -31,8 +31,15 @@
  *
  */
 
+namespace CS /// CS stands for \f$\boldsymbol{C}\f$ebyshev-\f$\boldsymbol{S}\f$pectral
+{
+
 void spectral_differentiate(size_t n,
                             Eigen::Ref<RowVectorXd> data,
                             Eigen::Ref<RowVectorXd> rslt,
                             double span = 1.0);
 
+void homogeneous_boundary(size_t m, size_t n,
+                          Eigen::Ref<RowMatrixXd> in,
+                          Eigen::Ref<RowMatrixXd> out);
+}

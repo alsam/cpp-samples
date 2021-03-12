@@ -241,7 +241,7 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     // std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
 
     cosfft1(M, f_vals, true);
-    spectral_differentiate(M, f_vals, f_vals, 2.0 / (x_max - x_min));
+    CS::spectral_differentiate(M, f_vals, f_vals, 2.0 / (x_max - x_min));
     cosfft1(M, f_vals);
 
     // std::cout << "f_vals: [" << f_vals << "]\n";
@@ -272,10 +272,10 @@ TEST(PoissonProblem, test_homogeneous_boundary)
     }
 
     // std::cout << "AA: [\n" << AA << "]\n";
-    PoissonProblem::homogeneous_boundary(M, AA, BB);
+    CS::homogeneous_boundary(M, M, AA, BB);
     // std::cout << "BB: [\n" << BB << "]\n";
     // std::cout << "AA: [\n" << AA << "]\n";
-    PoissonProblem::homogeneous_boundary(M, AA, AA);
+    CS::homogeneous_boundary(M, M, AA, AA);
     // std::cout << "AA: [\n" << AA << "]\n";
     EXPECT_DOUBLE_EQ((AA - BB).norm(), 0.0);
 }
