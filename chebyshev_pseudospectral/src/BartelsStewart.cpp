@@ -24,10 +24,13 @@
 
 #include "BartelsStewart.hpp"
 
+namespace BS
+{
+
 /// @brief reduces the matrix to upper Hessenberg form by Householder similarity transformations
 /// on @return the matrix `a` contains: the upper triangle and `(n+1)` column contains Hessenberg form
 /// the low triangle and `(n+1)` row contains the history of transformations.
-void BS::hshldr(Eigen::Ref<RowMatrixXd> a, size_t n)
+void hshldr(Eigen::Ref<RowMatrixXd> a, size_t n)
 {
     size_t i,j,l;
     double max, sum, s, p;
@@ -113,9 +116,9 @@ void BS::hshldr(Eigen::Ref<RowMatrixXd> a, size_t n)
 /// @brief from matrix `A` from `hshldr` builds ortogonal matrix `U`
 /// that reduces the matrix `A` to upper Hessenberg form
 /// the matrices `A` and `U` can be aliased i.e. be the same
-void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
-                Eigen::Ref<RowMatrixXd> u,
-                size_t n)
+void bckmlt(Eigen::Ref<RowMatrixXd> a,
+            Eigen::Ref<RowMatrixXd> u,
+            size_t n)
 {
     size_t i,j;
     double sum,p;
@@ -175,9 +178,9 @@ void BS::bckmlt(Eigen::Ref<RowMatrixXd> a,
 // [?2004h(gdb) p (signed)l
 // [?2004l$4 = -1
 
-bool BS::schur(Eigen::Ref<RowMatrixXd> h,
-               Eigen::Ref<RowMatrixXd> u,
-               size_t nn, double eps)
+bool schur(Eigen::Ref<RowMatrixXd> h,
+           Eigen::Ref<RowMatrixXd> u,
+           size_t nn, double eps)
 {
     constexpr size_t MAXITER = 150;
     bool notlast,zero;
@@ -283,9 +286,9 @@ nextw:
     }
 }
 
-void BS::init_au(size_t m,
-                   Eigen::Ref<RowMatrixXd> a,
-                   Eigen::Ref<RowMatrixXd> u)
+void init_au(size_t m,
+               Eigen::Ref<RowMatrixXd> a,
+               Eigen::Ref<RowMatrixXd> u)
 {
     hshldr(a, m);
     bckmlt(a, u, m);
@@ -298,11 +301,11 @@ void BS::init_au(size_t m,
     }
 }
 
-void BS::init_abuv(size_t m, size_t n,
-                   Eigen::Ref<RowMatrixXd> a,
-                   Eigen::Ref<RowMatrixXd> b,
-                   Eigen::Ref<RowMatrixXd> u,
-                   Eigen::Ref<RowMatrixXd> v)
+void init_abuv(size_t m, size_t n,
+               Eigen::Ref<RowMatrixXd> a,
+               Eigen::Ref<RowMatrixXd> b,
+               Eigen::Ref<RowMatrixXd> u,
+               Eigen::Ref<RowMatrixXd> v)
 {
     hshldr(a, m);
     bckmlt(a, u, m);
@@ -331,10 +334,10 @@ void BS::init_abuv(size_t m, size_t n,
     }
 }
 
-void BS::shrslv(size_t m, size_t n,
-                Eigen::Ref<RowMatrixXd> a,
-                Eigen::Ref<RowMatrixXd> b,
-                Eigen::Ref<RowMatrixXd> c)
+void shrslv(size_t m, size_t n,
+            Eigen::Ref<RowMatrixXd> a,
+            Eigen::Ref<RowMatrixXd> b,
+            Eigen::Ref<RowMatrixXd> c)
 {
     size_t i,j,ib,ja,k,l,dk,dl,kk,ll;
 
@@ -440,11 +443,11 @@ void BS::shrslv(size_t m, size_t n,
     } while (l<=n);
 }
 
-void BS::bs_solve(size_t m,
-                  Eigen::Ref<RowMatrixXd> a,
-                  Eigen::Ref<RowMatrixXd> u,
-                  Eigen::Ref<RowMatrixXd> c,
-                  Eigen::Ref<RowMatrixXd> rslt)
+void bs_solve(size_t m,
+              Eigen::Ref<RowMatrixXd> a,
+              Eigen::Ref<RowMatrixXd> u,
+              Eigen::Ref<RowMatrixXd> c,
+              Eigen::Ref<RowMatrixXd> rslt)
 {
     RowMatrixXd b = a.transpose(); /// very \f${\bf{important}}\f$
                                    /// b is a \f$\frac{\partial^2}{\partial{x^2}}\f$
@@ -452,13 +455,13 @@ void BS::bs_solve(size_t m,
     bs_solve(m, m, b, a, u, u, c, rslt);
 }
 
-void BS::bs_solve(size_t m, size_t n,
-                  Eigen::Ref<RowMatrixXd> a,
-                  Eigen::Ref<RowMatrixXd> b,
-                  Eigen::Ref<RowMatrixXd> u,
-                  Eigen::Ref<RowMatrixXd> v,
-                  Eigen::Ref<RowMatrixXd> c,
-                  Eigen::Ref<RowMatrixXd> rslt)
+void bs_solve(size_t m, size_t n,
+              Eigen::Ref<RowMatrixXd> a,
+              Eigen::Ref<RowMatrixXd> b,
+              Eigen::Ref<RowMatrixXd> u,
+              Eigen::Ref<RowMatrixXd> v,
+              Eigen::Ref<RowMatrixXd> c,
+              Eigen::Ref<RowMatrixXd> rslt)
 {
     size_t i,j,k;
 
@@ -510,3 +513,5 @@ void BS::bs_solve(size_t m, size_t n,
         }
     }
 }
+
+} // namespace BS

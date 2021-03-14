@@ -24,6 +24,8 @@
 
 #include "ChebyshevDifferentiate.hpp"
 
+namespace CS
+{
 /// 
 /// as \f$T_n(\cos\theta)=\cos n\theta\f$, then
 /// 
@@ -86,10 +88,10 @@
 ///
 /// and \f$\qquad a_{N+1}^{(1)} = a_{N+2}^{(1)} = 0, \quad a_{N}^{(2)} = a_{N+1}^{(2)} = 0\f$
 
-void CS::spectral_differentiate(size_t n,
-                                Eigen::Ref<RowVectorXd> in,
-                                Eigen::Ref<RowVectorXd> out,
-                                double span)
+void spectral_differentiate(size_t n,
+                            Eigen::Ref<RowVectorXd> in,
+                            Eigen::Ref<RowVectorXd> out,
+                            double span)
 {
     double temp1 = in[n-1],
            temp2 = in[n-2];
@@ -121,9 +123,9 @@ void CS::spectral_differentiate(size_t n,
 /// 	\sum^N_{q=1 \quad q\equiv1\pmod2} a_{qn} &= 0 &&
 /// 	\qquad 0\le n\le N
 /// \f}
-void CS::homogeneous_boundary(size_t m, size_t n,
-                              Eigen::Ref<RowMatrixXd> in,
-                              Eigen::Ref<RowMatrixXd> out)
+void homogeneous_boundary(size_t m, size_t n,
+                          Eigen::Ref<RowMatrixXd> in,
+                          Eigen::Ref<RowMatrixXd> out)
 {
     if (out != in) {
         out = in;
@@ -167,9 +169,9 @@ void CS::homogeneous_boundary(size_t m, size_t n,
     out(n, n)   = evens;
 }
 
-void CS::second_derivative(size_t m, size_t n,
-                           Eigen::Ref<RowMatrixXd> in,
-                           Eigen::Ref<RowMatrixXd> out)
+void second_derivative(size_t m, size_t n,
+                       Eigen::Ref<RowMatrixXd> in,
+                       Eigen::Ref<RowMatrixXd> out)
 {
     homogeneous_boundary(m, n, in, out);
     for (size_t i = 0; i <= m; ++i) {
@@ -177,3 +179,5 @@ void CS::second_derivative(size_t m, size_t n,
         spectral_differentiate(n, out.row(i), out.row(i));
     }
 }
+
+} // namespace CS
