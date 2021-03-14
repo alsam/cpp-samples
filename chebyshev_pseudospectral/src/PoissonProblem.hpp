@@ -108,7 +108,7 @@ private:
     RowMatrixXd psi_;
 
     /// \f$\partial^2/\partial{x}^2\f$ second derivative
-    RowMatrixXd laplacian_operator_, u_;
+    RowMatrixXd second_derivative_respect_x_, u_;
 
     Boundary border_;
 };

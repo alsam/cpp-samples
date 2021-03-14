@@ -36,7 +36,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
   y_grid_(N + 1),
   ome_   (M + 1, N + 1),
   psi_   (M + 1, N + 1),
-  laplacian_operator_(M + 1, M + 1),
+  second_derivative_respect_x_(M + 1, N + 1),
   u_     (M + 1, M + 1),
   border_(M, N)
 {
@@ -47,7 +47,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     generate_grid(M_, xa, xb, x_grid_);
     generate_grid(N_, ya, yb, y_grid_);
-    generate_matrix(laplacian_operator_);
+    generate_matrix(second_derivative_respect_x_);
 
     if (verbose_) {
         std::cout << "x_grid: [" << x_grid_ << "]\n";
@@ -65,9 +65,9 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     cosfft1(M_, border_.right_, false);
     cosfft1(N_, border_.up_,    false);
 
-    RHS(laplacian_operator_);
+    RHS(second_derivative_respect_x_);
 
-    BS::init_au(M_ - 2, laplacian_operator_, u_);
+    BS::init_au(M_ - 2, second_derivative_respect_x_, u_);
 }
 
 void PoissonProblem::generate_grid(size_t n, double a, double b,
@@ -123,13 +123,13 @@ void PoissonProblem::solve()
 {
     if (verbose_) {
         std::cout << "before bs_solve:\n" << std::endl;
-        std::cout << "laplacian_operator_:\n" << laplacian_operator_ << std::endl;
+        std::cout << "second_derivative_respect_x_:\n" << second_derivative_respect_x_ << std::endl;
         std::cout << "u_:\n" << u_ << std::endl;
         std::cout << "ome_:\n" << ome_ << std::endl;
     }
 
     if (M_ == N_) {
-        BS::bs_solve(M_-2, laplacian_operator_, u_, ome_, psi_);
+        BS::bs_solve(M_-2, second_derivative_respect_x_, u_, ome_, psi_);
     } else {
         throw "not yet implemented!";
     }
