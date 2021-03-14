@@ -78,10 +78,6 @@ public:
 
     void generate_matrix(Eigen::Ref<RowMatrixXd> ma);
 
-    static void laplacian(size_t n,
-                          Eigen::Ref<RowMatrixXd> in,
-                          Eigen::Ref<RowMatrixXd> out);
-
 private:
 
     void RHS(Eigen::Ref<RowMatrixXd> ma);

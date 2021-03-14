@@ -42,4 +42,8 @@ void spectral_differentiate(size_t n,
 void homogeneous_boundary(size_t m, size_t n,
                           Eigen::Ref<RowMatrixXd> in,
                           Eigen::Ref<RowMatrixXd> out);
+
+void second_derivative(size_t m, size_t n,
+                       Eigen::Ref<RowMatrixXd> in,
+                       Eigen::Ref<RowMatrixXd> out);
 }

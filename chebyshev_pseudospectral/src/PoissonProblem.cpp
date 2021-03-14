@@ -81,19 +81,7 @@ void PoissonProblem::generate_grid(size_t n, double a, double b,
 void PoissonProblem::generate_matrix(Eigen::Ref<RowMatrixXd> ma)
 {
     ma = Eigen::MatrixXd::Identity(M_ + 1, N_ + 1); // unity matrix `E`
-    laplacian(M_, ma, ma); // TODO for non-square matrix
-}
-
-void PoissonProblem::laplacian(size_t n,
-                               Eigen::Ref<RowMatrixXd> in,
-                               Eigen::Ref<RowMatrixXd> out)
-{
-    using namespace CS;
-    homogeneous_boundary(n, n, in, out);
-    for (size_t i = 0; i <= n; ++i) {
-        spectral_differentiate(n, out.row(i), out.row(i));
-        spectral_differentiate(n, out.row(i), out.row(i));
-    }
+    CS::second_derivative(M_, N_, ma, ma); // TODO for non-square matrix
 }
 
 void PoissonProblem::RHS(Eigen::Ref<RowMatrixXd> ma)

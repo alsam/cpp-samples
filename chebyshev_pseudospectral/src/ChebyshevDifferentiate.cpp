@@ -166,3 +166,14 @@ void CS::homogeneous_boundary(size_t m, size_t n,
     out(n, n-1) = odds;
     out(n, n)   = evens;
 }
+
+void CS::second_derivative(size_t m, size_t n,
+                           Eigen::Ref<RowMatrixXd> in,
+                           Eigen::Ref<RowMatrixXd> out)
+{
+    homogeneous_boundary(m, n, in, out);
+    for (size_t i = 0; i <= m; ++i) {
+        spectral_differentiate(n, out.row(i), out.row(i));
+        spectral_differentiate(n, out.row(i), out.row(i));
+    }
+}
