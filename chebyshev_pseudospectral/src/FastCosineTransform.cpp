@@ -26,13 +26,14 @@
 #include <algorithm>
 #include <iostream>
 #include "math.hpp"
+#include "FastCosineTransform.hpp"
 
 namespace FCT
 {
 
 void cosfft1(size_t n,
              Eigen::Ref<Eigen::VectorXd> data,
-             bool inverse)
+             TransformType transform_type)
 {
     size_t  m;
     size_t  mmax, istep, i1, i2, i3, i4;
@@ -41,10 +42,12 @@ void cosfft1(size_t n,
             temp, sum, first, last;
 
     temp = data[n];
-    if (inverse) {
+
+    if (transform_type == TransformType::Inverse) {
         first=0.5*data[0];
         last=0.5*temp;
     }
+
     sum = 0.0;
     for (size_t j=0; j<=n; j+=2) sum += data[j];
     for (size_t j=1; j<=n; j+=2) sum -= data[j];
@@ -132,7 +135,7 @@ void cosfft1(size_t n,
         data[j + 1] -= temp;
     }
 
-    if (inverse) {
+    if (transform_type == TransformType::Inverse) {
         for (size_t j=0;j<n;j+=2) {
             data[j    ] = (data[j    ]-(first+last))*2.0/n;
             data[j + 1] = (data[j + 1]-(first-last))*2.0/n;
@@ -145,16 +148,16 @@ void cosfft1(size_t n,
 
 void cft2(size_t m, size_t n,
           Eigen::Ref<RowMatrixXd> data,
-          bool inverse)
+          TransformType transform_type)
 {
     // `data` is (M+1)x(N+1) matrix
     for (size_t i=0; i<=m; ++i) {
-        cosfft1(n, data.row(i), inverse);
+        cosfft1(n, data.row(i), transform_type);
     }
 
     for (size_t i=0; i<=n; ++i) {
         Eigen::VectorXd col{data.col(i)};
-        cosfft1(m, col, inverse);
+        cosfft1(m, col, transform_type);
         data.col(i) = col;
     }
 }
@@ -163,12 +166,12 @@ void cft2(size_t m, size_t n,
 /// that parallel libraries often include tailored versions of `transpose`
 /// besides row major matrix storage allows to slice vectors from the matrix efficiently
 void cft2_with_transpose(size_t m, size_t n,
-                         RowMatrixXd &data,  /// don't use `Eigen::Ref<RowMatrixXd>`
-                         bool inverse)       /// as you get assertion in `.transposeInPlace()`
+                         RowMatrixXd &data,            /// don't use `Eigen::Ref<RowMatrixXd>`
+                         TransformType transform_type) /// as you get assertion in `.transposeInPlace()`
 {
     // `data` is (M+1)x(N+1) matrix
     for (size_t i=0; i<=m; ++i) {
-        cosfft1(n, data.row(i), inverse);
+        cosfft1(n, data.row(i), transform_type);
     }
 
     // to view the matrix columns as rows
@@ -177,7 +180,7 @@ void cft2_with_transpose(size_t m, size_t n,
     // `data` is (N+1)x(M+1) matrix
     // after `.transposeInPlace()`
     for (size_t i=0; i<=n; ++i) {
-        cosfft1(m, data.row(i), inverse);
+        cosfft1(m, data.row(i), transform_type);
     }
 
     // restore back

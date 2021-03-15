@@ -26,6 +26,7 @@
 #include "math.hpp"
 #include "ChebyshevDifferentiate.hpp"
 #include "PoissonProblem.hpp"
+#include "FastCosineTransform.hpp"
 
 template<size_t N>
 void sysslv(double a[N][N], double b[N])
@@ -94,7 +95,7 @@ TEST(cftSuite, test_cosfft12)
     }
 
     FCT::cosfft1(M, f_vals1);
-    FCT::cosfft1(M, f_vals1, true);
+    FCT::cosfft1(M, f_vals1, FCT::TransformType::Inverse);
 
     // EXPECT_DOUBLE_EQ((f_vals1 - f_vals2).norm(), 0.0);
     constexpr double EPS = 1e-14;
@@ -240,7 +241,7 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     // std::cout << "f_vals: [" << f_vals << "]\n";
     // std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
 
-    FCT::cosfft1(M, f_vals, true);
+    FCT::cosfft1(M, f_vals, FCT::TransformType::Inverse);
     CS::spectral_differentiate(M, f_vals, f_vals, 2.0 / (x_max - x_min));
     FCT::cosfft1(M, f_vals);
 

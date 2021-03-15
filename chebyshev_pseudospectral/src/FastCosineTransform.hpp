@@ -24,35 +24,31 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/eigen.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-#include <pybind11/numpy.h>
-#include <Eigen/Dense>
+#include "math.hpp"
 
 /**  
- *  @brief Contains fundamental type defintions used by the project. 
+ *  @brief Contains Fast Cosine Transform routines. 
  *  
  */
 
-namespace py = pybind11;
+namespace FCT /// stands for Fast Cosine Transform
+{
 
-namespace detail {
+enum class TransformType {Forward, Inverse};
 
-template <typename T> inline T sqr(T a) { return a*a; }
+void cosfft1(size_t n,
+             Eigen::Ref<Eigen::VectorXd> data,
+             TransformType transform_type = TransformType::Forward);
 
-inline double id(size_t i, size_t j) { return i==j ? 1.0 : 0.0; }
+void cft2(size_t m, size_t n,
+          Eigen::Ref<RowMatrixXd> data,
+          TransformType transform_type = TransformType::Forward);
 
-inline bool is_odd(size_t i) { return i&1; }
-
-inline bool is_even(size_t i) { return !is_odd(i); }
+/// this version of `cft2` might be beneficial for parallel computation
+/// that parallel libraries often include tailored versions of `transpose`
+/// besides row major matrix storage allows to slice vectors from the matrix efficiently
+void cft2_with_transpose(size_t m, size_t n,
+                         RowMatrixXd &data, /// don't use `Eigen::Ref<RowMatrixXd>`
+                         TransformType transform_type = TransformType::Forward); /// as you get assertion in `.transposeInPlace()`
 
 }
-
-using RowVectorXd = Eigen::RowVectorXd;
-
-using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-// Use RowMatrixXd instead of MatrixXd
-// see https://pybind11.readthedocs.io/en/stable/advanced/cast/eigen.html#storage-orders for more details
-
