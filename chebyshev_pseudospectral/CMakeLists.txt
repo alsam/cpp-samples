@@ -24,7 +24,7 @@ find_package(Boost REQUIRED COMPONENTS
 #========== Targets Configurations ============#
 
 set (src
-     src/cft.cpp
+     src/FastCosineTransform.cpp
      src/PoissonProblem.cpp
      src/BartelsStewart.cpp
      src/ChebyshevDifferentiate.cpp)

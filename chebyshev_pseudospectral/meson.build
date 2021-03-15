@@ -2,8 +2,10 @@ project('poisson_solver', ['c', 'cpp'],
         default_options: ['c_std=c17',])
 
 src = [
-  'src/cft.cpp',
+  'src/FastCosineTransform.cpp',
   'src/PoissonProblem.cpp',
+  'src/BartelsStewart.cpp',
+  'src/ChebyshevDifferentiate.cpp',
 ]
 
 pymod = import('python')
