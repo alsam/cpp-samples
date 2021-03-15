@@ -60,6 +60,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     border_.right_ = RowVectorXd::Zero(M_ + 1);
     border_.up_    = RowVectorXd::Zero(N_ + 1);
 
+    using namespace FCT;
     cosfft1(M_, border_.left_,  false);
     cosfft1(N_, border_.down_,  false);
     cosfft1(M_, border_.right_, false);
@@ -95,7 +96,7 @@ void PoissonProblem::RHS(Eigen::Ref<RowMatrixXd> ma)
     }
 
     // transform from physical to spectral space
-    cft2(M_, N_, ome_, true);
+    FCT::cft2(M_, N_, ome_, true);
 
     for (size_t i=0; i<=M_; ++i) {
         for (size_t j=0; j<=N_; j++) {
@@ -138,7 +139,7 @@ void PoissonProblem::solve()
     CS::homogeneous_boundary(M_, N_, psi_, psi_);
     if (verbose_)
         std::cout << "psi_ after homogeneous_boundary:\n" << psi_ << std::endl;
-    cft2(M_, N_, psi_);
+    FCT::cft2(M_, N_, psi_);
     if (verbose_)
         std::cout << "psi_ after cft2:\n" << psi_ << std::endl;
 }

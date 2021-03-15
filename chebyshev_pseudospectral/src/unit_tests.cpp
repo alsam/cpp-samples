@@ -72,7 +72,7 @@ TEST(cftSuite, test_cosfft1)
     x     << 1.,  2., 3.;
     x_inv << 6., -2., 2.;
 
-    cosfft1(M, x);
+    FCT::cosfft1(M, x);
 
     EXPECT_DOUBLE_EQ((x - x_inv).norm(), 0.0);
 }
@@ -93,8 +93,8 @@ TEST(cftSuite, test_cosfft12)
         f_vals2[i] = f_vals1[i] = y(x_grid[i]);
     }
 
-    cosfft1(M, f_vals1);
-    cosfft1(M, f_vals1, true);
+    FCT::cosfft1(M, f_vals1);
+    FCT::cosfft1(M, f_vals1, true);
 
     // EXPECT_DOUBLE_EQ((f_vals1 - f_vals2).norm(), 0.0);
     constexpr double EPS = 1e-14;
@@ -163,8 +163,8 @@ TEST(cftSuite, test_cf2)
 
     m1 = m;
 
-    cft2(M, N, m);
-    cft2_with_transpose(M, N, m1);
+    FCT::cft2(M, N, m);
+    FCT::cft2_with_transpose(M, N, m1);
 
     // std::cout << std::setprecision(17) << m << std::endl;
 
@@ -240,9 +240,9 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     // std::cout << "f_vals: [" << f_vals << "]\n";
     // std::cout << "f_deriv_vals: [" << f_deriv_vals << "]\n";
 
-    cosfft1(M, f_vals, true);
+    FCT::cosfft1(M, f_vals, true);
     CS::spectral_differentiate(M, f_vals, f_vals, 2.0 / (x_max - x_min));
-    cosfft1(M, f_vals);
+    FCT::cosfft1(M, f_vals);
 
     // std::cout << "f_vals: [" << f_vals << "]\n";
     // std::cout << "f_vals - f_deriv_vals: [" << f_vals - f_deriv_vals << "]\n";

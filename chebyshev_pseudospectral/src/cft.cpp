@@ -27,6 +27,9 @@
 #include <iostream>
 #include "math.hpp"
 
+namespace FCT
+{
+
 void cosfft1(size_t n,
              Eigen::Ref<Eigen::VectorXd> data,
              bool inverse)
@@ -180,3 +183,5 @@ void cft2_with_transpose(size_t m, size_t n,
     // restore back
     data.transposeInPlace();
 }
+
+} // namespace FCT
