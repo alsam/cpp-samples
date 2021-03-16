@@ -142,9 +142,9 @@ void homogeneous_boundary(size_t m, size_t n,
         out(i, n)   = evens - out(i, 0);
     }
 
-    for (size_t i=0; i<=m-2; ++i) {
+    for (size_t i=0; i<=n-2; ++i) {
         evens = odds = 0.0;
-        for (size_t j=1; j<n-2; j+=2) {
+        for (size_t j=1; j<m-2; j+=2) {
             odds  -= out(j,   i);
             evens -= out(j+1, i);
         }
