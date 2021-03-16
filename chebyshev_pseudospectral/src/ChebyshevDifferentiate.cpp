@@ -134,7 +134,7 @@ void homogeneous_boundary(size_t m, size_t n,
     double evens, odds;
     for (size_t i=0; i<=m-2; ++i) {
         evens = odds = 0.0;
-        for (size_t j=1; j<n-2; j+=2) {
+        for (size_t j=1; j<=n-2; j+=2) {
             odds  -= out(i, j);
             evens -= out(i, j+1);
         }
@@ -148,25 +148,25 @@ void homogeneous_boundary(size_t m, size_t n,
             odds  -= out(j,   i);
             evens -= out(j+1, i);
         }
-        out(n-1, i) = odds;
-        out(n,   i) = evens - out(0, i);
+        out(m-1, i) = odds;
+        out(m,   i) = evens - out(0, i);
     }
 
     evens = odds = 0.0;
     for (size_t j=1; j<n-2; j+=2) {
-        odds  -= out(n-1, j);
-        evens -= out(n-1, j+1);
+        odds  -= out(m-1, j);
+        evens -= out(m-1, j+1);
     }
-    out(n-1, n-1) = odds;
-    out(n-1, n)   = evens - out(n-1, 0);
+    out(m-1, n-1) = odds;
+    out(m-1, n)   = evens - out(n-1, 0);
 
     evens = odds = 0.0;
     for (size_t i=0; i<m; i+=2) {
         odds  -= out(i, n-1);
         evens -= out(i, n);
     }
-    out(n, n-1) = odds;
-    out(n, n)   = evens;
+    out(m, n-1) = odds;
+    out(m, n)   = evens;
 }
 
 void second_derivative(size_t m, size_t n,
