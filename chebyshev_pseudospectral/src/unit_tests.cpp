@@ -144,8 +144,21 @@ TEST(eigenSuite, test_unity)
 
     ma = Eigen::MatrixXd::Identity(M + 1, N + 1);
 
-    std::cout << "ma:\n" << ma << std::endl;
+    // std::cout << "ma:\n" << ma << std::endl;
 
+    EXPECT_EQ(ma.rows(), M + 1);
+    EXPECT_EQ(ma.cols(), N + 1);
+
+    ma.transposeInPlace();
+
+    EXPECT_EQ(ma.rows(), N + 1);
+    EXPECT_EQ(ma.cols(), M + 1);
+
+    EXPECT_EQ(ma(0, 0), 1.0);
+    EXPECT_EQ(ma(1, 1), 1.0);
+    EXPECT_EQ(ma(2, 2), 1.0);
+    EXPECT_EQ(ma(1, 2), 0.0);
+    EXPECT_EQ(ma(2, 1), 0.0);
 }
 
 TEST(cftSuite, test_cf2)
