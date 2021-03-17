@@ -107,6 +107,12 @@ void spectral_differentiate(size_t n,
     out[n] = 0.0;
 }
 
+
+// 159│     }
+// 160│     out(m-1, n-1) = odds;
+// 161├───> out(m-1, n)   = evens - out(n-1, 0);
+
+
 /// as \f$T_n(\cos\theta)=\cos n\theta\f$, then
 ///
 /// \f[
@@ -158,7 +164,7 @@ void homogeneous_boundary(size_t m, size_t n,
         evens -= out(m-1, j+1);
     }
     out(m-1, n-1) = odds;
-    out(m-1, n)   = evens - out(n-1, 0);
+    out(m-1, n)   = evens - out(m-1, 0);
 
     evens = odds = 0.0;
     for (size_t i=0; i<m; i+=2) {

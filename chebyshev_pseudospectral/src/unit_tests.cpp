@@ -293,11 +293,11 @@ TEST(PoissonProblem, test_homogeneous_boundary)
     // std::cout << "AA: [\n" << AA << "]\n";
     EXPECT_DOUBLE_EQ((AA - BB).norm(), 0.0);
 
-    constexpr size_t N = 2;
+    constexpr size_t N = 2*M;
     RowMatrixXd CC(M + 1, N + 1);
     for (size_t i = 0; i <= M; ++i) {
         for (size_t j = 0; j <= N; ++j) {
-            CC(i, j) = A[i][j];
+            CC(i, j) = A[i][j % 2];
         }
     }
     std::cout << "CC: [\n" << CC << "]\n";
