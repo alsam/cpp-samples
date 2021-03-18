@@ -269,6 +269,20 @@ TEST(ChebyshevDifferentiate, test_deriv1)
 
 TEST(PoissonProblem, test_homogeneous_boundary)
 {
+    auto sums_evens_odds = [](auto const& begin, auto const& end)
+                           -> std::pair<double, double> {
+        double evens = 0.0, odds = 0.0;
+        size_t counter = 0;
+        for (auto it = begin; it != end; ++it) {
+            if (detail::is_even(counter++)) {
+                evens += *it;
+            } else {
+                odds += *it;;
+            }
+        }
+        return {evens, odds};
+    };
+
     constexpr size_t M = 4;
 
     double A[M + 1][M + 1] = { {1.,  2., 3.,  4.,  8.,},
@@ -285,9 +299,9 @@ TEST(PoissonProblem, test_homogeneous_boundary)
         }
     }
 
-    std::cout << "AA: [\n" << AA << "]\n";
+    // std::cout << "AA: [\n" << AA << "]\n";
     CS::homogeneous_boundary(M, M, AA, BB);
-    std::cout << "BB: [\n" << BB << "]\n";
+    // std::cout << "BB: [\n" << BB << "]\n";
     // std::cout << "AA: [\n" << AA << "]\n";
     CS::homogeneous_boundary(M, M, AA, AA);
     // std::cout << "AA: [\n" << AA << "]\n";
@@ -300,8 +314,10 @@ TEST(PoissonProblem, test_homogeneous_boundary)
             CC(i, j) = A[i][j % 2];
         }
     }
-    std::cout << "CC: [\n" << CC << "]\n";
+    // std::cout << "CC: [\n" << CC << "]\n";
     CS::homogeneous_boundary(M, N, CC, CC);
 
-    std::cout << "CC: [\n" << CC << "]\n";
+    // std::cout << "CC: [\n" << CC << "]\n";
+    auto [evens, odds] = sums_evens_odds(&CC(2, 0), &CC(3, 0));
+    std::cout << "evens: " << evens << " odds: " << odds << std::endl;
 }

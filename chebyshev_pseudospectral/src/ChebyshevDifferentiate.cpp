@@ -107,12 +107,6 @@ void spectral_differentiate(size_t n,
     out[n] = 0.0;
 }
 
-
-// 159│     }
-// 160│     out(m-1, n-1) = odds;
-// 161├───> out(m-1, n)   = evens - out(n-1, 0);
-
-
 /// as \f$T_n(\cos\theta)=\cos n\theta\f$, then
 ///
 /// \f[
