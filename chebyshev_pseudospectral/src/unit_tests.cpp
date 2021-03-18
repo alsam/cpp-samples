@@ -325,16 +325,10 @@ TEST(PoissonProblem, test_homogeneous_boundary)
     }
     // std::cout << "CC: [\n" << CC << "]\n";
     CS::homogeneous_boundary(M, N, CC, CC);
-
     // std::cout << "CC: [\n" << CC << "]\n";
-    auto [evens, odds] = sums_evens_odds(&CC(2, 0), &CC(2, 8));
-    EXPECT_EQ(evens, 0);
-    EXPECT_EQ(odds, 0);
-    check_evens_odds(CC, 2, 0, 2, 8);
-    // std::cout << "evens: " << evens << " odds: " << odds << std::endl;
-    auto [evens1, odds1] = sums_evens_odds(&CC(0, 3), &CC(4, 3), N + 1);
-    check_evens_odds(CC, 0, 3, 4, 3, N + 1);
-    // std::cout << "evens: " << evens1 << " odds: " << odds1 << std::endl;
-    EXPECT_EQ(evens1, 0);
-    EXPECT_EQ(odds1, 0);
+
+    for (size_t I = 0; I <= M; ++I)
+        check_evens_odds(CC, I, 0, I, N, 1);
+    for (size_t J = 0; J <= N; ++J)
+        check_evens_odds(CC, 0, J, M, J, N + 1);
 }
