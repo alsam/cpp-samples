@@ -269,16 +269,19 @@ TEST(ChebyshevDifferentiate, test_deriv1)
 
 TEST(PoissonProblem, test_homogeneous_boundary)
 {
-    auto sums_evens_odds = [](auto const& begin, auto const& end)
+    auto sums_evens_odds = [](auto const& begin, auto const& end, size_t stride = 1)
                            -> std::pair<double, double> {
         double evens = 0.0, odds = 0.0;
         size_t counter = 0;
-        for (auto it = begin; it != end; ++it) {
+        for (auto it = begin; /* it != end*/ ; std::advance(it, stride)) {
+            std::cout << "*it : " << *it << std::endl; 
             if (detail::is_even(counter++)) {
                 evens += *it;
             } else {
-                odds += *it;;
+                odds += *it;
             }
+            if (it == end)
+                break;
         }
         return {evens, odds};
     };
@@ -317,7 +320,9 @@ TEST(PoissonProblem, test_homogeneous_boundary)
     // std::cout << "CC: [\n" << CC << "]\n";
     CS::homogeneous_boundary(M, N, CC, CC);
 
-    // std::cout << "CC: [\n" << CC << "]\n";
-    auto [evens, odds] = sums_evens_odds(&CC(2, 0), &CC(3, 0));
+    std::cout << "CC: [\n" << CC << "]\n";
+    auto [evens, odds] = sums_evens_odds(&CC(2, 0), &CC(2, 8));
     std::cout << "evens: " << evens << " odds: " << odds << std::endl;
+    auto [evens1, odds1] = sums_evens_odds(&CC(0, 3), &CC(4, 3), N + 1);
+    std::cout << "evens: " << evens1 << " odds: " << odds1 << std::endl;
 }
