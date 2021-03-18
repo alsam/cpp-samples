@@ -273,8 +273,7 @@ TEST(PoissonProblem, test_homogeneous_boundary)
                            -> std::pair<double, double> {
         double evens = 0.0, odds = 0.0;
         size_t counter = 0;
-        for (auto it = begin; /* it != end*/ ; std::advance(it, stride)) {
-            std::cout << "*it : " << *it << std::endl; 
+        for (auto it = begin; ;std::advance(it, stride)) {
             if (detail::is_even(counter++)) {
                 evens += *it;
             } else {
@@ -284,6 +283,13 @@ TEST(PoissonProblem, test_homogeneous_boundary)
                 break;
         }
         return {evens, odds};
+    };
+
+    auto check_evens_odds = [sums_evens_odds](auto const& ma, size_t row1, size_t col1, size_t row2, size_t col2, size_t stride = 1)
+    {
+        auto [evens, odds] = sums_evens_odds(&ma(row1, col1), &ma(row2, col2), stride);
+        EXPECT_EQ(evens, 0);
+        EXPECT_EQ(odds, 0);
     };
 
     constexpr size_t M = 4;
@@ -320,9 +326,15 @@ TEST(PoissonProblem, test_homogeneous_boundary)
     // std::cout << "CC: [\n" << CC << "]\n";
     CS::homogeneous_boundary(M, N, CC, CC);
 
-    std::cout << "CC: [\n" << CC << "]\n";
+    // std::cout << "CC: [\n" << CC << "]\n";
     auto [evens, odds] = sums_evens_odds(&CC(2, 0), &CC(2, 8));
-    std::cout << "evens: " << evens << " odds: " << odds << std::endl;
+    EXPECT_EQ(evens, 0);
+    EXPECT_EQ(odds, 0);
+    check_evens_odds(CC, 2, 0, 2, 8);
+    // std::cout << "evens: " << evens << " odds: " << odds << std::endl;
     auto [evens1, odds1] = sums_evens_odds(&CC(0, 3), &CC(4, 3), N + 1);
-    std::cout << "evens: " << evens1 << " odds: " << odds1 << std::endl;
+    check_evens_odds(CC, 0, 3, 4, 3, N + 1);
+    // std::cout << "evens: " << evens1 << " odds: " << odds1 << std::endl;
+    EXPECT_EQ(evens1, 0);
+    EXPECT_EQ(odds1, 0);
 }
