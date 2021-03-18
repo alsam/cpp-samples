@@ -285,8 +285,10 @@ TEST(PoissonProblem, test_homogeneous_boundary)
         return {evens, odds};
     };
 
-    auto check_evens_odds = [sums_evens_odds](auto const& ma, size_t row1, size_t col1, size_t row2, size_t col2, size_t stride = 1)
-    {
+    auto check_evens_odds = [sums_evens_odds]
+        (auto const& ma,
+         size_t row1, size_t col1,
+         size_t row2, size_t col2, size_t stride = 1) {
         auto [evens, odds] = sums_evens_odds(&ma(row1, col1), &ma(row2, col2), stride);
         EXPECT_EQ(evens, 0);
         EXPECT_EQ(odds, 0);
