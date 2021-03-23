@@ -31,6 +31,15 @@
 namespace FCT
 {
 
+Eigen::VectorXd grid_span(size_t nodes, double min, double max)
+{
+    Eigen::VectorXd grid(nodes + 1);
+    for (size_t i = 0; i <= nodes; ++i) {
+        grid[i] = min * std::cos(M_PI * i / static_cast<double>(nodes)) + max;
+    }
+    return grid;
+}
+
 void cosfft1(size_t n,
              Eigen::Ref<Eigen::VectorXd> data,
              TransformType transform_type)

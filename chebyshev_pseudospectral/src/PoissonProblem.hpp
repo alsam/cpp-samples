@@ -73,9 +73,6 @@ public:
 
 public:
 
-    static void generate_grid(size_t n, double a, double b,
-                              Eigen::Ref<RowVectorXd> grid);
-
     void generate_matrix(Eigen::Ref<RowMatrixXd> ma);
 
 private:

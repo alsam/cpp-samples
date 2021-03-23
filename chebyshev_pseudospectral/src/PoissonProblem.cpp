@@ -33,21 +33,22 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
                                bool verbose)
 : verbose_(verbose),
   M_(M), N_(N),
-  x_grid_(M + 1),
-  y_grid_(N + 1),
+  x_grid_(),
+  y_grid_(),
   ome_   (M + 1, N + 1),
   psi_   (M + 1, N + 1),
   second_derivative_respect_x_(M + 1, N + 1),
   u_     (M + 1, M + 1),
   border_(M, N)
 {
+    using namespace FCT;
     double xa = 0.5*(x_min-x_max);
     double xb = 0.5*(x_min+x_max);
     double ya = 0.5*(y_min-y_max);
     double yb = 0.5*(y_min+y_max);
 
-    generate_grid(M_, xa, xb, x_grid_);
-    generate_grid(N_, ya, yb, y_grid_);
+    x_grid_ = grid_span(M_, xa, xb);
+    y_grid_ = grid_span(N_, ya, yb);
     generate_matrix(second_derivative_respect_x_);
 
     if (verbose_) {
@@ -61,7 +62,6 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     border_.right_ = RowVectorXd::Zero(M_ + 1);
     border_.up_    = RowVectorXd::Zero(N_ + 1);
 
-    using namespace FCT;
     cosfft1(M_, border_.left_);
     cosfft1(N_, border_.down_);
     cosfft1(M_, border_.right_);
@@ -70,14 +70,6 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     RHS(second_derivative_respect_x_);
 
     BS::init_au(M_ - 2, second_derivative_respect_x_, u_);
-}
-
-void PoissonProblem::generate_grid(size_t n, double a, double b,
-                                   Eigen::Ref<RowVectorXd> grid)
-{
-    for (size_t i = 0; i <= n; ++i) {
-        grid[i] = a * std::cos(M_PI * i / (double)n) + b;
-    }
 }
 
 void PoissonProblem::generate_matrix(Eigen::Ref<RowMatrixXd> ma)

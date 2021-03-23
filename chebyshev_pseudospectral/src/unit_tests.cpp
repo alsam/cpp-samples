@@ -334,3 +334,16 @@ TEST(PoissonProblem, test_homogeneous_boundary)
     for (size_t J = 0; J <= N; ++J)
         check_evens_odds(CC, 0, J, M, J, N + 1);
 }
+
+
+TEST(PoissonProblem, test_second_derivative)
+{
+    constexpr size_t M = 32;
+    constexpr size_t N = 16;
+
+    auto y        = [](double x) {return x*x*x*x + sin(x);}; /// \f$y = x^4 + \sin x\f$
+    auto y_deriv2 = [](double x) {return 12*x*x - sin(x);};  /// \f$y = 12x^2 - \sin x\f$
+    RowMatrixXd CC(M + 1, N + 1);
+
+
+}

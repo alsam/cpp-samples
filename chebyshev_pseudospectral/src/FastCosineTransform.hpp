@@ -36,6 +36,10 @@ namespace FCT /// stands for Fast Cosine Transform
 
 enum class TransformType {Forward, Inverse};
 
+
+/// @return Chebyshev type grid more dense at both ends
+Eigen::VectorXd grid_span(size_t nodes, double min, double max);
+
 void cosfft1(size_t n,
              Eigen::Ref<Eigen::VectorXd> data,
              TransformType transform_type = TransformType::Forward);
