@@ -344,6 +344,16 @@ TEST(PoissonProblem, test_second_derivative)
     auto y        = [](double x) {return x*x*x*x + sin(x);}; /// \f$y = x^4 + \sin x\f$
     auto y_deriv2 = [](double x) {return 12*x*x - sin(x);};  /// \f$y = 12x^2 - \sin x\f$
     RowMatrixXd CC(M + 1, N + 1);
+    using namespace FCT;
+    Eigen::VectorXd x_grid = grid_span(M);
+    Eigen::VectorXd y_grid = grid_span(N);
 
+    for (size_t i = 0; i <= M; ++i) {
+        for (size_t j = 0; j <= N; ++j) {
+            CC(i, j) = y(x_grid[i])*y(y_grid[j]);
+        }
+    }
 
+    cft2(M, N, CC, FCT::TransformType::Inverse);
+    CS::second_derivative(M, N, CC, CC);
 }
