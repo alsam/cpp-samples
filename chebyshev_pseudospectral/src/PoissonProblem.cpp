@@ -42,13 +42,9 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
   border_(M, N)
 {
     using namespace FCT;
-    double xa = 0.5*(x_min-x_max);
-    double xb = 0.5*(x_min+x_max);
-    double ya = 0.5*(y_min-y_max);
-    double yb = 0.5*(y_min+y_max);
 
-    x_grid_ = grid_span(M_, xa, xb);
-    y_grid_ = grid_span(N_, ya, yb);
+    x_grid_ = grid_span(M_, x_min, x_max);
+    y_grid_ = grid_span(N_, y_min, y_max);
     generate_matrix(second_derivative_respect_x_);
 
     if (verbose_) {

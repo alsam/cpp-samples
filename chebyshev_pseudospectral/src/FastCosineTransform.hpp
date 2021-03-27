@@ -38,7 +38,9 @@ enum class TransformType {Forward, Inverse};
 
 
 /// @return Chebyshev type grid more dense at both ends
-Eigen::VectorXd grid_span(size_t nodes, double min, double max);
+Eigen::VectorXd grid_span(size_t nodes,
+                          double min = -1.,
+                          double max =  1);
 
 void cosfft1(size_t n,
              Eigen::Ref<Eigen::VectorXd> data,

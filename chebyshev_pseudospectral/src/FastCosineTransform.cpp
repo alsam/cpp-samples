@@ -34,8 +34,10 @@ namespace FCT
 Eigen::VectorXd grid_span(size_t nodes, double min, double max)
 {
     Eigen::VectorXd grid(nodes + 1);
+    double a = 0.5 * (min - max);
+    double b = 0.5 * (min + max);
     for (size_t i = 0; i <= nodes; ++i) {
-        grid[i] = min * std::cos(M_PI * i / static_cast<double>(nodes)) + max;
+        grid[i] = a * std::cos(M_PI * i / static_cast<double>(nodes)) + b;
     }
     return grid;
 }
