@@ -71,7 +71,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 void PoissonProblem::generate_matrix(Eigen::Ref<RowMatrixXd> ma)
 {
     ma = Eigen::MatrixXd::Identity(M_ + 1, N_ + 1); // unity matrix `E`
-    CS::second_derivative(M_, N_, ma, ma); // TODO for non-square matrix
+    CS::second_derivative(M_, N_, ma); // TODO for non-square matrix
 }
 
 void PoissonProblem::RHS(Eigen::Ref<RowMatrixXd> ma)
