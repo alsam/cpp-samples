@@ -267,7 +267,7 @@ TEST(ChebyshevDifferentiate, test_deriv1)
     EXPECT_NEAR((f_vals - f_deriv_vals).norm(), 0.0, EPS);
 }
 
-TEST(PoissonProblem, test_homogeneous_boundary)
+TEST(PoissonProblem, homogeneous_boundary_test)
 {
     auto sums_evens_odds = [](auto const& begin, auto const& end, size_t stride = 1)
                            -> std::pair<double, double> {
@@ -336,15 +336,31 @@ TEST(PoissonProblem, test_homogeneous_boundary)
 }
 
 
-TEST(PoissonProblem, test_second_derivative)
+TEST(PoissonProblem, grid_span_test)
 {
+    using namespace FCT;
+
+    constexpr size_t M = 32;
+    constexpr size_t N = 16;
+    Eigen::VectorXd x_grid = grid_span(M);
+    Eigen::VectorXd y_grid = grid_span(N, 7., 77.);
+
+    EXPECT_DOUBLE_EQ(x_grid[0], -1.);
+    EXPECT_DOUBLE_EQ(x_grid[M],  1.);
+    EXPECT_DOUBLE_EQ(y_grid[0],  7.);
+    EXPECT_DOUBLE_EQ(y_grid[N], 77.);
+}
+
+TEST(PoissonProblem, second_derivative_test)
+{
+    using namespace FCT;
+
     constexpr size_t M = 32;
     constexpr size_t N = 16;
 
     auto y        = [](double x) {return x*x*x*x + sin(x);}; /// \f$y = x^4 + \sin x\f$
     auto y_deriv2 = [](double x) {return 12*x*x - sin(x);};  /// \f$y = 12x^2 - \sin x\f$
     RowMatrixXd CC(M + 1, N + 1);
-    using namespace FCT;
     Eigen::VectorXd x_grid = grid_span(M);
     Eigen::VectorXd y_grid = grid_span(N);
 
