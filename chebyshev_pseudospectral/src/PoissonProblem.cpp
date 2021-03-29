@@ -63,7 +63,12 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     cosfft1(M_, border_.right_);
     cosfft1(N_, border_.up_);
 
-    RHS(second_derivative_respect_x_);
+    RHS(ome_);
+
+    // transform from physical to spectral space
+    FCT::cft2(M_, N_, ome_, FCT::TransformType::Inverse);
+
+    homogenize_bc(ome_, second_derivative_respect_x_);
 
     BS::init_au(M_ - 2, second_derivative_respect_x_, u_);
 }
@@ -74,37 +79,38 @@ void PoissonProblem::generate_matrix(Eigen::Ref<RowMatrixXd> ma)
     CS::second_derivative(M_, N_, ma); // TODO for non-square matrix
 }
 
-void PoissonProblem::RHS(Eigen::Ref<RowMatrixXd> ma)
+void PoissonProblem::RHS(Eigen::Ref<RowMatrixXd> omega)
 {
     // fill right hand function
     for (size_t i = 0; i <= M_; ++i) {
         for (size_t j = 0; j <= N_; ++j) {
-            ome_(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i])
-                                       * std::sin(4.*M_PI*y_grid_[j]);
+            omega(i, j) = 32.*M_PI*M_PI * std::sin(4.*M_PI*x_grid_[i])
+                                        * std::sin(4.*M_PI*y_grid_[j]);
         }
     }
+}
 
-    // transform from physical to spectral space
-    FCT::cft2(M_, N_, ome_, FCT::TransformType::Inverse);
-
+void PoissonProblem::homogenize_bc(Eigen::Ref<RowMatrixXd> omega, Eigen::Ref<RowMatrixXd> spectral_operator)
+{
     for (size_t i=0; i<=M_; ++i) {
         for (size_t j=0; j<=N_; j++) {
             using namespace detail;
             double delta;
             if        (is_even(i) && is_even(j)) {
-                delta = ma(0, i) * 0.5 * (border_.up_   [j] + border_.down_  [j])
-                      + ma(0, j) * 0.5 * (border_.left_ [i] + border_.right_ [i]);
+                delta = spectral_operator(0, i) * 0.5 * (border_.up_   [j] + border_.down_  [j])
+                      + spectral_operator(0, j) * 0.5 * (border_.left_ [i] + border_.right_ [i]);
             } else if (is_even(i) && is_odd(j)) {
-                delta = ma(0, i) * 0.5 * (border_.up_   [j] + border_.down_  [j])
-                      + ma(1, j) * 0.5 * (border_.left_ [i] - border_.right_ [i]);
+                delta = spectral_operator(0, i) * 0.5 * (border_.up_   [j] + border_.down_  [j])
+                      + spectral_operator(1, j) * 0.5 * (border_.left_ [i] - border_.right_ [i]);
             } else if (is_odd(i) && is_even(j)) {
-                delta = ma(1, i) * 0.5 * (border_.up_   [j] - border_.down_  [j])
-                      + ma(0, j) * 0.5 * (border_.left_ [i] + border_.right_ [i]);
+                delta = spectral_operator(1, i) * 0.5 * (border_.up_   [j] - border_.down_  [j])
+                      + spectral_operator(0, j) * 0.5 * (border_.left_ [i] + border_.right_ [i]);
             } else {// is_odd(i) && is_odd(j)
-                delta = ma(1, i) * 0.5 * (border_.up_   [j] - border_.down_  [j])
-                      + ma(1, j) * 0.5 * (border_.left_ [i] - border_.right_ [i]);
+                delta = spectral_operator(1, i) * 0.5 * (border_.up_   [j] - border_.down_  [j])
+                      + spectral_operator(1, j) * 0.5 * (border_.left_ [i] - border_.right_ [i]);
             }
-            ome_(i, j) -= delta;
+            /// FIXME std::cout << "delta: " << delta << std::endl;
+            omega(i, j) -= delta;
         }
     }
 }

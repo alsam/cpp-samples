@@ -77,7 +77,10 @@ public:
 
 private:
 
-    void RHS(Eigen::Ref<RowMatrixXd> ma);
+    void RHS(Eigen::Ref<RowMatrixXd> omega);
+
+    // FIXME does it really needed? check it for different corner cases 
+    void homogenize_bc(Eigen::Ref<RowMatrixXd> omega, Eigen::Ref<RowMatrixXd> spectral_operator);
 
 private:
 
@@ -105,7 +108,12 @@ private:
     RowMatrixXd psi_;
 
     /// \f$\partial^2/\partial{x}^2\f$ second derivative
-    RowMatrixXd second_derivative_respect_x_, u_;
+    RowMatrixXd second_derivative_respect_x_;
+
+    /// \f$\partial^2/\partial{y}^2\f$ second derivative
+    RowMatrixXd second_derivative_respect_y_;
+
+    RowMatrixXd u_;
 
     Boundary border_;
 };
