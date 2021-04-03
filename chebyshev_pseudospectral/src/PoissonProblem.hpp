@@ -73,7 +73,7 @@ public:
 
 public:
 
-    void generate_matrix(Eigen::Ref<RowMatrixXd> ma);
+    RowMatrixXd second_order_operator(size_t m);
 
 private:
 

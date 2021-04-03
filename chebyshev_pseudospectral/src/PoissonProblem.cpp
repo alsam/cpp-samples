@@ -45,7 +45,11 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     x_grid_ = grid_span(M_, x_min, x_max);
     y_grid_ = grid_span(N_, y_min, y_max);
-    generate_matrix(second_derivative_respect_x_);
+
+    second_derivative_respect_x_ = second_order_operator(M_);
+    if (M_ != N_) {
+        second_derivative_respect_y_ = second_order_operator(N_);
+    }
 
     if (verbose_) {
         std::cout << "x_grid: [" << x_grid_ << "]\n";
@@ -73,10 +77,11 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     BS::init_au(M_ - 2, second_derivative_respect_x_, u_);
 }
 
-void PoissonProblem::generate_matrix(Eigen::Ref<RowMatrixXd> ma)
+RowMatrixXd PoissonProblem::second_order_operator(size_t m)
 {
-    ma = Eigen::MatrixXd::Identity(M_ + 1, N_ + 1); // unity matrix `E`
-    CS::second_derivative(M_, N_, ma); // TODO for non-square matrix
+    RowMatrixXd ma = Eigen::MatrixXd::Identity(m + 1, m + 1); // unity matrix `E`
+    CS::second_derivative(m, m, ma);
+    return ma;
 }
 
 void PoissonProblem::RHS(Eigen::Ref<RowMatrixXd> omega)
