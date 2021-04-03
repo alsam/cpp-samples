@@ -90,7 +90,7 @@ private:
     /// grid size along `x` direction
     size_t M_;
 
-    /// grid size along `x` direction
+    /// grid size along `y` direction
     size_t N_;
 
     /// \f$x\f$ distributed as

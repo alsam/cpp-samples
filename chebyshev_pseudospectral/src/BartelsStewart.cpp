@@ -38,7 +38,7 @@ void hshldr(Eigen::Ref<RowMatrixXd> a, size_t n)
     for (l=0; l<=n-2; l++) {
         for (max=0.0, i=l+1; i<=n; i++)
             if (max < (s=std::fabs(a(i, l)))) max = s;
-        if (max == 0) a(l, n+1) = a(n+1, l) = 0.0;
+        if (max == 0.0) a(l, n+1) = a(n+1, l) = 0.0;
         else {
             for (sum=0.0, i=l+1; i<=n; i++) {
                 s = (a(i, l) /= max);
@@ -123,8 +123,8 @@ nextw:
             l--;
             zero=(std::fabs(h(l, l-1)) <= test);
         } while (l!=1 && !zero);
-        if (!zero) l=0;
-        else h(l, l-1)=0.0;
+        if (!zero) l = 0;
+        else h(l, l-1) = 0.0;
         if (l>=na) {
             n=l-1;
             goto nextw;
@@ -135,7 +135,7 @@ nextw:
         if (its>=MAXITER) return false;
         if (its%10 == 0 && its!=0) {
             y=(std::fabs(h(n, na))+std::fabs(h(na, na-1)))/hn;
-            s=1.5*y; y *= y;
+            s = 1.5*y; y *= y;
         }
         else { s=x+y; y=x*y-r; }
         its++;
@@ -152,14 +152,14 @@ nextw:
                    <= std::fabs(p)*test)
                    break;
         }
-        for (i=m+2; i<=n; i++) h(i, i-2)=0.0;
-        for (i=m+3; i<=n; i++) h(i, i-3)=0.0;
+        for (i=m+2; i<=n; i++) h(i, i-2) = 0.0;
+        for (i=m+3; i<=n; i++) h(i, i-3) = 0.0;
         for (k=m; k<=na; k++) {
             notlast = (k!=na);
             if (k!=m) {
                 p=h(k, k-1);
                 q=h(k+1, k-1);
-                if (notlast) r=h(k+2, k-1); else r=0.0;
+                if (notlast) r=h(k+2, k-1); else r = 0.0;
                 x=std::fabs(p)+std::fabs(q)+std::fabs(r);
                 if (x==0.0) goto contin;
                 p /= x; q /= x; r /= x;
