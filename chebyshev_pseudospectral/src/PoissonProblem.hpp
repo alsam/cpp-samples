@@ -113,7 +113,7 @@ private:
     /// \f$\partial^2/\partial{y}^2\f$ second derivative
     RowMatrixXd second_derivative_respect_y_;
 
-    RowMatrixXd u_;
+    RowMatrixXd u_, v_;
 
     Boundary border_;
 };

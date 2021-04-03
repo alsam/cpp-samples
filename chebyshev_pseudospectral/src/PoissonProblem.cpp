@@ -48,12 +48,8 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     second_derivative_respect_x_ = second_order_operator(M_);
     if (M_ != N_) {
+        second_derivative_respect_x_.transposeInPlace();
         second_derivative_respect_y_ = second_order_operator(N_);
-    }
-
-    if (verbose_) {
-        std::cout << "x_grid: [" << x_grid_ << "]\n";
-        std::cout << "y_grid: [" << y_grid_ << "]\n";
     }
 
     // zero boundary conditions
@@ -74,7 +70,15 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     homogenize_bc(ome_, second_derivative_respect_x_);
 
-    BS::init_au(M_ - 2, second_derivative_respect_x_, u_);
+    if (M_ == N_) {
+        BS::init_au(M_ - 2, second_derivative_respect_x_, u_);
+    } else {
+        v_.resize(N_ + 1, N_ + 1);
+        BS::init_abuv(M_ - 2, N_ - 2,
+                      second_derivative_respect_x_,
+                      second_derivative_respect_y_,
+                      u_, v_);
+    }
 }
 
 RowMatrixXd PoissonProblem::second_order_operator(size_t m)
@@ -132,7 +136,10 @@ void PoissonProblem::solve()
     if (M_ == N_) {
         BS::bs_solve(M_-2, second_derivative_respect_x_, u_, ome_, psi_);
     } else {
-        throw "not yet implemented!";
+        BS::bs_solve(M_-2, N_-2,
+                     second_derivative_respect_x_,
+                     second_derivative_respect_y_,
+                     u_, v_, ome_, psi_);
     }
     if (verbose_)
         std::cout << "psi_ after bs_solve:\n" << psi_ << std::endl;
