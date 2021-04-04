@@ -83,3 +83,50 @@
 // [?2004h(gdb) p (signed)l
 // [?2004l$4 = -1
 ```
+```c++
+386│             a(i, m+1) = 0.0;
+387│             for (k=0; k<=m; k++) {
+388│                 a(i, m+1) -= u(k, i)*c(k, j);
+389│             }
+390│         }
+391│         for (i=0; i<=m; i++) {
+392│             rslt(i, j) = a(i, m+1);
+393│         }
+394│     }
+395│     for (i=0; i<=m; i++) {
+396│         for (j=0; j<=n; j++) {
+397├───────────> b(n+1, j) = 0.0;
+398│             for (k=0; k<=n; k++) {
+399│                 b(n+1, j) += rslt(i, k)*v(k, j);
+400│             }
+401│         }
+402│         for (j=0; j<=n; j++) {
+403│             rslt(i, j) = b(n+1, j);
+404│         }
+405│     }
+406│
+407│     shrslv(m, n, a, b, rslt);
+/home/spike/work/github/cpp-samples/chebyshev_pseudospectral/src/BartelsStewart.cpp                                                                                                  
+a fields>}
+[?2004h(gdb) p a
+[?2004l$2 = {<Eigen::RefBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> > >> = {<Eigen::MapBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -
+1>, 0, Eigen::OuterStride<-1> >, 1>> = {<Eigen::MapBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> >, 0>> = {<Eigen::MatrixBase<Eigen::Ref<Eigen:
+:Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> > >> = {<Eigen::DenseBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> > >> = {<Eigen
+::DenseCoeffsBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> >, 3>> = {<Eigen::DenseCoeffsBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1
+>, 0, Eigen::OuterStride<-1> >, 1>> = {<Eigen::DenseCoeffsBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> >, 0>> = {<Eigen::EigenBase<Eigen::Ref<
+Eigen::Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> > >> = {<No data fields>}, <No data fields>}, <No data fields>}, <No data fields>}, <No data fields>}, <No data f
+ields>}, m_data = 0x55555560de60, m_rows = {m_value = 65}, m_cols = {m_value = 65}}, <No data fields>}, m_stride = {m_outer = {m_value = 65}, m_inner = {<No data fields>}}}, <No dat
+a fields>}
+[?2004h(gdb) where
+[?2004l#0  0x00007ffff7a41ef5 in raise () from /usr/lib/libc.so.6
+#1  0x00007ffff7a2b862 in abort () from /usr/lib/libc.so.6
+#2  0x00007ffff7a2b747 in __assert_fail_base.cold () from /usr/lib/libc.so.6
+#3  0x00007ffff7a3a646 in __assert_fail () from /usr/lib/libc.so.6
+#4  0x000055555556f58b in Eigen::DenseCoeffsBase<Eigen::Ref<Eigen::Matrix<double, -1, -1, 1, -1, -1>, 0, Eigen::OuterStride<-1> >, 1>::operator() (this=0x7fffffffd460, row=63, col=0
+) at /usr/include/eigen3/Eigen/src/Core/DenseCoeffsBase.h:364
+#5  0x0000555555578b11 in BS::bs_solve (m=30, n=62, a=..., b=..., u=..., v=..., c=..., rslt=...) at /home/spike/work/github/cpp-samples/chebyshev_pseudospectral/src/BartelsStewart.c
+pp:397
+#6  0x000055555556d94f in PoissonProblem::solve (this=0x7fffffffd570) at /home/spike/work/github/cpp-samples/chebyshev_pseudospectral/src/PoissonProblem.cpp:139
+#7  0x000055555555d80f in main (argc=5, argv=0x7fffffffd7e8) at /home/spike/work/github/cpp-samples/chebyshev_pseudospectral/src/main.cpp:116
+(gdb) 
+```

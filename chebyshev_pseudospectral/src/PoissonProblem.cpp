@@ -68,7 +68,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     // transform from physical to spectral space
     FCT::cft2(M_, N_, ome_, FCT::TransformType::Inverse);
 
-    homogenize_bc(ome_, second_derivative_respect_x_);
+    // homogenize_bc(ome_, second_derivative_respect_x_);
 
     if (M_ == N_) {
         BS::init_au(M_ - 2, second_derivative_respect_x_, u_);
@@ -137,9 +137,9 @@ void PoissonProblem::solve()
         BS::bs_solve(M_-2, second_derivative_respect_x_, u_, ome_, psi_);
     } else {
         BS::bs_solve(M_-2, N_-2,
-                     second_derivative_respect_x_,
                      second_derivative_respect_y_,
-                     u_, v_, ome_, psi_);
+                     second_derivative_respect_x_,
+                     v_, u_, ome_, psi_);
     }
     if (verbose_)
         std::cout << "psi_ after bs_solve:\n" << psi_ << std::endl;
