@@ -28,6 +28,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <dlfcn.h>
+#include <cstdlib>
+#include <fmt/core.h>
 
 struct Descriptor
 {
@@ -154,6 +157,11 @@ bool lockGpuFrequency(uint64_t freq)
     return status;
 }
 
+inline void cmd(std::string const& c)
+{
+    std::system(c.c_str());
+}
+
 int main(int argc, char** argv)
 {
     cxxopts::Options options("freqlock", "locks and displays device CPU/GPU/DDR frequencies");
@@ -167,6 +175,9 @@ int main(int argc, char** argv)
         ("h,help", "Print help")
         ;
     auto opts = options.parse(argc, argv);
+
+    void* handle = dlopen("./hello.so", RTLD_LAZY);
+    cmd(fmt::format("mkdir -p {}/{}", "/x/y/z", argv[0]));
 
     if (opts.arguments().empty() || opts.count("help"))
     {

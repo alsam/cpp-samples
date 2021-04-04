@@ -1,0 +1,6 @@
+[submodule "arm64.cross.greenfield/3dparty/cxxopts"]
+	path = arm64.cross.greenfield/3dparty/cxxopts
+	url = https://github.com/jarro2783/cxxopts.git
+[submodule "arm64.cross.greenfield/3dparty/fmt"]
+	path = arm64.cross.greenfield/3dparty/fmt
+	url = https://github.com/fmtlib/fmt.git
