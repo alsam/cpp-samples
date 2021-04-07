@@ -177,6 +177,32 @@ int main(int argc, char** argv)
     auto opts = options.parse(argc, argv);
 
     void* handle = dlopen("./hello.so", RTLD_LAZY);
+    using include_libentry_t = void(*)();
+    using capture_function_t = void(*)(const std::string&);
+    include_libentry_t entry_cast = (include_libentry_t)nullptr;
+    capture_function_t cap_cast = (capture_function_t)nullptr;
+    auto load_function = [handle](const char* sym_name, auto cast) -> decltype(cast)
+    {
+        void* sym = dlsym(handle, sym_name);
+        if (const char *dlsym_error = dlerror())
+        {
+            std::cerr << "Cannot load symbol '" << sym_name << "' " << dlsym_error << '\n';
+            // ignore Cannot load symbol 'xxx' undefined symbol: 'yyy'
+            // return nullptr;
+        }
+        if (sym != nullptr)
+        {
+            std::cerr << "symbol '" << sym_name << "' loaded OK\n";
+        }
+        return (decltype(cast))sym;
+    };
+
+    auto func1 = load_function("func1", entry_cast);
+    auto func2 = load_function("func2", cap_cast);
+
+    func1();
+    func2("xxx");
+
     cmd(fmt::format("mkdir -p {}/{}", "/x/y/z", argv[0]));
 
     if (opts.arguments().empty() || opts.count("help"))
