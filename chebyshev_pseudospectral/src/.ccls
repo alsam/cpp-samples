@@ -1,0 +1,2 @@
+%h -isystem /usr/include/eigen3
+%h -isystem /usr/include/python3.9

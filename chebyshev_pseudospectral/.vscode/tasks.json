@@ -1,0 +1,64 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+             "label": "g++ build active file",
+             "type": "shell",
+             "command": "/usr/bin/g++",
+             "args": [
+                 "-g",
+                 "${file}",
+                 "-c",
+                 "-o",
+                 "${fileDirname}/obj/${fileBasenameNoExtension}.o",
+                 "-I${workspaceFolder}/renderdoc",
+                 "-I${workspaceFolder}/renderdoc/3rdparty",
+                 "-I/src",
+                 "-I/usr/include/eigen3/",
+                 "-I/usr/include/python3.9/",
+                 "-I/usr/include/pybind11/",
+                 "-DRENDERDOC_PLATFORM_LINUX"
+             ],
+             "options": {
+                 "cwd": "/usr/bin"
+             },
+             "problemMatcher": [
+                 "$gcc"
+             ],
+             "group": {
+                 "kind": "build", "isDefault": true
+             }
+        },
+        {
+            "label": "cmake",
+            "type": "shell",
+            "isBuildCommand": true,
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "command": "/usr/bin/cmake",
+            "args": [
+                "-DCMAKE_BUILD_TYPE=Debug", ".."
+            ],
+            "group": {
+                "kind": "build", "isDefault": true
+            },
+        },
+        {
+            "taskName": "make",
+            "label": "make",
+            "command": "/usr/bin/make",
+            "args": [
+                "-j8", "-i",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "isBuildCommand": true,
+            "problemMatcher": [ "$gcc" ],
+            "group": {
+                "kind": "build", "isDefault": true
+            },
+        }
+    ]
+}
