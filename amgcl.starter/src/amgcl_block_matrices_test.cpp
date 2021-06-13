@@ -4,6 +4,7 @@
 #include <amgcl/make_solver.hpp>
 #include <amgcl/make_block_solver.hpp>
 #include <amgcl/solver/bicgstab.hpp>
+#include <amgcl/solver/gmres.hpp>
 #include <amgcl/amg.hpp>
 #include <amgcl/coarsening/smoothed_aggregation.hpp>
 #include <amgcl/coarsening/plain_aggregates.hpp>
@@ -124,13 +125,18 @@ int main(int argc, char *argv[])
     amgcl::amg<
         Backend,
         amgcl::coarsening::ruge_stuben,
-        amgcl::relaxation::ilu0
+        amgcl::relaxation::spai0
+        //amgcl::relaxation::ilu0
         >,
-    // And BiCGStab as iterative solver:
-    amgcl::solver::bicgstab<Backend>>;
+    // And GMRES as iterative solver:
+    amgcl::solver::gmres<Backend>>;
 
     try {
-        Solver3 solve( std::tie(n, ptr, col, val) );
+        Solver3::params prm;
+        Solver3::backend_params bprm;
+        prm.precond.direct_coarse = false;
+        //prm.precond.coarsening ...
+        Solver3 solve( std::tie(n, ptr, col, val), prm, bprm );
     } catch(std::runtime_error &e) {
         std::cout << "caught exception: " << e.what() << std::endl;
     }
