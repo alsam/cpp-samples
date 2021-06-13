@@ -9,6 +9,7 @@
 #include <amgcl/coarsening/plain_aggregates.hpp>
 #include <amgcl/coarsening/ruge_stuben.hpp>
 #include <amgcl/relaxation/spai0.hpp>
+#include <amgcl/relaxation/ilu0.hpp>
 #include <amgcl/adapter/crs_tuple.hpp>
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -123,7 +124,7 @@ int main(int argc, char *argv[])
     amgcl::amg<
         Backend,
         amgcl::coarsening::ruge_stuben,
-        amgcl::relaxation::spai0
+        amgcl::relaxation::ilu0
         >,
     // And BiCGStab as iterative solver:
     amgcl::solver::bicgstab<Backend>>;
@@ -133,7 +134,6 @@ int main(int argc, char *argv[])
     } catch(std::runtime_error &e) {
         std::cout << "caught exception: " << e.what() << std::endl;
     }
-
 
 
 }
