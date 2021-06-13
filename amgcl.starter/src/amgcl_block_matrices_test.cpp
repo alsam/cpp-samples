@@ -1,6 +1,15 @@
 #include <amgcl/io/mm.hpp>
 #include <amgcl/adapter/crs_tuple.hpp>
 #include <amgcl/amg.hpp>
+#include <amgcl/make_solver.hpp>
+#include <amgcl/make_block_solver.hpp>
+#include <amgcl/solver/bicgstab.hpp>
+#include <amgcl/amg.hpp>
+#include <amgcl/coarsening/smoothed_aggregation.hpp>
+#include <amgcl/coarsening/plain_aggregates.hpp>
+#include <amgcl/coarsening/ruge_stuben.hpp>
+#include <amgcl/relaxation/spai0.hpp>
+#include <amgcl/adapter/crs_tuple.hpp>
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -75,13 +84,56 @@ int main(int argc, char *argv[])
         }
     }
 
+    size_t n;
     vector<ptrdiff_t> ptr, col;
-    vector<double> val, rhs, null, x;
+    vector<double> val, rhs, x;
 
     if (vm.count("matrix")) {
         string Afile  = vm["matrix"].as<string>();
         auto [rows, cols] = io::mm_reader(Afile)(ptr, col, val);
 
+        std::cout << "rows: " << rows << std::endl;
+        std::cout << "cols: " << cols << std::endl;
+        n = rows;
     }
+
+    using Backend = amgcl::backend::builtin<double>;
+    using Solver1 = amgcl::make_solver<
+    // Use AMG as preconditioner:
+    amgcl::amg<
+        Backend,
+        amgcl::coarsening::smoothed_aggregation,
+        amgcl::relaxation::spai0
+        >,
+    // And BiCGStab as iterative solver:
+    amgcl::solver::bicgstab<Backend>>;
+
+    using Solver2 = amgcl::make_block_solver<
+    // Use AMG as preconditioner:
+    amgcl::amg<
+        Backend,
+        amgcl::coarsening::smoothed_aggregation,
+        amgcl::relaxation::spai0
+        >,
+    // And BiCGStab as iterative solver:
+    amgcl::solver::bicgstab<Backend>>;
+
+    using Solver3 = amgcl::make_solver<
+    // Use AMG as preconditioner:
+    amgcl::amg<
+        Backend,
+        amgcl::coarsening::ruge_stuben,
+        amgcl::relaxation::spai0
+        >,
+    // And BiCGStab as iterative solver:
+    amgcl::solver::bicgstab<Backend>>;
+
+    try {
+        Solver3 solve( std::tie(n, ptr, col, val) );
+    } catch(std::runtime_error &e) {
+        std::cout << "caught exception: " << e.what() << std::endl;
+    }
+
+
 
 }
