@@ -148,11 +148,11 @@ int main(int argc, char *argv[])
         amgcl::solver::gmres<Backend>>;
 
         try {
-            Solver3::params prm;
-            Solver3::backend_params bprm;
+            Solver1::params prm;
+            Solver1::backend_params bprm;
             prm.precond.direct_coarse = false;
             //prm.precond.coarsening ...
-            Solver3 solve( A, prm, bprm );
+            Solver1 solve( A, prm, bprm );
             auto [iters, error] = solve(A, rhs, x);
 
             // Output the number of iterations, the relative error:
