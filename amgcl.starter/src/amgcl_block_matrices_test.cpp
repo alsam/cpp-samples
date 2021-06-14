@@ -168,10 +168,11 @@ int main(int argc, char *argv[])
         }
     } else {
         // Compose the solver type
-        using SBackend = amgcl::backend::builtin<double>; // the outer iterative solver backend
-        using PBackend = amgcl::backend::builtin<float>;  // the PSolver backend
-        using UBackend = amgcl::backend::builtin<
-        amgcl::static_matrix<double,3,3>>;    // the USolver backend
+        using dmat_type = amgcl::static_matrix<double, 3, 3>;
+        using dvec_type = amgcl::static_matrix<double, 3, 1>;
+        using SBackend = amgcl::backend::builtin<double>;    // the outer iterative solver backend
+        using PBackend = amgcl::backend::builtin<float>;     // the PSolver backend
+        using UBackend = amgcl::backend::builtin<dmat_type>; // the USolver backend
         using BlockSolver = amgcl::make_block_solver<
                 // preconditioner
                 amgcl::amg<
@@ -195,8 +196,16 @@ int main(int argc, char *argv[])
             BlockSolver::params prm;
             BlockSolver::backend_params bprm;
             prm.precond.direct_coarse = false;
-            auto Ab = amgcl::adapter::block_matrix<UBackend>(A);
-            //Solver solve0( Ab, prm, bprm );
+            auto Ab = amgcl::adapter::block_matrix<dmat_type>(A);
+            auto rhsb = reinterpret_cast<dvec_type*>(rhs.data());
+            auto xb = reinterpret_cast<dvec_type*>(x.data());
+            auto RHS = amgcl::make_iterator_range(rhsb, rhsb + n / 3);
+            auto X = amgcl::make_iterator_range(xb, xb + n / 3);
+            Solver solve0( Ab, prm, bprm );
+            auto [iters0, error0] = solve0(Ab, RHS, X);
+            std::cout << "Iters0: " << iters0 << std::endl
+                      << "Error0: " << error0 << std::endl;
+
             BlockSolver solve( A, prm, bprm );
             auto [iters, error] = solve(A, rhs, x);
 
