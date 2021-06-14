@@ -9,6 +9,7 @@
 #include <amgcl/coarsening/smoothed_aggregation.hpp>
 #include <amgcl/coarsening/plain_aggregates.hpp>
 #include <amgcl/coarsening/ruge_stuben.hpp>
+#include <amgcl/coarsening/aggregation.hpp>
 #include <amgcl/relaxation/spai0.hpp>
 #include <amgcl/relaxation/ilu0.hpp>
 #include <amgcl/adapter/crs_tuple.hpp>
@@ -16,6 +17,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 // #include <format> // not yet supported
+
+// ./amgcl-block-matrices -A ../data/B_test.mtx  -b 3
 
 int main(int argc, char *argv[])
 {
@@ -81,14 +84,18 @@ int main(int argc, char *argv[])
     }
 
     if (vm.count("prm")) {
-        for(const string &v : vm["prm"].as<vector<string> >()) {
+        for(const string &v : vm["prm"].as<vector<string>>()) {
             amgcl::put(prm, v);
         }
     }
 
-    size_t n;
+    size_t n, block_size = 1;
     vector<ptrdiff_t> ptr, col;
-    vector<double> val, rhs, x;
+    vector<double> val;
+
+    if (vm.count("block-size")) {
+        block_size = vm["block-size"].as<int>();
+    }
 
     if (vm.count("matrix")) {
         string Afile  = vm["matrix"].as<string>();
@@ -99,47 +106,110 @@ int main(int argc, char *argv[])
         n = rows;
     }
 
-    using Backend = amgcl::backend::builtin<double>;
-    using Solver1 = amgcl::make_solver<
-    // Use AMG as preconditioner:
-    amgcl::amg<
-        Backend,
-        amgcl::coarsening::smoothed_aggregation,
-        amgcl::relaxation::spai0
-        >,
-    // And BiCGStab as iterative solver:
-    amgcl::solver::bicgstab<Backend>>;
+    // We use the tuple of CRS arrays to represent the system matrix.
+    // Note that std::tie creates a tuple of references, so no data is actually
+    // copied here:
+    auto A = std::tie(n, ptr, col, val);
+    std::vector<double> rhs (n, 1.0);
+    std::vector<double> x   (n, 0.0);
 
-    using Solver2 = amgcl::make_block_solver<
-    // Use AMG as preconditioner:
-    amgcl::amg<
-        Backend,
-        amgcl::coarsening::smoothed_aggregation,
-        amgcl::relaxation::spai0
-        >,
-    // And BiCGStab as iterative solver:
-    amgcl::solver::bicgstab<Backend>>;
+    if (block_size == 1) { // scalar case
+        using Backend = amgcl::backend::builtin<double>;
 
-    using Solver3 = amgcl::make_solver<
-    // Use AMG as preconditioner:
-    amgcl::amg<
-        Backend,
-        amgcl::coarsening::ruge_stuben,
-        amgcl::relaxation::spai0
-        //amgcl::relaxation::ilu0
-        >,
-    // And GMRES as iterative solver:
-    amgcl::solver::gmres<Backend>>;
+        using Solver1 = amgcl::make_solver<
+        // Use AMG as preconditioner:
+        amgcl::amg<
+            Backend,
+            amgcl::coarsening::smoothed_aggregation,
+            amgcl::relaxation::spai0
+            >,
+        // And BiCGStab as iterative solver:
+        amgcl::solver::bicgstab<Backend>>;
 
-    try {
-        Solver3::params prm;
-        Solver3::backend_params bprm;
-        prm.precond.direct_coarse = false;
-        //prm.precond.coarsening ...
-        Solver3 solve( std::tie(n, ptr, col, val), prm, bprm );
-    } catch(std::runtime_error &e) {
-        std::cout << "caught exception: " << e.what() << std::endl;
+        using Solver2 = amgcl::make_block_solver<
+        // Use AMG as preconditioner:
+        amgcl::amg<
+            Backend,
+            amgcl::coarsening::smoothed_aggregation,
+            amgcl::relaxation::spai0
+            >,
+        // And BiCGStab as iterative solver:
+        amgcl::solver::bicgstab<Backend>>;
+
+        using Solver3 = amgcl::make_solver<
+        // Use AMG as preconditioner:
+        amgcl::amg<
+            Backend,
+            amgcl::coarsening::ruge_stuben,
+            amgcl::relaxation::spai0
+            //amgcl::relaxation::ilu0
+            >,
+        // And GMRES as iterative solver:
+        amgcl::solver::gmres<Backend>>;
+
+        try {
+            Solver3::params prm;
+            Solver3::backend_params bprm;
+            prm.precond.direct_coarse = false;
+            //prm.precond.coarsening ...
+            Solver3 solve( A, prm, bprm );
+            auto [iters, error] = solve(A, rhs, x);
+
+            // Output the number of iterations, the relative error:
+            std::cout << "Iters: " << iters << std::endl
+                      << "Error: " << error << std::endl;
+            std::cout << "x = [ ";
+            for (auto el : x) {
+                std::cout << el << ", ";
+            }
+            std::cout << "]\n";
+        } catch(std::runtime_error &e) {
+            std::cout << "caught exception: " << e.what() << std::endl;
+        }
+    } else {
+        // Compose the solver type
+        using SBackend = amgcl::backend::builtin<double>; // the outer iterative solver backend
+        using PBackend = amgcl::backend::builtin<float>;  // the PSolver backend
+        using UBackend = amgcl::backend::builtin<
+        amgcl::static_matrix<double,3,3>>;    // the USolver backend
+        using BlockSolver = amgcl::make_block_solver<
+                // preconditioner
+                amgcl::amg<
+                    UBackend,
+                    amgcl::coarsening::aggregation,
+                    amgcl::relaxation::ilu0
+                    >,
+                // solver
+                amgcl::solver::gmres<UBackend>>;
+        using Solver = amgcl::make_solver<
+                // preconditioner
+                amgcl::amg<
+                    UBackend,
+                    amgcl::coarsening::aggregation,
+                    amgcl::relaxation::ilu0
+                    >,
+                // solver
+                amgcl::solver::gmres<UBackend>>;
+        try {
+            // see `tutorial/3.CoupCons3D/coupcons3d.cpp`
+            BlockSolver::params prm;
+            BlockSolver::backend_params bprm;
+            prm.precond.direct_coarse = false;
+            auto Ab = amgcl::adapter::block_matrix<UBackend>(A);
+            //Solver solve0( Ab, prm, bprm );
+            BlockSolver solve( A, prm, bprm );
+            auto [iters, error] = solve(A, rhs, x);
+
+            std::cout << "Iters: " << iters << std::endl
+                      << "Error: " << error << std::endl;
+            std::cout << "x = [ ";
+            for (auto el : x) {
+                std::cout << el << ", ";
+            }
+            std::cout << "]\n";
+
+        } catch(std::runtime_error &e) {
+            std::cout << "caught exception: " << e.what() << std::endl;
+        }
     }
-
-
 }
