@@ -5,6 +5,8 @@
 #include <amgcl/make_block_solver.hpp>
 #include <amgcl/solver/bicgstab.hpp>
 #include <amgcl/solver/gmres.hpp>
+#include <amgcl/solver/runtime.hpp>
+#include <amgcl/preconditioner/runtime.hpp>
 #include <amgcl/amg.hpp>
 #include <amgcl/coarsening/smoothed_aggregation.hpp>
 #include <amgcl/coarsening/plain_aggregates.hpp>
@@ -117,16 +119,11 @@ int main(int argc, char *argv[])
         using Backend = amgcl::backend::builtin<double>;
 
         using Solver1 = amgcl::make_solver<
-        // Use AMG as preconditioner:
-        amgcl::amg<
-            Backend,
-            amgcl::coarsening::smoothed_aggregation,
-            amgcl::relaxation::spai0
-            >,
-        // And BiCGStab as iterative solver:
-        amgcl::solver::bicgstab<Backend>>;
+        amgcl::runtime::preconditioner<Backend>,
+        amgcl::runtime::solver::wrapper<Backend>>;
 
-        using Solver2 = amgcl::make_block_solver<
+        //using Solver2 = amgcl::make_block_solver<
+        using Solver2 = amgcl::make_solver<
         // Use AMG as preconditioner:
         amgcl::amg<
             Backend,
@@ -148,21 +145,22 @@ int main(int argc, char *argv[])
         amgcl::solver::gmres<Backend>>;
 
         try {
-            Solver1::params prm;
-            Solver1::backend_params bprm;
-            prm.precond.direct_coarse = false;
+            Solver2::params prm;
+            Solver2::backend_params bprm;
+            // prm.precond.direct_coarse = false;
+            prm.precond.direct_coarse = true;
             //prm.precond.coarsening ...
-            Solver1 solve( A, prm, bprm );
+            Solver2 solve( A, prm, bprm );
             auto [iters, error] = solve(A, rhs, x);
 
             // Output the number of iterations, the relative error:
             std::cout << "Iters: " << iters << std::endl
                       << "Error: " << error << std::endl;
-            std::cout << "x = [ ";
-            for (auto el : x) {
-                std::cout << el << ", ";
-            }
-            std::cout << "]\n";
+            // std::cout << "x = [ ";
+            // for (auto el : x) {
+            //     std::cout << el << ", ";
+            // }
+            // std::cout << "]\n";
         } catch(std::runtime_error &e) {
             std::cout << "caught exception: " << e.what() << std::endl;
         }
