@@ -112,8 +112,18 @@ int main(int argc, char *argv[])
     // Note that std::tie creates a tuple of references, so no data is actually
     // copied here:
     auto A = std::tie(n, ptr, col, val);
-    std::vector<double> rhs (n, 1.0);
+    std::vector<double> rhs (n, 0.0);
     std::vector<double> x   (n, 0.0);
+
+    // Set RHS := Ax where x = 1
+    for (size_t i = 0; i < n; ++i) {
+        double s = 0;
+        for (ptrdiff_t j = ptr[i], e = ptr[i+1]; j < e; ++j) {
+            s += val[j];
+        }
+        rhs[i] = s;
+    }
+
 
     if (block_size == 1) { // scalar case
         using Backend = amgcl::backend::builtin<double>;
