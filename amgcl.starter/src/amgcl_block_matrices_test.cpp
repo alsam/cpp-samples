@@ -124,7 +124,6 @@ int main(int argc, char *argv[])
         rhs[i] = s;
     }
 
-
     if (block_size == 1) { // scalar case
         using Backend = amgcl::backend::builtin<double>;
 
@@ -219,11 +218,11 @@ int main(int argc, char *argv[])
 
             std::cout << "Iters: " << iters << std::endl
                       << "Error: " << error << std::endl;
-            std::cout << "x = [ ";
-            for (auto el : x) {
-                std::cout << el << ", ";
-            }
-            std::cout << "]\n";
+            // std::cout << "x = [ ";
+            // for (auto el : x) {
+            //     std::cout << el << ", ";
+            // }
+            // std::cout << "]\n";
 
         } catch(std::runtime_error &e) {
             std::cout << "caught exception: " << e.what() << std::endl;
