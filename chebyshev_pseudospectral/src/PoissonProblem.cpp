@@ -37,7 +37,7 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
   y_grid_(),
   ome_   (M + 1, N + 1),
   psi_   (M + 1, N + 1),
-  second_derivative_respect_x_(M + 1, N + 1),
+  second_derivative_respect_x_(M + 1, M + 1),
   u_     (M + 1, M + 1),
   border_(M, N)
 {
@@ -48,8 +48,10 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
 
     second_derivative_respect_x_ = second_order_operator(M_);
     if (M_ != N_) {
-        second_derivative_respect_x_.transposeInPlace();
+        //second_derivative_respect_x_.transposeInPlace();
+        //second_derivative_respect_y_ = second_order_operator(N_);
         second_derivative_respect_y_ = second_order_operator(N_);
+        second_derivative_respect_y_.transposeInPlace();
     }
 
     // zero boundary conditions
@@ -137,9 +139,9 @@ void PoissonProblem::solve()
         BS::bs_solve(M_-2, second_derivative_respect_x_, u_, ome_, psi_);
     } else {
         BS::bs_solve(M_-2, N_-2,
-                     second_derivative_respect_y_,
                      second_derivative_respect_x_,
-                     v_, u_, ome_, psi_);
+                     second_derivative_respect_y_,
+                     u_, v_, ome_, psi_);
     }
     if (verbose_)
         std::cout << "psi_ after bs_solve:\n" << psi_ << std::endl;

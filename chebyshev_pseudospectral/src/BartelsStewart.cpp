@@ -372,8 +372,8 @@ void bs_solve(size_t m,
 }
 
 void bs_solve(size_t m, size_t n,
-              Eigen::Ref<RowMatrixXd> a,
-              Eigen::Ref<RowMatrixXd> b,
+              Eigen::Ref<RowMatrixXd> a, // A is (M+2)x(M+2)
+              Eigen::Ref<RowMatrixXd> b, // B is (N+2)x(N+2)
               Eigen::Ref<RowMatrixXd> u,
               Eigen::Ref<RowMatrixXd> v,
               Eigen::Ref<RowMatrixXd> c,
