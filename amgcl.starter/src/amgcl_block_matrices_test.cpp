@@ -158,6 +158,8 @@ int main(int argc, char *argv[])
             Solver2::backend_params bprm;
             // prm.precond.direct_coarse = false;
             prm.precond.direct_coarse = true;
+            prm.solver.maxiter = 1200;
+            prm.solver.verbose = true;
             //prm.precond.coarsening ...
             Solver2 solve( A, prm, bprm );
             auto [iters, error] = solve(A, rhs, x);
@@ -201,13 +203,15 @@ int main(int argc, char *argv[])
         try {
             // see `tutorial/3.CoupCons3D/coupcons3d.cpp`
             BlockSolver::params prm;
+            prm.solver.maxiter = 1200;
+            prm.solver.verbose = true;
             BlockSolver::backend_params bprm;
             prm.precond.direct_coarse = false;
             auto Ab = amgcl::adapter::block_matrix<dmat_type>(A);
             auto rhsb = reinterpret_cast<dvec_type*>(rhs.data());
             auto xb = reinterpret_cast<dvec_type*>(x.data());
             auto RHS = amgcl::make_iterator_range(rhsb, rhsb + n / 3);
-            auto X = amgcl::make_iterator_range(xb, xb + n / 3);
+            auto X = amgcl::make_iterator_range(xb, xb + n / block_size);
             Solver solve0( Ab, prm, bprm );
             auto [iters0, error0] = solve0(Ab, RHS, X);
             std::cout << "Iters0: " << iters0 << std::endl
