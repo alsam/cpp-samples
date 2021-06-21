@@ -354,7 +354,7 @@ void shrslv(size_t m, size_t n,
                 c(k, l) /= t;
             }
             k += dk;
-        } while (k<=n);
+        } while (k<=m);
         l += dl;
     } while (l<=n);
 }
