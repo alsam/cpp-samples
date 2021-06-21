@@ -49,9 +49,9 @@ PoissonProblem::PoissonProblem(size_t M,     size_t N,
     second_derivative_respect_x_ = second_order_operator(M_);
     if (M_ != N_) {
         //second_derivative_respect_x_.transposeInPlace();
-        //second_derivative_respect_y_ = second_order_operator(N_);
         second_derivative_respect_y_ = second_order_operator(N_);
-        second_derivative_respect_y_.transposeInPlace();
+        //second_derivative_respect_y_ = second_order_operator(N_);
+        //second_derivative_respect_y_.transposeInPlace();
     }
 
     // zero boundary conditions
