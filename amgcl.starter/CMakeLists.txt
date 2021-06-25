@@ -49,6 +49,6 @@ target_include_directories(${project_name} PRIVATE
 target_link_libraries(${project_name}
     amgcl::amgcl
     cuda_target
-    Boost::program_options
+    #    Boost::program_options
     )
 

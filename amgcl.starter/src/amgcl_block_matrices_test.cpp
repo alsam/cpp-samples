@@ -1,7 +1,8 @@
+#include "cxxopts.hpp"
+
 #include <amgcl/io/mm.hpp>
 #include <amgcl/adapter/crs_tuple.hpp>
 #include <amgcl/amg.hpp>
-
 
 //#include <amgcl/backend/cuda.hpp>
 
@@ -37,12 +38,13 @@
 
 int main(int argc, char *argv[])
 {
-    namespace po = boost::program_options;
+    //namespace po = boost::program_options;
     namespace io = amgcl::io;
 
     using std::vector;
     using std::string;
 
+#if 0
     po::options_description desc("Options");
 
     desc.add_options()
@@ -81,9 +83,23 @@ int main(int argc, char *argv[])
     po::variables_map vm;
     po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
     po::notify(vm);
+#endif
+
+    cxxopts::Options options("amgcl_block_matrices", "check AMG for different block sizes");
+    options
+        .allow_unrecognised_options()
+        .add_options()
+        ("A,matrix", "System matrix in the MatrixMarket format.",
+         cxxopts::value<std::string>())
+        ("b,block-size", "The block size of the system matrix. ",
+         cxxopts::value<int>()->default_value("1"))
+        ("h,help", "Print help")
+        ;
+
+    auto vm = options.parse(argc, argv);
 
     if (vm.count("help")) {
-        std::cout << desc << std::endl;
+        std::cout << options.help() << std::endl;
         return 0;
     }
 
