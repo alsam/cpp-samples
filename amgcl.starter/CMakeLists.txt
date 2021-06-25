@@ -17,7 +17,8 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 add_executable(${project_name} src/amgcl_block_matrices_test.cpp)
-add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\)\(6\))
+add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\)\(6\)\(10\))
+add_compile_definitions(SOLVER_BACKEND_CUDA=1)
 target_link_libraries(${project_name}
     amgcl::amgcl
     Boost::program_options
