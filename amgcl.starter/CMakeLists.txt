@@ -37,10 +37,24 @@ find_package(Boost REQUIRED COMPONENTS
   #  regex
 )
 
+function(add_cuda_example example)
+    configure_file(
+        src/${example}.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/${example}.cu
+        COPYONLY
+        )
+
+    cuda_add_executable(${example}_cuda ${CMAKE_CURRENT_BINARY_DIR}/${example}.cu
+        OPTIONS -DSOLVER_BACKEND_CUDA -I${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(${example}_cuda amgcl_example cuda_target)
+endfunction()
 
 add_executable(${project_name} src/amgcl_block_matrices_test.cpp)
 
+add_cuda_example(amgcl_block_matrices_test)
+
 add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\)\(6\)\(10\))
+##add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\))
 #add_compile_definitions(SOLVER_BACKEND_CUDA=1)
 target_include_directories(${project_name} PRIVATE
 #    /opt/cuda

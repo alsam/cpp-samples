@@ -1,6 +1,9 @@
 # sample build & docgen targets
 
 debug_build:
+	mkdir -p build && cd build && CC=gcc-10 CXX=g++-10 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCUDA_TARGET_ARCH=Turing  -DCUDA_TOOLKIT_ROOT_DIR=/opt/cuda && make -j4
+
+debug_build0:
 	mkdir -p build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug && make -j4
 
 ninja_build_debug:
