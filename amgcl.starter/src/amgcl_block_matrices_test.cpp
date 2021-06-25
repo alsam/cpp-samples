@@ -1,6 +1,19 @@
 #include <amgcl/io/mm.hpp>
 #include <amgcl/adapter/crs_tuple.hpp>
 #include <amgcl/amg.hpp>
+
+
+//#include <amgcl/backend/cuda.hpp>
+
+#if defined(SOLVER_BACKEND_CUDA)
+#  include <amgcl/backend/cuda.hpp>
+#  include <amgcl/relaxation/cusparse_ilu0.hpp>
+   using Backend = amgcl::backend::cuda<double>;
+
+#else
+   using Backend = amgcl::backend::builtin<double>;
+#endif
+
 #include <amgcl/make_solver.hpp>
 #include <amgcl/make_block_solver.hpp>
 #include <amgcl/solver/bicgstab.hpp>
@@ -125,7 +138,6 @@ int main(int argc, char *argv[])
     }
 
     if (block_size == 1) { // scalar case
-        using Backend = amgcl::backend::builtin<double>;
 
         using Solver1 = amgcl::make_solver<
         amgcl::runtime::preconditioner<Backend>,
