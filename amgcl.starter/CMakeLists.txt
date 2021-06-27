@@ -46,7 +46,8 @@ function(add_cuda_example example)
 
     cuda_add_executable(${example}_cuda ${CMAKE_CURRENT_BINARY_DIR}/${example}.cu
         OPTIONS -DSOLVER_BACKEND_CUDA -I${CMAKE_CURRENT_SOURCE_DIR}/src -I/usr/include/eigen3)
-    target_link_libraries(${example}_cuda amgcl_example cuda_target)
+    #target_link_libraries(${example}_cuda amgcl_example cuda_target)
+    target_link_libraries(${example}_cuda cuda_target)
 endfunction()
 
 add_executable(${project_name} src/amgcl_block_matrices_test.cpp)

@@ -33,7 +33,6 @@
 #include <boost/program_options.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-// #include <format> // not yet supported
 
 // ./amgcl-block-matrices -A ../data/B_test.mtx  -b 3
 
@@ -44,47 +43,6 @@ int main(int argc, char *argv[])
 
     using std::vector;
     using std::string;
-
-#if 0
-    po::options_description desc("Options");
-
-    desc.add_options()
-        ("help,h", "Show this help.")
-        ("prm-file,P",
-         po::value<string>(),
-         "Parameter file in json format. "
-        )
-        (
-         "prm,p",
-         po::value< vector<string> >()->multitoken(),
-         "Parameters specified as name=value pairs. "
-         "May be provided multiple times. Examples:\n"
-         "  -p solver.tol=1e-3\n"
-         "  -p precond.coarse_enough=300"
-        )
-        ("matrix,A",
-         po::value<string>(),
-         "System matrix in the MatrixMarket format. "
-         "When not specified, solves a Poisson problem in 3D unit cube. "
-        )
-        (
-         "block-size,b",
-         po::value<int>()->default_value(1),
-         "The block size of the system matrix. "
-         "When specified, the system matrix is assumed to have block-wise structure. "
-         "This usually is the case for problems in elasticity, structural mechanics, "
-         "for coupled systems of PDE (such as Navier-Stokes equations), etc. "
-        )
-        ;
-
-
-    po::positional_options_description p;
-    p.add("prm", -1);
-
-    po::variables_map vm;
-    po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    po::notify(vm);
-#endif
 
     cxxopts::Options options("amgcl_block_matrices", "check AMG for different block sizes");
     options
@@ -191,7 +149,23 @@ int main(int argc, char *argv[])
             prm.solver.verbose = true;
             //prm.precond.coarsening ...
             Solver2 solve( A, prm, bprm );
-            auto [iters, error] = solve(A, rhs, x);
+
+
+            auto f_b = Backend::copy_vector(rhs, bprm);
+            auto x_b = Backend::copy_vector(x,   bprm);
+
+            //auto [iters, error] = solve(A, rhs, x);
+            auto [iters, error] = solve(A, *f_b, *x_b);
+
+#if defined(SOLVER_BACKEND_VEXCL)
+            vex::copy(*x_b, x);
+#elif defined(SOLVER_BACKEND_VIENNACL)
+            viennacl::fast_copy(*x_b, x);
+#elif defined(SOLVER_BACKEND_CUDA)
+            thrust::copy(x_b->begin(), x_b->end(), x.begin());
+#else
+            std::copy(&(*x_b)[0], &(*x_b)[0] + n, &x[0]);
+#endif
 
             // Output the number of iterations, the relative error:
             std::cout << "Iters: " << iters << std::endl
@@ -231,6 +205,7 @@ int main(int argc, char *argv[])
                 amgcl::solver::gmres<UBackend>>;
         try {
             // see `tutorial/3.CoupCons3D/coupcons3d.cpp`
+#if 0
             BlockSolver::params prm;
             prm.solver.maxiter = 1200;
             prm.solver.verbose = true;
@@ -256,7 +231,7 @@ int main(int argc, char *argv[])
             //     std::cout << el << ", ";
             // }
             // std::cout << "]\n";
-
+#endif
         } catch(std::runtime_error &e) {
             std::cout << "caught exception: " << e.what() << std::endl;
         }
