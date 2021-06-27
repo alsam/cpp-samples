@@ -148,6 +148,27 @@ int main(int argc, char *argv[])
             prm.solver.maxiter = 1200;
             prm.solver.verbose = true;
             //prm.precond.coarsening ...
+
+#if defined(SOLVER_BACKEND_VEXCL)
+            vex::Context ctx(vex::Filter::Env);
+            std::cout << ctx << std::endl;
+            bprm.q = ctx;
+#elif defined(SOLVER_BACKEND_VIENNACL)
+            std::cout
+                << viennacl::ocl::current_device().name()
+                << " (" << viennacl::ocl::current_device().vendor() << ")\n\n";
+#elif defined(SOLVER_BACKEND_CUDA)
+            cusparseCreate(&bprm.cusparse_handle);
+            {
+                int dev;
+                cudaGetDevice(&dev);
+
+                cudaDeviceProp prop;
+                cudaGetDeviceProperties(&prop, dev);
+                std::cout << prop.name << std::endl << std::endl;
+            }
+#endif
+
             Solver2 solve( A, prm, bprm );
 
 
