@@ -6,12 +6,17 @@
 #include <amgcl/adapter/crs_tuple.hpp>
 #include <amgcl/amg.hpp>
 
-#if defined(SOLVER_BACKEND_CUDA)
+#if defined(SOLVER_BACKEND_VEXCL)
+#  include <amgcl/value_type/static_matrix.hpp>
+#  include <amgcl/adapter/block_matrix.hpp>
+#  include <amgcl/backend/vexcl.hpp>
+#  include <amgcl/backend/vexcl_static_matrix.hpp>
+   typedef amgcl::backend::vexcl<double> Backend;
+#elif defined(SOLVER_BACKEND_CUDA)
 #  include <amgcl/adapter/eigen.hpp>
 #  include <amgcl/backend/cuda.hpp>
 #  include <amgcl/relaxation/cusparse_ilu0.hpp>
    using Backend = amgcl::backend::cuda<double>;
-
 #else
    using Backend = amgcl::backend::builtin<double>;
 #endif
@@ -91,7 +96,8 @@ std::tuple<size_t, double> scalar_solve(
     amgcl::amg<
         Backend,
         amgcl::coarsening::smoothed_aggregation,
-        amgcl::relaxation::spai0
+        //amgcl::relaxation::spai0
+        amgcl::relaxation::damped_jacobi
         >,
     // And BiCGStab as iterative solver:
     amgcl::solver::bicgstab<Backend>>;
@@ -114,6 +120,7 @@ std::tuple<size_t, double> scalar_solve(
         prm.precond.direct_coarse = true;
         prm.solver.maxiter = 1200;
         prm.solver.verbose = true;
+        prm.solver.tol = 1e-5;
         //prm.precond.coarsening ...
 
 #if defined(SOLVER_BACKEND_VEXCL)
@@ -251,8 +258,9 @@ int main(int argc, char *argv[])
         scalar_solve(prm, n, ptr,col, val, rhs, x, false);
     } else {
         // Compose the solver type
-        using dmat_type = amgcl::static_matrix<double, 3, 3>;
-        using dvec_type = amgcl::static_matrix<double, 3, 1>;
+        constexpr size_t B = 6; // 3
+        using dmat_type = amgcl::static_matrix<double, B, B>;
+        using dvec_type = amgcl::static_matrix<double, B, 1>;
         using SBackend = amgcl::backend::builtin<double>;    // the outer iterative solver backend
         using PBackend = amgcl::backend::builtin<float>;     // the PSolver backend
         using UBackend = amgcl::backend::builtin<dmat_type>; // the USolver backend
@@ -276,7 +284,7 @@ int main(int argc, char *argv[])
                 amgcl::solver::gmres<UBackend>>;
         try {
             // see `tutorial/3.CoupCons3D/coupcons3d.cpp`
-#if 0
+#if 1
             BlockSolver::params prm;
             prm.solver.maxiter = 1200;
             prm.solver.verbose = true;

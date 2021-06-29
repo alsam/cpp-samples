@@ -7,6 +7,17 @@ project(${project_name})
 set(CMAKE_CXX_STANDARD 20)
 
 find_package(amgcl)
+
+find_package(OpenMP)
+
+#find_package(VexCL QUIET)
+if (VexCL_FOUND)
+    #message(STATUS "VexCL_FOUND")
+    vexcl_add_executables(${example}_vexcl src/amgcl_block_matrices_test.cpp)
+    target_compile_definitions(${solver}_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
+
+endif()
+
 find_package(CUDA)
 if (CUDA_FOUND)
     set(CUDA_TARGET_ARCH "Maxwell Pascal Turing Ampere" CACHE STRING "Target architecture(s) for CUDA")
@@ -46,8 +57,8 @@ function(add_cuda_example example)
 
     cuda_add_executable(${example}_cuda ${CMAKE_CURRENT_BINARY_DIR}/${example}.cu
         OPTIONS -DSOLVER_BACKEND_CUDA -I${CMAKE_CURRENT_SOURCE_DIR}/src -I/usr/include/eigen3)
-    #target_link_libraries(${example}_cuda amgcl_example cuda_target)
-    target_link_libraries(${example}_cuda cuda_target)
+    target_compile_options(${example}_cuda INTERFACE ${OpenMP_CXX_FLAGS})
+    target_link_libraries(${example}_cuda cuda_target ${OpenMP_CXX_FLAGS})
 endfunction()
 
 add_executable(${project_name} src/amgcl_block_matrices_test.cpp)
@@ -55,11 +66,7 @@ add_executable(${project_name} src/amgcl_block_matrices_test.cpp)
 add_cuda_example(amgcl_block_matrices_test)
 
 add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\)\(6\)\(10\))
-##add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\))
-#add_compile_definitions(SOLVER_BACKEND_CUDA=1)
 target_include_directories(${project_name} PRIVATE
-#    /opt/cuda
-#    /opt/thrust
 )
 target_link_libraries(${project_name}
     amgcl::amgcl
