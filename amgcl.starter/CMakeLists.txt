@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
-set(project_name amgcl-block-matrices)
+#set(project_name amgcl_block_matrices)
+set(project_name solver)
 set(project_lib ${project_name}_lib)
 set(project_unit_tests ${project_name}_unit_tests)
 project(${project_name})
@@ -56,17 +57,20 @@ function(add_cuda_example example)
         )
 
     cuda_add_executable(${example}_cuda ${CMAKE_CURRENT_BINARY_DIR}/${example}.cu
-        OPTIONS -DSOLVER_BACKEND_CUDA -I${CMAKE_CURRENT_SOURCE_DIR}/src -I/usr/include/eigen3)
+        OPTIONS -DSOLVER_BACKEND_CUDA -I${CMAKE_CURRENT_SOURCE_DIR}/src -I/usr/include/eigen3 -Isrc/)
     target_compile_options(${example}_cuda INTERFACE ${OpenMP_CXX_FLAGS})
     target_link_libraries(${example}_cuda cuda_target ${OpenMP_CXX_FLAGS})
 endfunction()
 
-add_executable(${project_name} src/amgcl_block_matrices_test.cpp)
+#add_executable(${project_name} src/amgcl_block_matrices_test.cpp)
+add_executable(${project_name} src/${project_name}.cpp)
 
 add_cuda_example(amgcl_block_matrices_test)
+add_cuda_example(${project_name})
 
 add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\)\(6\)\(10\))
 target_include_directories(${project_name} PRIVATE
+src/
 )
 target_link_libraries(${project_name}
     amgcl::amgcl
