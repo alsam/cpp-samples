@@ -55,7 +55,7 @@
 #include <amgcl/profiler.hpp>
 
 #ifndef AMGCL_BLOCK_SIZES
-#  define AMGCL_BLOCK_SIZES (3)(4)
+#  define AMGCL_BLOCK_SIZES (3)(4)(6)(10)
 #endif
 
 namespace amgcl { profiler<> prof; }

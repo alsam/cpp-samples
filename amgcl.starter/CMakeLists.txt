@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
-#set(project_name amgcl_block_matrices)
-set(project_name solver)
+set(project_name amgcl_block_matrices)
+#set(project_name solver)
 set(project_lib ${project_name}_lib)
 set(project_unit_tests ${project_name}_unit_tests)
 project(${project_name})
@@ -62,17 +62,30 @@ function(add_cuda_example example)
     target_link_libraries(${example}_cuda cuda_target ${OpenMP_CXX_FLAGS})
 endfunction()
 
-#add_executable(${project_name} src/amgcl_block_matrices_test.cpp)
-add_executable(${project_name} src/${project_name}.cpp)
+add_executable(amgl_block_matrices_test src/amgcl_block_matrices_test.cpp)
+
+add_executable(solver src/solver.cpp)
 
 add_cuda_example(amgcl_block_matrices_test)
-add_cuda_example(${project_name})
+add_cuda_example(solver)
 
 add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\)\(6\)\(10\))
-target_include_directories(${project_name} PRIVATE
+
+target_include_directories(amgl_block_matrices_test PRIVATE
 src/
 )
-target_link_libraries(${project_name}
+
+target_include_directories(solver PRIVATE
+src/
+)
+
+target_link_libraries(amgl_block_matrices_test
+    amgcl::amgcl
+    cuda_target
+    #    Boost::program_options
+    )
+
+target_link_libraries(solver
     amgcl::amgcl
     cuda_target
     #    Boost::program_options
