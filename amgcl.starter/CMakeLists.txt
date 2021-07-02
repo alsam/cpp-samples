@@ -14,8 +14,10 @@ find_package(OpenMP)
 #find_package(VexCL QUIET)
 if (VexCL_FOUND)
     #message(STATUS "VexCL_FOUND")
-    vexcl_add_executables(${example}_vexcl src/amgcl_block_matrices_test.cpp)
-    target_compile_definitions(${solver}_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
+    vexcl_add_executables(amgcl_block_matrices_test_vexcl src/amgcl_block_matrices_test.cpp)
+    #target_compile_definitions(amgl_block_matrices_test_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
+    vexcl_add_executables(solver_vexcl src/solver.cpp)
+    target_compile_definitions(solver_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
 
 endif()
 
