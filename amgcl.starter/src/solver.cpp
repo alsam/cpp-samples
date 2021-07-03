@@ -413,15 +413,26 @@ int main(int argc, char *argv[]) {
 
     size_t rows, nv = 0;
     vector<ptrdiff_t> ptr, col;
-    vector<double> val, rhs, null, x;
+    vector<double> val;
 
     if (vm.count("matrix")) {
         string Afile  = vm["matrix"].as<string>();
         auto [r, cols] = io::mm_reader(Afile)(ptr, col, val);
 
+        rows = r;
         std::cout << "rows: " << rows << std::endl;
         std::cout << "cols: " << cols << std::endl;
-        rows = r;  
+    }
+
+    vector<double> rhs(rows, 0.0), x(rows, 0.0);
+
+    // Set RHS := Ax where x = 1
+    for (size_t i = 0; i < rows; ++i) {
+        double s = 0;
+        for (ptrdiff_t j = ptr[i], e = ptr[i+1]; j < e; ++j) {
+            s += val[j];
+        }
+        rhs[i] = s;
     }
 
     auto [iters, error] = solve(
