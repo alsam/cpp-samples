@@ -11,26 +11,29 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 
+#ifndef REAL
+#define REAL double
+#endif
 
 #if defined(SOLVER_BACKEND_VEXCL)
 #  include <amgcl/value_type/static_matrix.hpp>
 #  include <amgcl/adapter/block_matrix.hpp>
 #  include <amgcl/backend/vexcl.hpp>
 #  include <amgcl/backend/vexcl_static_matrix.hpp>
-   typedef amgcl::backend::vexcl<double> Backend;
+   typedef amgcl::backend::vexcl<REAL> Backend;
 #elif defined(SOLVER_BACKEND_VIENNACL)
 #  include <amgcl/backend/viennacl.hpp>
-   typedef amgcl::backend::viennacl< viennacl::compressed_matrix<double> > Backend;
+   typedef amgcl::backend::viennacl< viennacl::compressed_matrix<REAL> > Backend;
 #elif defined(SOLVER_BACKEND_CUDA)
 #  include <amgcl/backend/cuda.hpp>
 #  include <amgcl/relaxation/cusparse_ilu0.hpp>
-   typedef amgcl::backend::cuda<double> Backend;
+   typedef amgcl::backend::cuda<REAL> Backend;
 #elif defined(SOLVER_BACKEND_EIGEN)
 #  include <amgcl/backend/eigen.hpp>
-   typedef amgcl::backend::eigen<double> Backend;
+   typedef amgcl::backend::eigen<REAL> Backend;
 #elif defined(SOLVER_BACKEND_BLAZE)
 #  include <amgcl/backend/blaze.hpp>
-   typedef amgcl::backend::blaze<double> Backend;
+   typedef amgcl::backend::blaze<REAL> Backend;
 #else
 #  ifndef SOLVER_BACKEND_BUILTIN
 #    define SOLVER_BACKEND_BUILTIN
@@ -38,7 +41,7 @@
 #  include <amgcl/backend/builtin.hpp>
 #  include <amgcl/value_type/static_matrix.hpp>
 #  include <amgcl/adapter/block_matrix.hpp>
-   typedef amgcl::backend::builtin<double> Backend;
+   typedef amgcl::backend::builtin<REAL> Backend;
 #endif
 
 #include <amgcl/relaxation/runtime.hpp>
@@ -65,19 +68,19 @@ using amgcl::precondition;
 #ifdef SOLVER_BACKEND_BUILTIN
 //---------------------------------------------------------------------------
 template <int B>
-std::tuple<size_t, double> block_solve(
+std::tuple<size_t, REAL> block_solve(
         const boost::property_tree::ptree &prm,
         size_t rows,
         std::vector<ptrdiff_t> const &ptr,
         std::vector<ptrdiff_t> const &col,
-        std::vector<double>    const &val,
-        std::vector<double>    const &rhs,
-        std::vector<double>          &x,
+        std::vector<REAL>    const &val,
+        std::vector<REAL>    const &rhs,
+        std::vector<REAL>          &x,
         bool reorder
         )
 {
-    typedef amgcl::static_matrix<double, B, B> value_type;
-    typedef amgcl::static_matrix<double, B, 1> rhs_type;
+    typedef amgcl::static_matrix<REAL, B, B> value_type;
+    typedef amgcl::static_matrix<REAL, B, 1> rhs_type;
     typedef amgcl::backend::builtin<value_type> BBackend;
 
     typedef amgcl::make_solver<
@@ -88,7 +91,7 @@ std::tuple<size_t, double> block_solve(
     auto As = std::tie(rows, ptr, col, val);
     auto Ab = amgcl::adapter::block_matrix<value_type>(As);
 
-    std::tuple<size_t, double> info;
+    std::tuple<size_t, REAL> info;
 
     if (reorder) {
         prof.tic("reorder");
@@ -139,19 +142,19 @@ std::tuple<size_t, double> block_solve(
 #ifdef SOLVER_BACKEND_VEXCL
 //---------------------------------------------------------------------------
 template <int B>
-std::tuple<size_t, double> block_solve(
+std::tuple<size_t, REAL> block_solve(
         const boost::property_tree::ptree &prm,
         size_t rows,
         std::vector<ptrdiff_t> const &ptr,
         std::vector<ptrdiff_t> const &col,
-        std::vector<double>    const &val,
-        std::vector<double>    const &rhs,
-        std::vector<double>          &x,
+        std::vector<REAL>    const &val,
+        std::vector<REAL>    const &rhs,
+        std::vector<REAL>          &x,
         bool reorder
         )
 {
-    typedef amgcl::static_matrix<double, B, B> value_type;
-    typedef amgcl::static_matrix<double, B, 1> rhs_type;
+    typedef amgcl::static_matrix<REAL, B, B> value_type;
+    typedef amgcl::static_matrix<REAL, B, 1> rhs_type;
     typedef amgcl::backend::vexcl<value_type> BBackend;
 
     typedef amgcl::make_solver<
@@ -167,12 +170,12 @@ std::tuple<size_t, double> block_solve(
     bprm.fast_matrix_setup = prm.get("fast", true);
 
     vex::scoped_program_header header(ctx,
-            amgcl::backend::vexcl_static_matrix_declaration<double,B>());
+            amgcl::backend::vexcl_static_matrix_declaration<REAL,B>());
 
     auto As = std::tie(rows, ptr, col, val);
     auto Ab = amgcl::adapter::block_matrix<value_type>(As);
 
-    std::tuple<size_t, double> info;
+    std::tuple<size_t, REAL> info;
 
     if (reorder) {
         prof.tic("reorder");
@@ -227,14 +230,14 @@ std::tuple<size_t, double> block_solve(
 #endif
 
 //---------------------------------------------------------------------------
-std::tuple<size_t, double> scalar_solve(
+std::tuple<size_t, REAL> scalar_solve(
         const boost::property_tree::ptree &prm,
         size_t rows,
         std::vector<ptrdiff_t> const &ptr,
         std::vector<ptrdiff_t> const &col,
-        std::vector<double>    const &val,
-        std::vector<double>    const &rhs,
-        std::vector<double>          &x,
+        std::vector<REAL>    const &val,
+        std::vector<REAL>    const &rhs,
+        std::vector<REAL>          &x,
         bool reorder
         )
 {
@@ -265,7 +268,7 @@ std::tuple<size_t, double> scalar_solve(
         amgcl::runtime::solver::wrapper<Backend>
         > Solver;
 
-    std::tuple<size_t, double> info;
+    std::tuple<size_t, REAL> info;
 
     if (reorder) {
         prof.tic("reorder");
@@ -278,7 +281,7 @@ std::tuple<size_t, double> scalar_solve(
 
         std::cout << solve << std::endl;
 
-        std::vector<double> tmp(rows);
+        std::vector<REAL> tmp(rows);
 
         perm.forward(rhs, tmp);
         auto f_b = Backend::copy_vector(tmp, bprm);
@@ -334,14 +337,14 @@ std::tuple<size_t, double> scalar_solve(
     return block_solve<B>(prm, rows, ptr, col, val, rhs, x, reorder);
 
 //---------------------------------------------------------------------------
-std::tuple<size_t, double> solve(
+std::tuple<size_t, REAL> solve(
         const boost::property_tree::ptree &prm,
         size_t rows,
         std::vector<ptrdiff_t> const &ptr,
         std::vector<ptrdiff_t> const &col,
-        std::vector<double>    const &val,
-        std::vector<double>    const &rhs,
-        std::vector<double>          &x,
+        std::vector<REAL>    const &val,
+        std::vector<REAL>    const &rhs,
+        std::vector<REAL>          &x,
         int block_size,
         bool reorder
         )
@@ -413,15 +416,26 @@ int main(int argc, char *argv[]) {
 
     size_t rows, nv = 0;
     vector<ptrdiff_t> ptr, col;
-    vector<double> val, rhs, null, x;
+    vector<REAL> val;
 
     if (vm.count("matrix")) {
         string Afile  = vm["matrix"].as<string>();
         auto [r, cols] = io::mm_reader(Afile)(ptr, col, val);
 
+        rows = r;
         std::cout << "rows: " << rows << std::endl;
         std::cout << "cols: " << cols << std::endl;
-        rows = r;  
+    }
+
+    vector<REAL> rhs(rows, 0.0), x(rows, 0.0);
+
+    // Set RHS := Ax where x = 1
+    for (size_t i = 0; i < rows; ++i) {
+        REAL s = 0;
+        for (ptrdiff_t j = ptr[i], e = ptr[i+1]; j < e; ++j) {
+            s += val[j];
+        }
+        rhs[i] = s;
     }
 
     auto [iters, error] = solve(

@@ -72,6 +72,7 @@ add_cuda_example(amgcl_block_matrices_test)
 add_cuda_example(solver)
 
 add_compile_definitions(AMGCL_BLOCK_SIZES=\(2\)\(3\)\(6\)\(10\))
+add_compile_definitions(REAL=${FLOAT_TYPE})
 
 target_include_directories(amgl_block_matrices_test PRIVATE
 src/
