@@ -6,6 +6,9 @@ debug_build:
 ninja_build_debug:
 	mkdir -p build_ninja && cd build_ninja && cmake .. -DCMAKE_BUILD_TYPE=Debug -G Ninja && ninja -j4
 
+gen_compile_commands:
+	mkdir -p build_compile_commands && cd build_compile_commands && CMAKE_EXPORT_COMPILE_COMMANDS=yes cmake .. && mv compile_commands.json ..
+
 dox:
 	doxygen Doxyfile && cd docs/latex && make && okular refman.pdf
 

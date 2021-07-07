@@ -11,7 +11,7 @@ find_package(amgcl)
 
 find_package(OpenMP)
 
-#find_package(VexCL QUIET)
+find_package(VexCL QUIET)
 if (VexCL_FOUND)
     #message(STATUS "VexCL_FOUND")
     vexcl_add_executables(amgcl_block_matrices_test_vexcl src/amgcl_block_matrices_test.cpp)
