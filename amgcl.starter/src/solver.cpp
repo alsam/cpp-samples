@@ -418,13 +418,15 @@ int main(int argc, char *argv[]) {
     }
 
     // see [Question: How to retrieve the initial residual from the linear solvers?](https://github.com/ddemidov/amgcl/issues/89)
-    prm.put("solver.type",    prm.get("solver.type",    "cg")); // "bicgstab"
-    prm.put("solver.tol",     prm.get("solver.tol",     1e-5));
-    prm.put("solver.maxiter", prm.get("solver.maxiter", 5000));
-    prm.put("solver.verbose", prm.get("solver.verbose", false));
-    prm.put("precond.coarsening.type", prm.get("precond.coarsening.type", "smoothed_aggregation"));
-    //prm.put("precond.relax.type", "ilu0");
-    prm.put("precond.relax.type",      prm.get("precond.relax.type", "damped_jacobi"));
+    auto set_prm_defaults = [&prm](string const& param, auto const& default_val) {
+        prm.put(param, prm.get(param, default_val));
+    };
+    set_prm_defaults("solver.type",     "cg"); // "bicgstab"
+    set_prm_defaults("solver.tol",      1e-4);
+    set_prm_defaults("solver.maxiter",  5000);
+    set_prm_defaults("solver.verbose",  false);
+    set_prm_defaults("precond.coarsening.type",  "smoothed_aggregation");
+    set_prm_defaults("precond.relax.type",       "damped_jacobi"); // ilu0
 
     size_t block_size = 1;
 
