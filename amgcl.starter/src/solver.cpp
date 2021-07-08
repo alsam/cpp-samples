@@ -408,6 +408,15 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // see [Question: How to retrieve the initial residual from the linear solvers?](https://github.com/ddemidov/amgcl/issues/89)
+    prm.put("solver.type", "cg"); // "bicgstab"
+    prm.put("solver.tol", 1e-5);
+    prm.put("solver.maxiter", 5000);
+    //prm.put("solver.verbose", true);
+    prm.put("precond.coarsening.type", "smoothed_aggregation");
+    //prm.put("precond.relax.type", "ilu0");
+    prm.put("precond.relax.type", "damped_jacobi");
+
     size_t block_size = 1;
 
     if (vm.count("block-size")) {
