@@ -1,7 +1,7 @@
 # sample build & docgen targets
 
 debug_build:
-	mkdir -p build && cd build && CC=gcc-10 CXX=g++-10 cmake .. --DFLOAT_TYPE=double DCMAKE_BUILD_TYPE=Debug -DCUDA_TARGET_ARCH=Turing  -DCUDA_TOOLKIT_ROOT_DIR=/opt/cuda && make -j4
+	mkdir -p build_debug && cd build_debug && CC=gcc-10 CXX=g++-10 cmake .. -DFLOAT_TYPE=double -DCMAKE_BUILD_TYPE=Debug -DCUDA_TARGET_ARCH=Turing  -DCUDA_TOOLKIT_ROOT_DIR=/opt/cuda && make -j4
 
 release_build_double:
 	mkdir -p build_release_double && cd build_release_double && CC=gcc-10 CXX=g++-10 cmake .. -DFLOAT_TYPE=double -DCMAKE_BUILD_TYPE=Release -DCUDA_TARGET_ARCH=Turing  -DCUDA_TOOLKIT_ROOT_DIR=/opt/cuda && make -j4

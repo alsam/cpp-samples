@@ -381,6 +381,15 @@ int main(int argc, char *argv[]) {
          cxxopts::value<std::string>())
         ("b,block-size", "The block size of the system matrix. ",
          cxxopts::value<int>()->default_value("1"))
+
+        (
+         "p,prm",
+         "Parameters specified as name=value pairs. "
+         "May be provided multiple times. Examples:\n"
+         "  -p solver.tol=1e-3\n"
+         "  -p precond.coarse_enough=300",
+         cxxopts::value<vector<string>>())
+
         ("h,help", "Print help")
         ;
 
