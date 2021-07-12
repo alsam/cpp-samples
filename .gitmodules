@@ -4,3 +4,6 @@
 [submodule "arm64.cross.greenfield/3dparty/fmt"]
 	path = arm64.cross.starter/3dparty/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "amgcl.starter/3dparty/amgcl"]
+	path = amgcl.starter/3dparty/amgcl
+	url = https://github.com/ddemidov/amgcl.git
