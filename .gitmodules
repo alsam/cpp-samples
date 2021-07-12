@@ -7,3 +7,6 @@
 [submodule "amgcl.starter/3dparty/amgcl"]
 	path = amgcl.starter/3dparty/amgcl
 	url = https://github.com/ddemidov/amgcl.git
+[submodule "amgcl.starter/3dparty/vexcl"]
+	path = amgcl.starter/3dparty/vexcl
+	url = https://github.com/ddemidov/vexcl.git
