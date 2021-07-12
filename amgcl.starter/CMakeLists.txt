@@ -5,11 +5,16 @@ set(project_lib ${project_name}_lib)
 set(project_unit_tests ${project_name}_unit_tests)
 project(${project_name})
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(amgcl)
 
 find_package(OpenMP)
+
+
+#get_property(AMGCL_INCLUDE_DIRS TARGET amgcl::amgcl PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+
+set(AMGCL_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/3dparty/amgcl/)
 
 find_package(VexCL QUIET)
 if (VexCL_FOUND)
@@ -17,13 +22,10 @@ if (VexCL_FOUND)
     vexcl_add_executables(amgcl_block_matrices_test_vexcl src/amgcl_block_matrices_test.cpp)
     #target_compile_definitions(amgl_block_matrices_test_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
     vexcl_add_executables(solver_vexcl src/solver.cpp)
-    target_compile_definitions(solver_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
+    target_include_directories(amgcl_block_matrices_test_vexcl INTERFACE ${AMGCL_INCLUDE_DIRS} SOLVER_BACKEND_VEXCL)
+    target_include_directories(solver_vexcl INTERFACE ${AMGCL_INCLUDE_DIRS} SOLVER_BACKEND_VEXCL)
 
 endif()
-
-#get_property(AMGCL_INCLUDE_DIRS TARGET amgcl::amgcl PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-
-set(AMGCL_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/3dparty/amgcl/)
 
 find_package(CUDA)
 if (CUDA_FOUND)
