@@ -18,6 +18,8 @@ debug_build0:
 ninja_build_debug:
 	mkdir -p build_ninja && cd build_ninja && cmake .. -DCMAKE_BUILD_TYPE=Debug -G Ninja && ninja -j4
 
+install_vexcl:
+	mkdir -p 3dparty/vexcl/build && cd 3dparty/vexcl/build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/local && make install
 dox:
 	doxygen Doxyfile && cd docs/latex && make && okular refman.pdf
 
