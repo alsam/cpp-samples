@@ -16,13 +16,15 @@ find_package(OpenMP)
 
 set(AMGCL_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/3dparty/amgcl/)
 
-find_package(VexCL QUIET)
+#find_package(VexCL QUIET)
+find_package(VexCL PATHS /home/alsam/local)
 if (VexCL_FOUND)
     #message(STATUS "VexCL_FOUND")
     vexcl_add_executables(amgcl_block_matrices_test_vexcl src/amgcl_block_matrices_test.cpp)
     #target_compile_definitions(amgl_block_matrices_test_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
     vexcl_add_executables(solver_vexcl src/solver.cpp)
     target_include_directories(amgcl_block_matrices_test_vexcl INTERFACE ${AMGCL_INCLUDE_DIRS} SOLVER_BACKEND_VEXCL)
+    target_compile_definitions(solver_vexcl INTERFACE SOLVER_BACKEND_VEXCL)
     target_include_directories(solver_vexcl INTERFACE ${AMGCL_INCLUDE_DIRS} SOLVER_BACKEND_VEXCL)
 
 endif()

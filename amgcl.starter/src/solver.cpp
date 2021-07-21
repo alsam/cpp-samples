@@ -244,9 +244,12 @@ std::tuple<size_t, REAL> scalar_solve(
     Backend::params bprm;
 
 #if defined(SOLVER_BACKEND_VEXCL)
-    vex::Context ctx(vex::Filter::Env);
+    // https://vexcl.readthedocs.io/en/latest/initialize.html
+    //vex::Context ctx(vex::Filter::Env);
+    vex::Context ctx(vex::Filter::Position(2));
     std::cout << ctx << std::endl;
     bprm.q = ctx;
+    //bprm.q = {ctx.queue(2)}; // RadeonVII
 #elif defined(SOLVER_BACKEND_VIENNACL)
     std::cout
         << viennacl::ocl::current_device().name()
