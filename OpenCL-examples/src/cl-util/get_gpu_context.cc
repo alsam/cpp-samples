@@ -17,7 +17,7 @@ std::tuple<std::vector<cl::Device>, cl::Context>
         "  is OpenCL correctly installed?"
         "\n(fail)\n");
 
-    cl::Platform default_platform = platform_list[0];
+    cl::Platform default_platform = platform_list[2];
     console.msg(
         "Using platform: ",
         default_platform.getInfo<CL_PLATFORM_NAME>());

@@ -3,7 +3,7 @@ subdir('src')
 
 opencl_dep = dependency('OpenCL')
 libpng_dep = dependency('libpng')
-libyuv_dep = dependency('libyuv')
+#libyuv_dep = dependency('libyuv')
 
 local_include = include_directories('./include')
 
@@ -25,9 +25,9 @@ executable('mandel', mandel_files,
     link_with: [cl_util_static],
     include_directories: local_include)
 
-executable('yuv2rgb', yuv2rgb_files,
-    dependencies : [opencl_dep, libpng_dep, libyuv_dep],
-    cpp_args: ['-std=c++17', '-g'],
-    link_args: ['-g'],
-    link_with: [cl_util_static],
-    include_directories: local_include)
+#executable('yuv2rgb', yuv2rgb_files,
+#    dependencies : [opencl_dep, libpng_dep, libyuv_dep],
+#    cpp_args: ['-std=c++17', '-g'],
+#    link_args: ['-g'],
+#    link_with: [cl_util_static],
+#    include_directories: local_include)

@@ -19,7 +19,7 @@ namespace cl_tutorial
                 std::tie(devices, context) = get_default_gpu_context();
                 queue =
                     cl::CommandQueue(
-                    context, devices[2], CL_QUEUE_PROFILING_ENABLE);
+                    context, devices[0], CL_QUEUE_PROFILING_ENABLE);
                 return *this;
             }
     
