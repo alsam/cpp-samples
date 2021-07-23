@@ -1,0 +1,2 @@
+g++ -c -std=c++20 -fmodules-ts math_module_template.cpp -o math_module_template.cpp.o
+g++ -std=c++20 -fmodules-ts client_template.cpp math_module_template.o -o ma1
