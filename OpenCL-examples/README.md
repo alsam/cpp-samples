@@ -26,6 +26,20 @@
 <<< writing image to julia3.png ... >>> (ok)
 ```
 
+```sh
+./mandel
+⏲  start timer [render with opencl]
+│   ☷  OpenCL initialisation ...
+│   │  Using platform: AMD Accelerated Parallel Processing
+found devices: 1
+│   │  Using device:   gfx906:sramecc-:xnack-
+│   ┕ (ok)
+│   
+calling clCreateProgramWithSource
+ok))
+┕ stop timer [render with opencl]: 330.769 ms
+```
+
 + HOWTO render this document to `README.pdf`
 
 ```sh
