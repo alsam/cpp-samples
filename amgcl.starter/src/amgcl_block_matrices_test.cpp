@@ -290,6 +290,7 @@ int main(int argc, char *argv[])
             prm.solver.verbose = true;
             BlockSolver::backend_params bprm;
             prm.precond.direct_coarse = false;
+            prm.precond.allow_rebuild = true;
             auto Ab = amgcl::adapter::block_matrix<dmat_type>(A);
             auto rhsb = reinterpret_cast<dvec_type*>(rhs.data());
             auto xb = reinterpret_cast<dvec_type*>(x.data());

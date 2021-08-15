@@ -430,6 +430,7 @@ int main(int argc, char *argv[]) {
     set_prm_defaults("solver.verbose",  false);
     set_prm_defaults("precond.coarsening.type",  "smoothed_aggregation");
     set_prm_defaults("precond.relax.type",       "damped_jacobi"); // ilu0
+    set_prm_defaults("precond.allow_rebuild", true);
 
     size_t block_size = 1;
 
