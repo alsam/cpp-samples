@@ -5,6 +5,7 @@
 // dpcpp simple2.cpp -o simple2
 
 using namespace sycl;
+using namespace sycl::ONEAPI;
 
 int main() {
 
@@ -34,8 +35,19 @@ int main() {
     }
   }).wait();
 
+
+  std::array<unsigned, N> data2;
+  buffer buf{ data2 };
+  Q.submit([&](handler& h) {
+    atomic_accessor acc(buf, h, relaxed_order, system_scope);
+    h.parallel_for(N, [=](id<1> i) {
+      int j = i % M;
+      acc[j] += 1;
+    });
+  });
+
   for (int i = 0; i < N; ++i) {
-    std::cout << "data [" << i << "] = " << data[i] << "\n";
+    std::cout << "data [" << i << "] = " << data[i] << " data2 [" << i << "] = " << data2[i] << "\n";
   }
 
   return 0;
