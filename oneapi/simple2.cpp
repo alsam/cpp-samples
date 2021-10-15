@@ -21,7 +21,7 @@ int main() {
     accessor A{B, h};
 
     h.parallel_for(size , [=](auto& idx) {
-	A[idx] = idx;
+      A[idx] = idx;
     });
   });
 
