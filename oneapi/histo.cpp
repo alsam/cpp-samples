@@ -1,6 +1,9 @@
 #include <CL/sycl.hpp>
 #include <array>
+#include <vector>
 #include <iostream>
+#include <algorithm>
+#include <cmath>
 
 // dpcpp simple2.cpp -o simple2
 
@@ -13,7 +16,7 @@ int main() {
   constexpr unsigned M = 16;
 
   // Create queue on implementation-chosen default device
-  queue Q;
+  queue Q{gpu_selector{}};
 
   unsigned* data = malloc_shared<unsigned>(N, Q);
   std::fill(data, data + N, 0);
@@ -48,6 +51,40 @@ int main() {
 
   for (int i = 0; i < N; ++i) {
     std::cout << "data [" << i << "] = " << data[i] << " data2 [" << i << "] = " << data2[i] << "\n";
+  }
+  
+  {
+    unsigned N = 1 << 16;
+    constexpr unsigned NUM_BINS = 256;
+    std::vector<unsigned> h_input(N);
+    std::vector<unsigned> h_result(NUM_BINS);
+    std::srand(42);
+    std::generate(std::begin(h_input), std::end(h_input), [] { return  (unsigned)rand() % NUM_BINS; } );
+
+    // Create queue on implementation-chosen default device
+    queue Q{gpu_selector{}};
+    std::cout << "Selected device: " <<
+      Q.get_device().get_info<info::device::name>() << "\n";
+    std::cout << "-> Device vendor: " <<
+      Q.get_device().get_info<info::device::vendor>() << "\n";
+
+    buffer d_input{ h_input };
+    buffer d_result{ h_result };
+    Q.submit([&](handler& h) {
+      atomic_accessor acc(d_result, h, relaxed_order, system_scope);
+      accessor acc2(d_input, h);
+      h.parallel_for(N, [=](id<1> i) {
+        unsigned j = acc2[i];
+        acc[j] += 1;
+      });
+    });
+
+    // copy back
+    host_accessor h_result_back{d_result};
+    for (size_t i = 0; i < h_result_back.size(); ++i) {
+      std::cout << "h_result[" << i << "] = " << h_result_back[i] << "\n";
+    }
+
   }
 
   return 0;
