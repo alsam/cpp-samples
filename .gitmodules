@@ -10,3 +10,6 @@
 [submodule "amgcl.starter/3dparty/vexcl"]
 	path = amgcl.starter/3dparty/vexcl
 	url = https://github.com/ddemidov/vexcl.git
+[submodule "sunrise/3dparty/sunset"]
+	path = sunrise/3dparty/sunset
+	url = https://github.com/buelowp/sunset
