@@ -1,13 +1,19 @@
 #include <iostream>
 #include <LIEF/LIEF.hpp>
+#include <cxxopts.hpp>
 
 int main(int argc, char** argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <binary>" << std::endl;
-    return 1;
+  cxxopts::Options options("lief_test" "parses almost any binary");
+  options
+    .add_options()
+    ("b,binary", "input binary", cxxopts::value<std::string>())
+    ("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"))
+    ;
+  auto opts = options.parse(argc, argv);
+  if (opts.count("b")) {
+    auto binary_name = opts["b"].as<std::string>();
+    auto binary = LIEF::Parser::parse(binary_name);
+    std::cout << *binary << std::endl;
   }
-
-  auto binary = LIEF::Parser::parse(argv[1]);
-  std::cout << *binary << std::endl;
-  return 0;
+  return EXIT_SUCCESS;
 }
