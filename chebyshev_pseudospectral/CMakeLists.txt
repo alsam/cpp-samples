@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
 find_package(Eigen3 REQUIRED)
-find_package(PythonLibs 3 REQUIRED)
+find_package (Python3 COMPONENTS Interpreter Development)
 find_package(pybind11 REQUIRED)
 find_package(GTest REQUIRED)
 find_package(Boost REQUIRED COMPONENTS
@@ -31,33 +31,27 @@ set (src
 
 add_library(${project_lib} STATIC ${src})
 
-target_include_directories(${project_lib} PRIVATE
-    ${PYTHON_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIRS}
+target_link_libraries(${project_lib}
+  PUBLIC
+  Eigen3::Eigen
+  pybind11::module
+  Python3::Python
 )
 
 add_executable(${project_name} src/main.cpp)
 
-target_include_directories(${project_name} PRIVATE
-    ${PYTHON_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
-)
-
 target_link_libraries(${project_name}
+    PUBLIC pybind11::headers
     Boost::program_options
+    Eigen3::Eigen
     ${project_lib}
 )
 
 add_executable(${project_tests} src/unit_tests.cpp)
 
-target_include_directories(${project_tests} PRIVATE
-    ${PYTHON_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIRS}
-)
-
 target_link_libraries(${project_tests}
                       GTest::GTest
                       GTest::Main
+                      Eigen3::Eigen
                       ${project_lib}
 )
