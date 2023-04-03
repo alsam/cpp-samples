@@ -39,7 +39,7 @@ int main(int argc, char **argv)
         auto hexstr = hexStr(buffer.data(), buffer.size());
         for (size_t i = 0; i < hexstr.size(); i += 2) {
             std::cout << "0x" << hexstr[i] << hexstr[i+1] << ", ";
-            if (i % 8 == 6) std::cout << "\n";
+            if (i % 16 == 14) std::cout << "\n";
         }
     }
     return EXIT_SUCCESS;
