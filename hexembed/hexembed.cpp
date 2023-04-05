@@ -1,10 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <string>
 #include <vector>
 #include <cstdint>
 #include <cerrno>
 #include <cstring>
+
+namespace fs = std::filesystem;
 
 constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7',
                            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -25,16 +28,16 @@ int main(int argc, char **argv)
         std::cout << "gimme input file\n";
         return EXIT_FAILURE;
     }
-    std::ifstream f(argv[1], std::ios::binary | std::ios::ate);
+    fs::path filepath(fs::absolute(fs::path(argv[1])));
+    std::streamsize fsize = fs::exists(filepath) ? fs::file_size(filepath) : 0;
+    std::ifstream f(filepath, std::ios::binary | std::ios::in);
     if (!f) {
         std::cout << "failed to open input file ";
         std::cout << std::strerror(errno) << "\n";
         return EXIT_FAILURE;
     }
-    std::streamsize fs = f.tellg();
-    f.seekg(0, std::ios::beg);
-    std::vector<char> buffer(fs);
-    if (f.read(buffer.data(), fs)) {
+    std::vector<char> buffer(fsize);
+    if (f.read(buffer.data(), fsize)) {
         std::cout << "-I- read " << buffer.size() << " bytes " << std::endl;
         auto hexstr = hexStr(buffer.data(), buffer.size());
         const size_t line_break = 8;
