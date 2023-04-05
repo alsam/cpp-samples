@@ -37,9 +37,12 @@ int main(int argc, char **argv)
     if (f.read(buffer.data(), fs)) {
         std::cout << "-I- read " << buffer.size() << " bytes " << std::endl;
         auto hexstr = hexStr(buffer.data(), buffer.size());
-        for (size_t i = 0; i < hexstr.size(); i += 2) {
-            std::cout << "0x" << hexstr[i] << hexstr[i+1] << ", ";
-            if (i % 16 == 14) std::cout << "\n";
+        const size_t line_break = 8;
+        for (size_t i = 0; i < buffer.size(); ++i) {
+            std::cout << "0x" << hexstr[2 * i]
+                              << hexstr[2 * i + 1] << ", ";
+            if (i % line_break == (line_break - 1))
+                std::cout << "\n";
         }
     }
     return EXIT_SUCCESS;
