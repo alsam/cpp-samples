@@ -26,7 +26,6 @@
 #include <fstream>
 #include <filesystem>
 #include <string>
-#include <vector>
 #include <cstdint>
 #include <cerrno>
 #include <cstring>
