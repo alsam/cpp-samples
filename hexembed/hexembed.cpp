@@ -42,7 +42,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
     uint8_t *data = reinterpret_cast<uint8_t*>(mmap(nullptr, fsize, PROT_READ, MAP_SHARED, fd, 0));
-    if (nullptr == data) {
+    if (MAP_FAILED == data) {
         std::cout << "failed to mmap input file " << filepath << " : ";
         std::cout << std::strerror(errno) << "\n";
         return EXIT_FAILURE;
