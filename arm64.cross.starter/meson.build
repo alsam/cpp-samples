@@ -25,3 +25,8 @@ exe = executable('sample', sources: src,
                                                  '3dparty/cxxopts/include',],
                            dependencies: [dl_dep],
                            link_with: [fmt_lib])
+
+# spinlock
+exe = executable('spinlock_arm64', sources: ['../parallel_ds_and_algos/spinlock/spinlock_test.cpp'],
+                           dependencies: [dl_dep])
+
