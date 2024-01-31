@@ -31,6 +31,7 @@
 #include <dlfcn.h>
 #include <cstdlib>
 #include <fmt/core.h>
+#include <iostream>
 
 struct Descriptor
 {

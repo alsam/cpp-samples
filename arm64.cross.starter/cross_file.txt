@@ -7,7 +7,7 @@ cpp = '/usr/bin/aarch64-linux-gnu-g++'
 ar = '/usr/bin/aarch64-linux-gnu-gcc-ar'
 strip = '/usr/bin/aarch64-linux-gnu-strip'
 pkgconfig = '/usr/bin/aarch64-linux-gnu-pkg-config'
-exe_wrapper = '/usr/bin/qemu-aarch64-static'
+exe_wrapper = '/usr/bin/qemu-aarch64'
 
 [host_machine]
 system = 'linux'
